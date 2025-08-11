@@ -1,0 +1,41 @@
+.pokemon-card {
+  width: 300px;
+  border-radius: 10px;
+  text-align: center;
+  padding: 20px;
+  border: 2px solid black;
+  box-shadow: 5px 5px black;
+  position: relative;
+  overflow: hidden;
+}
+
+.pokemon-card > .types-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 20px 0 0;
+}
+
+.type-badge {
+  width: 100px;
+  padding: 4px;
+  border-radius: 6px;
+  border: 2px solid black;
+  color: white;
+}
+
+.pokemon-card .description {
+  text-align: left;
+  padding: 20px;
+  font-size: 1.3rem;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background-color: white;
+  transition: all 0.3s ease-in-out;
+  translate: 0 100%;
+}
+
+.pokemon-card:hover .description {
+  translate: 0 0;
+}
