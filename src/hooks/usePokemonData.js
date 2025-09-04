@@ -48,7 +48,7 @@ const usePokemonData = () => {
       setError(null);
       try {
         const response = await fetch(
-          "https://pokeapi.co/api/v2/pokemon-species?limit=500"
+          "https://pokeapi.co/api/v2/pokemon-species?limit=501"
         );
         if (!response.ok) {
           throw new Error("Gagal mengambil data spesies dari server.");
@@ -82,7 +82,6 @@ const usePokemonData = () => {
                 `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
               );
 
-              // **PERBAIKAN UTAMA**: Tangani jika Pokémon tidak ditemukan (404)
               if (pokeResponse.ok) {
                 const pokeData = await pokeResponse.json();
                 const speciesResponse = await fetch(pokeData.species.url);
@@ -95,6 +94,14 @@ const usePokemonData = () => {
                   pokeData.sprites.other["official-artwork"].front_default ||
                   pokeData.sprites.front_default;
 
+                // --- AWAL PERUBAHAN ---
+                // Ambil data statistik
+                const stats = {};
+                pokeData.stats.forEach((stat) => {
+                  stats[stat.stat.name] = stat.base_stat;
+                });
+                // --- AKHIR PERUBAHAN ---
+
                 evolutionLine.push({
                   id: pokeData.id,
                   name: pokeData.name,
@@ -103,6 +110,8 @@ const usePokemonData = () => {
                   description: description
                     ? description.flavor_text.replace(/\s+/g, " ")
                     : "No description available.",
+                  // --- TAMBAHKAN STATS DI SINI ---
+                  stats: stats,
                 });
               } else {
                 console.warn(`Pokémon tidak ditemukan: ${pokemonName}`);
@@ -112,7 +121,7 @@ const usePokemonData = () => {
             return evolutionLine;
           })
         );
-        // Hapus rantai evolusi yang kosong (jika semua Pokémon di dalamnya 404)
+
         const nonEmptyChains = pokemonDetails.filter(
           (chain) => chain.length > 0
         );
@@ -127,7 +136,7 @@ const usePokemonData = () => {
     };
 
     fetchPokemons();
-  }, [pokemons]); // Tambahkan `pokemons` sebagai dependensi
+  }, [pokemons]);
 
   const processedPokemons = useMemo(() => {
     return pokemons
@@ -145,7 +154,7 @@ const usePokemonData = () => {
         );
       })
       .sort((a, b) => {
-        if (!a[0] || !b[0]) return 0; // Jaga-jaga jika ada array kosong
+        if (!a[0] || !b[0]) return 0;
         if (sortByName) {
           return a[0].name.localeCompare(b[0].name);
         }

@@ -4,24 +4,21 @@ import { colours } from "../../data/colours";
 
 function PokemonItem({ evolutionLine }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [showDescription, setShowDescription] = useState(false); // State untuk visibilitas deskripsi
+  const [showDescription, setShowDescription] = useState(false);
 
-  // Fungsi untuk ke evolusi selanjutnya
   const handleNext = () => {
-    setShowDescription(false); // Sembunyikan deskripsi saat ganti
+    setShowDescription(false);
     setCurrentIndex((prevIndex) => (prevIndex + 1) % evolutionLine.length);
   };
 
-  // Fungsi untuk ke evolusi sebelumnya
   const handlePrev = () => {
-    setShowDescription(false); // Sembunyikan deskripsi saat ganti
+    setShowDescription(false);
     setCurrentIndex(
       (prevIndex) =>
         (prevIndex - 1 + evolutionLine.length) % evolutionLine.length
     );
   };
 
-  // Fungsi untuk menampilkan/menyembunyikan deskripsi
   const toggleDescription = () => {
     setShowDescription((prev) => !prev);
   };
@@ -51,19 +48,51 @@ function PokemonItem({ evolutionLine }) {
         ))}
       </div>
 
-      {/* Tombol untuk toggle deskripsi */}
+      {/* Tombol toggle utama yang selalu terlihat */}
       <button className="description-toggle-button" onClick={toggleDescription}>
         {showDescription ? "Sembunyikan Deskripsi" : "Lihat Deskripsi"}
       </button>
 
-      {/* Kontainer deskripsi yang muncul dari bawah */}
       <div className={`description-overlay ${showDescription ? "show" : ""}`}>
         <div className="description-content">
           <p>{pokemon.description}</p>
+
+          {pokemon.stats && (
+            <div className="stats-container">
+              <div className="stat-item">
+                <span className="stat-name hp">HP</span>
+                <span className="stat-value">{pokemon.stats["hp"]}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-name atk">ATK</span>
+                <span className="stat-value">{pokemon.stats["attack"]}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-name def">DEF</span>
+                <span className="stat-value">{pokemon.stats["defense"]}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-name sp-atk">SP.ATK</span>
+                <span className="stat-value">
+                  {pokemon.stats["special-attack"]}
+                </span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-name sp-def">SP.DEF</span>
+                <span className="stat-value">
+                  {pokemon.stats["special-defense"]}
+                </span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-name speed">SPEED</span>
+                <span className="stat-value">{pokemon.stats["speed"]}</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Kontrol slider evolusi */}
+      {/* Kontrol evolusi tetap di sini */}
       {evolutionLine.length > 1 && (
         <div className="evolution-controls">
           <button onClick={handlePrev}>&lt;</button>

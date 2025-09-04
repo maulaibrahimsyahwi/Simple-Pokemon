@@ -94,7 +94,7 @@ function Pokemons() {
             </button>
           </div>
           <div className="grid-size-container">
-            <strong>Column Size:</strong>
+            <strong>Card Column:</strong>
             <div className="grid-buttons">
               {[4, 5, 6, 7].map((size) => (
                 <button
@@ -117,7 +117,7 @@ function Pokemons() {
           style={{ "--grid-size": gridSize }}
         >
           {loading ? (
-            Array.from({ length: 12 }).map((_, index) => (
+            Array.from({ length: 9 }).map((_, index) => (
               <PokemonCardSkeleton key={index} />
             ))
           ) : processedPokemons.length === 0 ? (
