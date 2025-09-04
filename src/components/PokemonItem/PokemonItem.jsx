@@ -58,7 +58,9 @@ function PokemonItem({ evolutionLine }) {
 
       {/* Kontainer deskripsi yang muncul dari bawah */}
       <div className={`description-overlay ${showDescription ? "show" : ""}`}>
-        <p className="description-content">{pokemon.description}</p>
+        <div className="description-content">
+          <p>{pokemon.description}</p>
+        </div>
       </div>
 
       {/* Kontrol slider evolusi */}

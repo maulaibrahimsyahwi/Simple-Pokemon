@@ -5,10 +5,10 @@
   padding: 20px;
   border: 2px solid black;
   box-shadow: 5px 5px black;
-  position: relative; /* Penting untuk positioning overlay */
-  overflow: hidden; /* Penting untuk menyembunyikan deskripsi di luar batas */
+  position: relative;
+  overflow: hidden;
   cursor: pointer;
-  padding-bottom: 60px; /* Beri ruang di bawah untuk tombol slider */
+  padding-bottom: 60px;
 }
 
 .pokemon-card h1 {
@@ -23,10 +23,10 @@
 .types-container {
   display: flex;
   justify-content: center;
-  gap: 10px; /* Jarak antar type-badge jika ada lebih dari satu */
+  gap: 10px;
   margin-top: 15px;
   margin-bottom: 10px;
-  flex-wrap: wrap; /* Agar badge bisa wrap jika terlalu banyak */
+  flex-wrap: wrap;
 }
 
 .type-badge {
@@ -38,8 +38,9 @@
   text-transform: capitalize;
 }
 
+/* --- PERBAIKAN #1 --- */
 .description-toggle-button {
-  background-color: #3d7dca; /* Pokemon Blue */
+  background-color: #3d7dca;
   color: white;
   padding: 8px 15px;
   border: 2px solid #2a588d;
@@ -48,41 +49,50 @@
   font-size: 0.9em;
   font-weight: bold;
   transition: background-color 0.3s ease;
-  margin-top: 15px; /* Jarak dari type badge */
+  margin-top: 15px;
+  position: relative; /* Wajib ada agar z-index berfungsi */
+  z-index: 30; /* Pastikan tombol ini di lapisan paling atas */
 }
 
 .description-toggle-button:hover {
   background-color: #2a588d;
 }
 
-/* CSS untuk overlay deskripsi yang muncul dari bawah */
 .description-overlay {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  max-height: 0; /* Awalnya tersembunyi */
+  max-height: 0;
   background-color: rgba(255, 255, 255, 0.95);
   color: #333;
-  transition: max-height 0.4s ease-out; /* Efek transisi */
-  overflow: hidden;
+  transition: max-height 0.4s ease-out;
   box-sizing: border-box;
+  z-index: 20; /* Di bawah tombol, tapi di atas konten kartu lain */
+  overflow-y: auto;
 }
 
 .description-overlay.show {
-  max-height: 250px; /* Tinggi maksimum saat terlihat */
+  max-height: 100%;
 }
 
+/* --- PERBAIKAN #2 --- */
 .description-content {
   text-align: left;
   font-size: 1rem;
   line-height: 1.4;
-  padding: 20px;
-  overflow-y: auto; /* Tambahkan scroll jika deskripsi panjang */
-  max-height: 230px; /* Sesuaikan dengan max-height .description-overlay */
+  display: flex;
+  top: 0;
+  padding: 5px 20px 70px 20px; /* Atas, Kanan, Bawah, Kiri */
 }
 
-/* CSS untuk tombol navigasi evolusi */
+.description-content p {
+  display: flex;
+  margin-bottom: 280px;
+  font: bold;
+  text-transform: capitalize;
+}
+
 .evolution-controls {
   position: absolute;
   bottom: 10px;
@@ -94,8 +104,8 @@
   background-color: rgba(255, 255, 255, 0.85);
   padding: 5px 15px;
   border-radius: 20px;
-  z-index: 10; /* Pastikan di atas deskripsi overlay */
   border: 1px solid #ccc;
+  z-index: 40; /* Pastikan juga di atas overlay */
 }
 
 .evolution-controls button {
