@@ -16,7 +16,7 @@
   align-items: flex-start;
   margin-bottom: 20px;
   gap: 20px;
-  max-width: 80%;
+  max-width: 90%;
   margin: 0 auto 20px;
 }
 
@@ -30,18 +30,13 @@
   font-size: 1.2rem;
 }
 
-/* --- INI BAGIAN PERUBAHANNYA --- */
 .type-buttons {
-  display: grid; /* Mengubah dari flex ke grid */
-  grid-template-columns: repeat(
-    9,
-    1fr
-  ); /* Membuat 2 kolom dengan lebar yang sama */
-  gap: 10px; /* Jarak antar tombol */
-  width: 100%; /* Lebar maksimal untuk container grid */
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 10px;
+  width: 100%;
   max-width: 300px;
 }
-/* --- AKHIR BAGIAN PERUBAHAN --- */
 
 .type-buttons button {
   padding: 8px 15px;
@@ -53,7 +48,7 @@
   transition: all 0.2s ease;
   background-color: #f0f0f0;
   color: #333;
-  width: 100%; /* Membuat tombol mengisi sel grid */
+  width: 100%;
   text-align: center;
 }
 
@@ -68,9 +63,15 @@
   opacity: 0.8;
 }
 
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
+}
+
 .sort-container {
   text-align: right;
-  margin-top: 20px; /* Menambahkan margin agar sejajar */
 }
 
 .sort-container button {
@@ -85,12 +86,51 @@
   transition: all 0.2s;
 }
 
-.list-pokemon {
+.grid-size-container {
+  text-align: right;
+}
+
+.grid-size-container strong {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.grid-buttons {
   display: flex;
-  justify-content: center;
-  gap: 30px;
-  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.grid-buttons button {
+  padding: 8px 15px;
+  font-size: 1rem;
+  font-weight: bold;
+  background-color: #efefef;
+  border: 2px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 2px 2px black;
+  transition: all 0.2s;
+}
+
+.grid-buttons button.active {
+  background-color: #4a90e2;
+  color: white;
+  transform: scale(1.1);
+}
+
+.list-pokemon-wrapper {
+  width: 100%;
   margin: 40px auto;
-  padding: 0;
-  clear: both; /* Membersihkan float dari container sebelumnya */
+  transition: height 0.3s ease;
+}
+
+.list-pokemon {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-size, 4), 300px);
+  justify-content: flex-start;
+  gap: 30px;
+  width: max-content;
+  transform-origin: top left;
+  transition: transform 0.3s ease;
 }

@@ -1,13 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 
 const usePokemonData = () => {
-  // Cek apakah ada data di cache saat inisialisasi state
+  // ... (state yang sudah ada)
   const [pokemons, setPokemons] = useState(() => {
     const cachedData = localStorage.getItem("pokemonData");
     return cachedData ? JSON.parse(cachedData) : [];
   });
 
-  // Jika tidak ada data di cache, set loading ke true
   const [loading, setLoading] = useState(() => {
     return !localStorage.getItem("pokemonData");
   });
@@ -16,10 +15,11 @@ const usePokemonData = () => {
   const [filterType, setFilterType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortByName, setSortByName] = useState(false);
+  const [gridSize, setGridSize] = useState(4); // --- TAMBAHKAN STATE INI ---
 
   useEffect(() => {
+    // ... (useEffect yang sudah ada)
     const fetchPokemons = async () => {
-      // Hanya fetch jika tidak ada pokemon di state (dan cache)
       if (pokemons.length > 0) {
         setLoading(false);
         return;
@@ -61,7 +61,6 @@ const usePokemonData = () => {
             };
           })
         );
-        // Simpan data ke state dan localStorage
         setPokemons(pokemonDetails);
         localStorage.setItem("pokemonData", JSON.stringify(pokemonDetails));
       } catch (error) {
@@ -73,9 +72,10 @@ const usePokemonData = () => {
     };
 
     fetchPokemons();
-  }, [pokemons.length]); // Effect ini bergantung pada panjang array pokemons
+  }, [pokemons.length]);
 
   const processedPokemons = useMemo(() => {
+    // ... (useMemo yang sudah ada)
     return pokemons
       .filter((pokemon) => {
         if (filterType === "all") return true;
@@ -102,6 +102,8 @@ const usePokemonData = () => {
     setFilterType,
     sortByName,
     setSortByName,
+    gridSize, // --- EKSPOR STATE ---
+    setGridSize, // --- EKSPOR FUNGSI SETTER ---
     colours: {
       normal: "#A8A77A",
       fire: "#EE8130",
