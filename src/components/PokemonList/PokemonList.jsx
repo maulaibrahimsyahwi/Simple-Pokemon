@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import PokemonItem from "../PokemonItem/PokemonItem";
 import usePokemonData from "../../hooks/usePokemonData";
 import PokemonCardSkeleton from "../PokemonItem/PokemonCardSkeleton";
+import ErrorDisplay from "../ErrorDisplay/ErrorDisplay"; // Impor komponen error
 import "./PokemonList.css";
 import NotfoundImage from "./img/Not Found Pokemon.webp";
 
@@ -18,22 +19,20 @@ function Pokemons() {
     gridSize,
     setGridSize,
     colours,
+    refetch, // Ambil fungsi refetch dari hook
   } = usePokemonData();
 
   const listWrapperRef = useRef(null);
   const listRef = useRef(null);
 
-  // --- PERUBAHAN 1: Tambahkan state untuk deteksi mobile ---
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
 
-  // --- PERUBAHAN 2: Tambahkan useEffect untuk handle resize ---
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 640);
     };
 
     window.addEventListener("resize", handleResize);
-    // Cleanup listener saat komponen di-unmount
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -60,10 +59,11 @@ function Pokemons() {
       clearTimeout(timeoutId);
       window.removeEventListener("resize", calculateScale);
     };
-  }, [gridSize, isMobile, processedPokemons, loading]); // Tambahkan isMobile sebagai dependency
+  }, [gridSize, isMobile, processedPokemons, loading]);
 
+  // Gunakan komponen ErrorDisplay jika ada error
   if (error) {
-    return <div>Error: {error}</div>;
+    return <ErrorDisplay message={error} onRetry={refetch} />;
   }
 
   return (
@@ -113,6 +113,12 @@ function Pokemons() {
           </div>
         </div>
         <div className="settings-container">
+          <div className="sort-container">
+            <button onClick={() => setSortByName(!sortByName)}>
+              {sortByName ? "Sort by ID" : "Sort by Name"}
+            </button>
+          </div>
+
           {!isMobile && (
             <div className="grid-size-container">
               <strong>Column Size:</strong>
@@ -129,42 +135,46 @@ function Pokemons() {
               </div>
             </div>
           )}
-          <div className="sort-container">
-            <button onClick={() => setSortByName(!sortByName)}>
-              {sortByName ? "Sort by ID" : "Sort by Name"}
-            </button>
-          </div>
         </div>
       </div>
 
       <div className="list-pokemon-wrapper" ref={listWrapperRef}>
-        <div
-          className="list-pokemon"
-          ref={listRef}
-          // --- PERUBAHAN 4: Atur grid size menjadi 3 jika mobile ---
-          style={{ "--grid-size": isMobile ? 3 : gridSize }}
-        >
-          {loading ? (
-            Array.from({ length: 12 }).map((_, index) => (
+        {/* --- AWAL PERUBAHAN LOGIKA TAMPILAN --- */}
+        {loading ? (
+          <div
+            className="list-pokemon"
+            ref={listRef}
+            style={{ "--grid-size": isMobile ? 3 : gridSize }}
+          >
+            {Array.from({ length: 12 }).map((_, index) => (
               <PokemonCardSkeleton key={index} />
-            ))
-          ) : processedPokemons.length === 0 ? (
-            <div className="not-found-container">
-              <img
-                src={NotfoundImage}
-                alt="Not Found"
-                style={{ width: "150px", marginBottom: "10px" }}
-              />
-            </div>
-          ) : (
-            processedPokemons.map((evolutionLine) => (
+            ))}
+          </div>
+        ) : processedPokemons.length === 0 ? (
+          <div className="not-found-container">
+            <img
+              src={NotfoundImage}
+              alt="Not Found"
+              style={{ width: "350px", marginBottom: "20px" }}
+            />
+            <h2>Pokémon Tidak Ditemukan</h2>
+            <p>Coba gunakan kata kunci atau filter yang lain.</p>
+          </div>
+        ) : (
+          <div
+            className="list-pokemon"
+            ref={listRef}
+            style={{ "--grid-size": isMobile ? 3 : gridSize }}
+          >
+            {processedPokemons.map((evolutionLine) => (
               <PokemonItem
                 key={evolutionLine[0].id}
                 evolutionLine={evolutionLine}
               />
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
+        {/* --- AKHIR PERUBAHAN LOGIKA TAMPILAN --- */}
       </div>
     </>
   );

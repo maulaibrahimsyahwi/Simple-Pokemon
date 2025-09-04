@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { colours } from "../data/colours"; // Impor dari file data
 
 const usePokemonData = () => {
   const [pokemons, setPokemons] = useState(() => {
@@ -7,19 +8,25 @@ const usePokemonData = () => {
   });
 
   const [loading, setLoading] = useState(() => {
-    // Set loading ke true jika tidak ada data di cache
     return !localStorage.getItem("pokemonData");
   });
 
   const [error, setError] = useState(null);
   const [filterType, setFilterType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortByName, setSortByName] = useState(true);
+  const [sortByName, setSortByName] = useState(true); // Default diubah ke true
   const [gridSize, setGridSize] = useState(4);
+  const [triggerFetch, setTriggerFetch] = useState(0);
+
+  // Fungsi untuk memuat ulang data, dibungkus dengan useCallback
+  const refetch = useCallback(() => {
+    localStorage.removeItem("pokemonData");
+    setPokemons([]);
+    setTriggerFetch((prev) => prev + 1);
+  }, []);
 
   useEffect(() => {
     const fetchPokemons = async () => {
-      // Periksa format data cache dan hapus jika formatnya lama
       const cachedData = localStorage.getItem("pokemonData");
       if (cachedData) {
         try {
@@ -29,33 +36,29 @@ const usePokemonData = () => {
             parsed.length > 0 &&
             !Array.isArray(parsed[0])
           ) {
-            console.log("Format data lama terdeteksi, membersihkan cache.");
             localStorage.removeItem("pokemonData");
+          } else if (Array.isArray(parsed) && parsed.length > 0) {
+            setPokemons(parsed);
+            setLoading(false);
+            return;
           }
         } catch (err) {
-          console.error("Gagal mem-parsing data cache:", err);
+          console.error("Error parsing cached data:", err);
           localStorage.removeItem("pokemonData");
         }
-      }
-
-      // Jika data sudah ada dengan format yang benar, jangan fetch ulang
-      if (pokemons.length > 0 && Array.isArray(pokemons[0])) {
-        setLoading(false);
-        return;
       }
 
       setLoading(true);
       setError(null);
       try {
         const response = await fetch(
-          "https://pokeapi.co/api/v2/pokemon-species?limit=1025"
+          "https://pokeapi.co/api/v2/pokemon-species?limit=501"
         );
         if (!response.ok) {
           throw new Error("Gagal mengambil data spesies dari server.");
         }
         const data = await response.json();
 
-        // Ambil semua rantai evolusi
         const evolutionChains = await Promise.all(
           data.results.map(async (species) => {
             const speciesResponse = await fetch(species.url);
@@ -66,12 +69,10 @@ const usePokemonData = () => {
           })
         );
 
-        // Filter agar setiap rantai evolusi unik
         const uniqueChains = Array.from(
           new Set(evolutionChains.map((chain) => chain.id))
         ).map((id) => evolutionChains.find((chain) => chain.id === id));
 
-        // Proses setiap rantai evolusi untuk mendapatkan detail Pokémon
         const pokemonDetails = await Promise.all(
           uniqueChains.map(async (chain) => {
             const evolutionLine = [];
@@ -94,13 +95,10 @@ const usePokemonData = () => {
                   pokeData.sprites.other["official-artwork"].front_default ||
                   pokeData.sprites.front_default;
 
-                // --- AWAL PERUBAHAN ---
-                // Ambil data statistik
                 const stats = {};
                 pokeData.stats.forEach((stat) => {
                   stats[stat.stat.name] = stat.base_stat;
                 });
-                // --- AKHIR PERUBAHAN ---
 
                 evolutionLine.push({
                   id: pokeData.id,
@@ -110,11 +108,8 @@ const usePokemonData = () => {
                   description: description
                     ? description.flavor_text.replace(/\s+/g, " ")
                     : "No description available.",
-                  // --- TAMBAHKAN STATS DI SINI ---
                   stats: stats,
                 });
-              } else {
-                console.warn(`Pokémon tidak ditemukan: ${pokemonName}`);
               }
               current = current.evolves_to[0];
             }
@@ -128,7 +123,6 @@ const usePokemonData = () => {
         setPokemons(nonEmptyChains);
         localStorage.setItem("pokemonData", JSON.stringify(nonEmptyChains));
       } catch (error) {
-        console.error("Gagal mengambil data Pokemon:", error);
         setError(error.message);
       } finally {
         setLoading(false);
@@ -136,7 +130,7 @@ const usePokemonData = () => {
     };
 
     fetchPokemons();
-  }, [pokemons]);
+  }, [triggerFetch]);
 
   const processedPokemons = useMemo(() => {
     return pokemons
@@ -174,26 +168,8 @@ const usePokemonData = () => {
     setSortByName,
     gridSize,
     setGridSize,
-    colours: {
-      normal: "#A8A77A",
-      fire: "#EE8130",
-      water: "#6390F0",
-      electric: "#F7D02C",
-      grass: "#7AC74C",
-      ice: "#96D9D6",
-      fighting: "#C22E28",
-      poison: "#A33EA1",
-      ground: "#E2BF65",
-      flying: "#A98FF3",
-      psychic: "#F95587",
-      bug: "#A6B91A",
-      rock: "#B6A136",
-      ghost: "#735797",
-      dragon: "#6F35FC",
-      dark: "#705746",
-      steel: "#B7B7CE",
-      fairy: "#D685AD",
-    },
+    colours, // Ekspor warna dari data
+    refetch, // Ekspor fungsi refetch
   };
 };
 

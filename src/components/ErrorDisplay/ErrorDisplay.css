@@ -1,0 +1,40 @@
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  margin: 50px auto;
+  background-color: #fff0f0;
+  border: 2px solid #ffaaaa;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 600px;
+}
+
+.error-container h3 {
+  color: #c22e28;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+.error-container p {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.retry-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  background-color: #3d7dca;
+  border: 2px solid #2a588d;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.retry-button:hover {
+  background-color: #2a588d;
+}
