@@ -1,11 +1,13 @@
-import { useState } from "react";
 import Pokemons from "./components/PokemonList/PokemonList";
-import Login from "./components/Login";
+import "./App.css"; // Impor file CSS yang baru
 
 function App() {
-  const [isLogin, setIsLogin] = useState(true);
-
-  return <>{isLogin ? <Pokemons /> : <Login setIsLogin={setIsLogin} />}</>;
+  return (
+    <div className="app-container">
+      <h1>Simple Pokémon</h1>
+      <Pokemons />
+    </div>
+  );
 }
 
 export default App;

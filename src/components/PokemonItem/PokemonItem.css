@@ -7,6 +7,19 @@
   box-shadow: 5px 5px black;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+}
+
+/* Tambahkan styling untuk h1 di sini */
+.pokemon-card h1 {
+  text-transform: capitalize;
+  margin: 10px 0; /* Beri sedikit jarak */
+
+  /* --- INI BAGIAN PERBAIKANNYA --- */
+  white-space: nowrap; /* Mencegah nama turun ke baris baru */
+  overflow: hidden; /* Sembunyikan teks yang melampaui batas */
+  text-overflow: ellipsis; /* Tambahkan "..." di akhir teks yang terpotong */
+  width: 100%; /* Pastikan h1 tidak lebih lebar dari kartu */
 }
 
 .pokemon-card > .types-container {
@@ -22,6 +35,7 @@
   border-radius: 6px;
   border: 2px solid black;
   color: white;
+  text-transform: capitalize; /* Agar tipe juga huruf kapital di awal */
 }
 
 .pokemon-card .description {

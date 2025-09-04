@@ -1,0 +1,12 @@
+.app-container {
+  max-width: max-content;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.app-container h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: #333;
+}
