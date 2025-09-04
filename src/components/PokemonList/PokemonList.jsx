@@ -99,7 +99,7 @@ function Pokemons() {
             </button>
           </div>
           <div className="grid-size-container">
-            <strong>Column Size:</strong>
+            <strong>Card Size:</strong>
             <div className="grid-buttons">
               {[3, 4, 5, 6].map((size) => (
                 <button
