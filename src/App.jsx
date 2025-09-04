@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Pokemons from "./components/PokemonList/PokemonList";
 import Login from "./components/Login";
 import ScrollToTopButton from "./components/ScrollToTopButton/ScrollToTopButton"; // --- 1. IMPORT KOMPONEN BARU ---
-import "./App.css";
+import "./app.css";
 
 function App() {
   const [isLogin, setIsLogin] = useState(() => {
