@@ -5,11 +5,12 @@
   padding: 20px;
   border: 2px solid black;
   box-shadow: 5px 5px black;
-  position: relative; /* Ini penting agar tombol bisa diposisikan */
+  position: relative; /* Penting untuk positioning overlay */
+  overflow: hidden; /* Penting untuk menyembunyikan deskripsi di luar batas */
   cursor: pointer;
-  padding-bottom: 60px; /* Beri ruang di bawah untuk tombol */
+  padding-bottom: 60px; /* Beri ruang di bawah untuk tombol slider */
 }
-/* Tambahkan styling untuk h1 di sini */
+
 .pokemon-card h1 {
   text-transform: capitalize;
   margin: 10px 0;
@@ -19,11 +20,13 @@
   width: 100%;
 }
 
-.pokemon-card > .types-container {
+.types-container {
   display: flex;
   justify-content: center;
-  gap: 30px;
-  margin: 20px 0 0;
+  gap: 10px; /* Jarak antar type-badge jika ada lebih dari satu */
+  margin-top: 15px;
+  margin-bottom: 10px;
+  flex-wrap: wrap; /* Agar badge bisa wrap jika terlalu banyak */
 }
 
 .type-badge {
@@ -35,28 +38,76 @@
   text-transform: capitalize;
 }
 
-.pokemon-card .description {
-  text-align: left;
-  padding-top: 20px;
-  font-size: 1.3rem;
+.description-toggle-button {
+  background-color: #3d7dca; /* Pokemon Blue */
+  color: white;
+  padding: 8px 15px;
+  border: 2px solid #2a588d;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  margin-top: 15px; /* Jarak dari type badge */
 }
 
+.description-toggle-button:hover {
+  background-color: #2a588d;
+}
+
+/* CSS untuk overlay deskripsi yang muncul dari bawah */
+.description-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  max-height: 0; /* Awalnya tersembunyi */
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #333;
+  transition: max-height 0.4s ease-out; /* Efek transisi */
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.description-overlay.show {
+  max-height: 250px; /* Tinggi maksimum saat terlihat */
+}
+
+.description-content {
+  text-align: left;
+  font-size: 1rem;
+  line-height: 1.4;
+  padding: 20px;
+  overflow-y: auto; /* Tambahkan scroll jika deskripsi panjang */
+  max-height: 230px; /* Sesuaikan dengan max-height .description-overlay */
+}
+
+/* CSS untuk tombol navigasi evolusi */
 .evolution-controls {
   position: absolute;
-  bottom: 10px; /* Posisikan di bawah */
+  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 10px;
-  background-color: rgba(255, 255, 255, 0.7);
-  padding: 5px 10px;
+  gap: 15px;
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 5px 15px;
   border-radius: 20px;
+  z-index: 10; /* Pastikan di atas deskripsi overlay */
+  border: 1px solid #ccc;
 }
 
 .evolution-controls button {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: bold;
   cursor: pointer;
+  padding: 0 5px;
+  color: #333;
+}
+
+.evolution-controls span {
+  font-weight: bold;
 }

@@ -7,6 +7,7 @@ const usePokemonData = () => {
   });
 
   const [loading, setLoading] = useState(() => {
+    // Set loading ke true jika tidak ada data di cache
     return !localStorage.getItem("pokemonData");
   });
 
@@ -18,6 +19,7 @@ const usePokemonData = () => {
 
   useEffect(() => {
     const fetchPokemons = async () => {
+      // Periksa format data cache dan hapus jika formatnya lama
       const cachedData = localStorage.getItem("pokemonData");
       if (cachedData) {
         try {
@@ -27,15 +29,16 @@ const usePokemonData = () => {
             parsed.length > 0 &&
             !Array.isArray(parsed[0])
           ) {
-            console.log("Old data format detected, clearing cache.");
+            console.log("Format data lama terdeteksi, membersihkan cache.");
             localStorage.removeItem("pokemonData");
           }
-        } catch (error) {
+        } catch (err) {
+          console.error("Gagal mem-parsing data cache:", err);
           localStorage.removeItem("pokemonData");
-          console.error("Error parsing cached data:", error);
         }
       }
 
+      // Jika data sudah ada dengan format yang benar, jangan fetch ulang
       if (pokemons.length > 0 && Array.isArray(pokemons[0])) {
         setLoading(false);
         return;
@@ -48,10 +51,11 @@ const usePokemonData = () => {
           "https://pokeapi.co/api/v2/pokemon-species?limit=500"
         );
         if (!response.ok) {
-          throw new Error("Gagal mengambil data dari server.");
+          throw new Error("Gagal mengambil data spesies dari server.");
         }
         const data = await response.json();
 
+        // Ambil semua rantai evolusi
         const evolutionChains = await Promise.all(
           data.results.map(async (species) => {
             const speciesResponse = await fetch(species.url);
@@ -62,10 +66,12 @@ const usePokemonData = () => {
           })
         );
 
+        // Filter agar setiap rantai evolusi unik
         const uniqueChains = Array.from(
           new Set(evolutionChains.map((chain) => chain.id))
         ).map((id) => evolutionChains.find((chain) => chain.id === id));
 
+        // Proses setiap rantai evolusi untuk mendapatkan detail Pokémon
         const pokemonDetails = await Promise.all(
           uniqueChains.map(async (chain) => {
             const evolutionLine = [];
@@ -76,7 +82,7 @@ const usePokemonData = () => {
                 `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
               );
 
-              // FIX: Check if the request was successful before processing
+              // **PERBAIKAN UTAMA**: Tangani jika Pokémon tidak ditemukan (404)
               if (pokeResponse.ok) {
                 const pokeData = await pokeResponse.json();
                 const speciesResponse = await fetch(pokeData.species.url);
@@ -98,12 +104,15 @@ const usePokemonData = () => {
                     ? description.flavor_text.replace(/\s+/g, " ")
                     : "No description available.",
                 });
+              } else {
+                console.warn(`Pokémon tidak ditemukan: ${pokemonName}`);
               }
               current = current.evolves_to[0];
             }
             return evolutionLine;
           })
         );
+        // Hapus rantai evolusi yang kosong (jika semua Pokémon di dalamnya 404)
         const nonEmptyChains = pokemonDetails.filter(
           (chain) => chain.length > 0
         );
@@ -118,28 +127,25 @@ const usePokemonData = () => {
     };
 
     fetchPokemons();
-  }, [pokemons]);
+  }, [pokemons]); // Tambahkan `pokemons` sebagai dependensi
 
   const processedPokemons = useMemo(() => {
     return pokemons
       .filter((evolutionLine) => {
-        if (!Array.isArray(evolutionLine)) {
-          return false;
-        }
+        if (!Array.isArray(evolutionLine)) return false;
         if (filterType === "all") return true;
         return evolutionLine.some((pokemon) =>
           pokemon.types.includes(filterType)
         );
       })
       .filter((evolutionLine) => {
-        if (!Array.isArray(evolutionLine)) {
-          return false;
-        }
+        if (!Array.isArray(evolutionLine)) return false;
         return evolutionLine.some((pokemon) =>
           pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
       })
       .sort((a, b) => {
+        if (!a[0] || !b[0]) return 0; // Jaga-jaga jika ada array kosong
         if (sortByName) {
           return a[0].name.localeCompare(b[0].name);
         }
