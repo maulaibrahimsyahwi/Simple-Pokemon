@@ -1,7 +1,6 @@
 .pokemon-card {
   width: 300px;
-  /* Tambahkan tinggi tetap agar stabil */
-  height: 520px;
+  height: 520px; /* Tinggi tetap agar stabil */
   border-radius: 10px;
   text-align: center;
   padding: 20px;
@@ -10,7 +9,6 @@
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  /* Hapus padding bawah karena kita sudah mengatur tinggi tetap */
 }
 
 .pokemon-card h1 {
@@ -65,16 +63,15 @@
   left: 0;
   width: 100%;
   max-height: 0;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.98);
   color: #333;
   transition: max-height 0.4s ease-out;
   box-sizing: border-box;
   z-index: 20;
-  overflow-y: hidden;
+  overflow-y: hidden; /* <-- PERBAIKAN SCROLLBAR SUDAH DI SINI */
 }
 
 .description-overlay.show {
-  /* Biarkan overlay mengisi seluruh kartu */
   max-height: 100%;
 }
 
@@ -82,11 +79,6 @@
   text-align: left;
   font-size: 1rem;
   line-height: 1.4;
-  /* PERBAIKAN KUNCI: 
-    Padding bawah yang besar (80px) untuk memberi ruang 
-    agar konten bisa di-scroll ke atas dan tidak tertutup 
-    oleh tombol evolusi di bawahnya.
-  */
   padding: 20px 20px 80px 20px;
 }
 
@@ -96,6 +88,7 @@
   text-transform: capitalize;
 }
 
+/* --- KODE STATISTIK ANDA YANG SAYA KEMBALIKAN --- */
 .stats-container {
   display: flex;
   justify-content: space-around;
@@ -145,7 +138,9 @@
 .stat-name.speed {
   background-color: #f5e142;
 }
+/* --- AKHIR DARI KODE STATISTIK --- */
 
+/* --- KODE EVOLUTION CONTROLS YANG SUDAH DIPERBAIKI --- */
 .evolution-controls {
   position: absolute;
   bottom: 10px;
@@ -153,24 +148,31 @@
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 15px;
+  width: 45%;
+  justify-content: space-between;
   background-color: rgba(255, 255, 255, 0.85);
   padding: 5px 15px;
   border-radius: 20px;
   border: 1px solid #ccc;
-  z-index: 40; /* Paling atas */
+  z-index: 40;
 }
 
 .evolution-controls button {
   background: none;
   border: none;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: bold;
   cursor: pointer;
-  padding: 0 5px;
+  padding: 0 8px;
   color: #333;
+  transition: color 0.2s;
+}
+
+.evolution-controls button:hover {
+  color: #007bff;
 }
 
 .evolution-controls span {
   font-weight: bold;
+  font-size: 1.1rem;
 }

@@ -146,18 +146,6 @@
   width: 100%;
 }
 
-.type-dropdown {
-  width: 100%;
-  max-width: 250px;
-  padding: 10px;
-  font-size: 1rem;
-  font-family: "Jura", sans-serif;
-  border: 2px solid #555;
-  border-radius: 8px;
-  background-color: #f0f0f0;
-  cursor: pointer;
-}
-
 .error-container {
   display: flex;
   flex-direction: column;
@@ -191,4 +179,58 @@
 
 .retry-button:hover {
   background-color: #2a588d;
+}
+
+/* --- KODE BARU UNTUK RESPONSIVE --- */
+
+/* Sembunyikan dropdown di layar besar secara default */
+.type-dropdown {
+  display: none;
+  width: 100%;
+  max-width: 250px;
+  padding: 10px;
+  font-size: 1rem;
+  font-family: "Jura", sans-serif;
+  border: 2px solid #555;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  text-transform: capitalize;
+}
+
+/* Tampilan untuk layar 1280px ke bawah */
+@media (max-width: 1280px) {
+  .controls-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .filter-container,
+  .settings-container {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+
+  .type-buttons {
+    display: none;
+  }
+
+  .type-dropdown {
+    display: block;
+    margin: 0 auto;
+  }
+
+  .sort-container,
+  .grid-size-container {
+    text-align: center;
+  }
+}
+
+/* Tampilan untuk layar 640px ke bawah */
+@media (max-width: 640px) {
+  .list-pokemon-wrapper {
+    display: block;
+  }
 }
