@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Pokemons from "./components/PokemonList/PokemonList";
-import Login from "./components/Login";
+import Login from "./components/Login/Login";
 import ScrollToTopButton from "./components/ScrollToTopButton/ScrollToTopButton"; // --- 1. IMPORT KOMPONEN BARU ---
 import "./app.css";
 
