@@ -113,13 +113,6 @@ function Pokemons() {
           </div>
         </div>
         <div className="settings-container">
-          <div className="sort-container">
-            <button onClick={() => setSortByName(!sortByName)}>
-              {sortByName ? "Sort by ID" : "Sort by Name"}
-            </button>
-          </div>
-
-          {/* --- PERUBAHAN 3: Sembunyikan jika isMobile true --- */}
           {!isMobile && (
             <div className="grid-size-container">
               <strong>Column Size:</strong>
@@ -136,6 +129,11 @@ function Pokemons() {
               </div>
             </div>
           )}
+          <div className="sort-container">
+            <button onClick={() => setSortByName(!sortByName)}>
+              {sortByName ? "Sort by ID" : "Sort by Name"}
+            </button>
+          </div>
         </div>
       </div>
 

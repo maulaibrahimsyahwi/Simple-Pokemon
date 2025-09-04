@@ -14,7 +14,7 @@ const usePokemonData = () => {
   const [error, setError] = useState(null);
   const [filterType, setFilterType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortByName, setSortByName] = useState(false);
+  const [sortByName, setSortByName] = useState(true);
   const [gridSize, setGridSize] = useState(4);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ const usePokemonData = () => {
       setError(null);
       try {
         const response = await fetch(
-          "https://pokeapi.co/api/v2/pokemon-species?limit=501"
+          "https://pokeapi.co/api/v2/pokemon-species?limit=1025"
         );
         if (!response.ok) {
           throw new Error("Gagal mengambil data spesies dari server.");
