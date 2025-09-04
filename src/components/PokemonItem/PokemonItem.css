@@ -65,12 +65,12 @@
   left: 0;
   width: 100%;
   max-height: 0;
-  background-color: rgba(255, 255, 255, 0.98);
+  background-color: rgba(255, 255, 255, 0.95);
   color: #333;
   transition: max-height 0.4s ease-out;
   box-sizing: border-box;
   z-index: 20;
-  overflow-y: auto; /* Pastikan bisa di-scroll */
+  overflow-y: hidden;
 }
 
 .description-overlay.show {
