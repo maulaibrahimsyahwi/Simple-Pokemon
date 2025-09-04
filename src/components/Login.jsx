@@ -1,36 +1,94 @@
-import { useState } from "react"
+import { useState } from "react";
+import "./Login.css";
 
-// import './Login.css'
-
-function Login({setIsLogin}) {
+function Login({ setIsLogin }) {
   const [user, setUser] = useState({
-    email: "",
+    username: "",
     password: "",
-  })
+  });
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showHint, setShowHint] = useState(false); // State baru untuk hint box
 
   const handleChange = (event) => {
     setUser({
       ...user,
       [event.target.name]: event.target.value,
-    })
-  }
+    });
+  };
 
   const handleLogin = (event) => {
-    event.preventDefault()
-      if (user.username == 'skilvul' && user.password == 'admin'){
-        setIsLogin(true)
-      }
-  }
+    event.preventDefault();
+    if (user.username === "skilvul" && user.password === "admin") {
+      setIsLogin(true);
+    } else {
+      setError("Username atau password salah!");
+    }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
-    <form>
-      <h1>Login Data Pokemon</h1>
-      <input type="text" name="username" placeholder="username" onChange={handleChange} />
-      <input type="password" name="password" placeholder="password" onChange={handleChange}/>
-      <button onClick={handleLogin}>Login</button>
-    </form>
-  )
+    <div className="login-container">
+      <form onSubmit={handleLogin} className="login-form">
+        <img src="/pokemon.webp" alt="Pokeball Logo" className="login-logo" />
+        <h1>Welcome, Trainer!</h1>
+        <p className="login-subtitle">
+          Masukkan kredensial untuk memulai petualanganmu.
+        </p>
+
+        <div className="input-group">
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="input-group password-group">
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            placeholder="Password"
+            onChange={handleChange}
+            required
+          />
+          <span
+            onClick={togglePasswordVisibility}
+            className="password-toggle-icon"
+          >
+            {showPassword ? "🙈" : "👁️"}
+          </span>
+        </div>
+
+        {/* --- BAGIAN HINT BOX DIPERBARUI --- */}
+        <p className="hint-toggle" onClick={() => setShowHint(true)}>
+          Butuh petunjuk?
+        </p>
+
+        {showHint && (
+          <div className="hint-box">
+            <p>
+              <strong>Username:</strong> skilvul
+            </p>
+            <p>
+              <strong>Password:</strong> admin
+            </p>
+          </div>
+        )}
+        {/* --- AKHIR BAGIAN YANG DIPERBARUI --- */}
+
+        {error && <p className="error-message">{error}</p>}
+        <button type="submit" className="login-button">
+          Masuk
+        </button>
+      </form>
+    </div>
+  );
 }
 
-
-export default Login
+export default Login;

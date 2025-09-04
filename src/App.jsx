@@ -1,11 +1,42 @@
+import { useState, useEffect } from "react";
 import Pokemons from "./components/PokemonList/PokemonList";
-import "./App.css"; // Impor file CSS yang baru
+import Login from "./components/Login";
+import "./App.css";
 
 function App() {
+  const [isLogin, setIsLogin] = useState(() => {
+    return localStorage.getItem("isLoggedIn") === "true";
+  });
+
+  useEffect(() => {
+    if (isLogin) {
+      localStorage.setItem("isLoggedIn", "true");
+    } else {
+      localStorage.removeItem("isLoggedIn");
+    }
+  }, [isLogin]);
+
+  const handleLogout = () => {
+    // --- TAMBAHKAN BARIS INI ---
+    localStorage.removeItem("pokemonData"); // Membersihkan cache data Pokemon
+    setIsLogin(false);
+  };
+
   return (
     <div className="app-container">
-      <h1>Simple Pokémon</h1>
-      <Pokemons />
+      {isLogin ? (
+        <>
+          <div className="header">
+            <h1>Simple Pokémon</h1>
+            <button onClick={handleLogout} className="logout-button">
+              Logout
+            </button>
+          </div>
+          <Pokemons />
+        </>
+      ) : (
+        <Login setIsLogin={setIsLogin} />
+      )}
     </div>
   );
 }

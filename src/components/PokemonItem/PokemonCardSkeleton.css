@@ -1,0 +1,63 @@
+.skeleton-card {
+  width: 300px;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: #e0e0e0;
+  border: 2px solid #ccc;
+  box-shadow: 5px 5px #d4d4d4;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Animasi kilatan (shimmer) */
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.skeleton-image,
+.skeleton-text,
+.skeleton-badge {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  animation: shimmer 1.5s linear infinite;
+  background-image: linear-gradient(
+    to right,
+    #f0f0f0 0%,
+    #e0e0e0 20%,
+    #f0f0f0 40%,
+    #f0f0f0 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 800px 104px;
+}
+
+.skeleton-image {
+  width: 250px;
+  height: 250px;
+  margin: 0 auto 10px;
+  border-radius: 8px;
+}
+
+.skeleton-text {
+  width: 70%;
+  height: 30px;
+  margin: 10px auto;
+}
+
+.skeleton-badge-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 20px 0 0;
+}
+
+.skeleton-badge {
+  width: 100px;
+  height: 28px;
+  border-radius: 6px;
+}

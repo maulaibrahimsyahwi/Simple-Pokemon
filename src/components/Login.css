@@ -1,3 +1,201 @@
-/* .box {
-  background-color: aqua;
-} */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f85743 0%, #ffcb05 100%);
+  padding: 20px;
+  font-family: "Jura", sans-serif;
+  overflow-y: auto;
+}
+
+.login-form {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  border: 3px solid #333;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-logo {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 15px;
+  border-radius: 50%;
+  border: 4px solid #333;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  /* --- PERBAIKAN UTAMA ADA DI SINI --- */
+  animation: spin-and-bounce 4s infinite linear;
+}
+
+/* Keyframe baru yang menggabungkan putaran dan pantulan */
+@keyframes spin-and-bounce {
+  0% {
+    transform: rotate(0deg) translateY(0);
+  }
+  10% {
+    transform: rotate(36deg) translateY(0);
+  }
+  20% {
+    transform: rotate(72deg) translateY(-25px);
+  }
+  30% {
+    transform: rotate(108deg) translateY(0);
+  }
+  40% {
+    transform: rotate(144deg) translateY(-15px);
+  }
+  50% {
+    transform: rotate(180deg) translateY(0);
+  }
+  60% {
+    transform: rotate(216deg) translateY(-8px);
+  }
+  70% {
+    transform: rotate(252deg) translateY(0);
+  }
+  80% {
+    transform: rotate(288deg) translateY(-5px);
+  }
+  90% {
+    transform: rotate(324deg) translateY(0);
+  }
+  100% {
+    transform: rotate(360deg) translateY(0);
+  }
+}
+
+.login-form h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.login-subtitle {
+  margin-bottom: 25px;
+  color: #555;
+  font-size: 1.1rem;
+}
+
+.hint-box {
+  border: 2px dashed #a8a77a;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 0 0 20px 0;
+  background-color: #f9f9f9;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.hint-box p {
+  margin: 5px 0;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 15px;
+  background-color: #f0f0f0;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: "Jura", sans-serif;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #3d7dca;
+  box-shadow: 0 0 8px rgba(61, 125, 202, 0.3);
+}
+
+.login-button {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: white;
+  background-color: #3d7dca; /* Pokemon Blue */
+  border: 2px solid #2a588d;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.login-button:hover {
+  background-color: #2a588d;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.error-message {
+  color: #c22e28; /* Pokemon Fighting Red */
+  margin-top: 15px;
+  font-weight: bold;
+}
+/* Styling untuk grup password agar bisa menampung ikon */
+.password-group {
+  position: relative;
+}
+
+/* Styling untuk ikon mata */
+.password-toggle-icon {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #555;
+  user-select: none; /* Mencegah teks ikon terseleksi saat diklik */
+}
+.hint-toggle {
+  color: #555;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: -10px; /* Sedikit naik agar lebih dekat dengan input password */
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}
+
+.hint-toggle:hover {
+  color: #3d7dca;
+}
+
+/* Animasi untuk hint-box saat muncul */
+.hint-box {
+  animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
