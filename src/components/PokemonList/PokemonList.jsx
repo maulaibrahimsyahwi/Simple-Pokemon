@@ -3,6 +3,7 @@ import PokemonItem from "../PokemonItem/PokemonItem";
 import usePokemonData from "../../hooks/usePokemonData";
 import PokemonCardSkeleton from "../PokemonItem/PokemonCardSkeleton";
 import "./PokemonList.css";
+import NotfoundImage from "./img/Not Found Pokemon.png";
 
 function Pokemons() {
   const {
@@ -99,7 +100,7 @@ function Pokemons() {
             </button>
           </div>
           <div className="grid-size-container">
-            <strong>Card Size:</strong>
+            <strong>Column Size:</strong>
             <div className="grid-buttons">
               {[3, 4, 5, 6].map((size) => (
                 <button
@@ -127,7 +128,13 @@ function Pokemons() {
               <PokemonCardSkeleton key={index} />
             ))
           ) : processedPokemons.length === 0 ? (
-            <div>No Pokémon found!</div>
+            <div className="not-found-container">
+              <img
+                src={NotfoundImage}
+                alt="Not Found"
+                style={{ width: "150px", marginBottom: "10px" }}
+              />
+            </div>
           ) : (
             processedPokemons.map((pokemon) => (
               <PokemonItem key={pokemon.id} pokemon={pokemon} />

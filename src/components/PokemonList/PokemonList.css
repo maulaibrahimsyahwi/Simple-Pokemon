@@ -134,3 +134,14 @@
   transform-origin: top left;
   transition: transform 0.3s ease;
 }
+
+.not-found-container {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 50px;
+  text-align: center;
+  width: 100%;
+}
