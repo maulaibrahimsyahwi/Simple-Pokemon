@@ -19,7 +19,7 @@ function Login({ setIsLogin }) {
 
   const handleLogin = (event) => {
     event.preventDefault();
-    if (user.username === "skilvul" && user.password === "admin") {
+    if (user.username === "admin" && user.password === "admin") {
       setIsLogin(true);
     } else {
       setError("Username atau password salah!");
@@ -73,7 +73,7 @@ function Login({ setIsLogin }) {
         {showHint && (
           <div className="hint-box">
             <p>
-              <strong>Username:</strong> skilvul
+              <strong>Username:</strong> admin
             </p>
             <p>
               <strong>Password:</strong> admin

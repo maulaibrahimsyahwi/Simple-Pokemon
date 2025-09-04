@@ -1,23 +1,33 @@
+import { useState } from "react";
 import "./PokemonItem.css";
 import { colours } from "../../data/colours";
 
-function PokemonItem({ pokemon }) {
-  // Ambil tipe pertama pokemon untuk dijadikan warna latar
+function PokemonItem({ evolutionLine }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % evolutionLine.length);
+  };
+
+  const handlePrev = () => {
+    setCurrentIndex(
+      (prevIndex) =>
+        (prevIndex - 1 + evolutionLine.length) % evolutionLine.length
+    );
+  };
+
+  const pokemon = evolutionLine[currentIndex];
   const mainType = pokemon.types[0].toLowerCase();
-  // Ambil kode warna hex dari file colours.js
   const cardBackgroundColor = colours[mainType];
 
   return (
     <div
       className="pokemon-card"
       style={{
-        // Terapkan warna latar yang sudah kita perbaiki
-        // Tambahkan 'aa' di akhir untuk sedikit transparansi agar lebih bagus
         backgroundColor: `${cardBackgroundColor}aa`,
       }}
     >
       <img src={pokemon.imageUrl} alt={pokemon.name} width={250} />
-      {/* Membuat huruf pertama nama menjadi kapital */}
       <h1 style={{ textTransform: "capitalize" }}>{pokemon.name}</h1>
       <div className="types-container">
         {pokemon.types.map((type, index) => (
@@ -34,6 +44,17 @@ function PokemonItem({ pokemon }) {
       </div>
 
       <p className="description">{pokemon.description}</p>
+
+      {/* Kontrol slider akan muncul jika ada lebih dari 1 evolusi */}
+      {evolutionLine.length > 1 && (
+        <div className="evolution-controls">
+          <button onClick={handlePrev}>&lt;</button>
+          <span>
+            {currentIndex + 1} / {evolutionLine.length}
+          </span>
+          <button onClick={handleNext}>&gt;</button>
+        </div>
+      )}
     </div>
   );
 }

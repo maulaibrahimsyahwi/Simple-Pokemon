@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react"; // --- IMPORT HOOKS BARU ---
+import { useEffect, useRef } from "react";
 import PokemonItem from "../PokemonItem/PokemonItem";
 import usePokemonData from "../../hooks/usePokemonData";
 import PokemonCardSkeleton from "../PokemonItem/PokemonCardSkeleton";
 import "./PokemonList.css";
-import NotfoundImage from "./img/Not Found Pokemon.png";
+import NotfoundImage from "./img/Not Found Pokemon.webp";
 
 function Pokemons() {
   const {
@@ -20,25 +20,21 @@ function Pokemons() {
     colours,
   } = usePokemonData();
 
-  // --- TAMBAHKAN REFS UNTUK MENGUKUR ELEMEN ---
   const listWrapperRef = useRef(null);
   const listRef = useRef(null);
 
-  // --- TAMBAHKAN USEEFFECT UNTUK LOGIKA ZOOM ---
   useEffect(() => {
     const calculateScale = () => {
       if (listWrapperRef.current && listRef.current) {
-        // Reset transform untuk mendapatkan ukuran asli
         listRef.current.style.transform = "scale(1)";
 
         const wrapperWidth = listWrapperRef.current.offsetWidth;
-        const listWidth = listRef.current.scrollWidth; // Gunakan scrollWidth untuk ukuran penuh
+        const listWidth = listRef.current.scrollWidth;
         const listHeight = listRef.current.scrollHeight;
 
         if (listWidth > wrapperWidth) {
           const scale = wrapperWidth / listWidth;
           listRef.current.style.transform = `scale(${scale})`;
-          // Sesuaikan tinggi wrapper agar layout tidak rusak
           listWrapperRef.current.style.height = `${listHeight * scale}px`;
         } else {
           listRef.current.style.transform = "scale(1)";
@@ -47,15 +43,14 @@ function Pokemons() {
       }
     };
 
-    // Panggil setelah render dan saat window di-resize
-    const timeoutId = setTimeout(calculateScale, 0); // Beri jeda agar DOM ter-update
+    const timeoutId = setTimeout(calculateScale, 0);
     window.addEventListener("resize", calculateScale);
 
     return () => {
       clearTimeout(timeoutId);
       window.removeEventListener("resize", calculateScale);
     };
-  }, [gridSize, processedPokemons, loading]); // Jalankan ulang jika grid, data, atau status loading berubah
+  }, [gridSize, processedPokemons, loading]);
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -71,7 +66,6 @@ function Pokemons() {
       />
 
       <div className="controls-container">
-        {/* ... (Kontrol filter) ... */}
         <div className="filter-container">
           <strong>Filter by Type:</strong>
           <div className="type-buttons">
@@ -102,7 +96,7 @@ function Pokemons() {
           <div className="grid-size-container">
             <strong>Column Size:</strong>
             <div className="grid-buttons">
-              {[3, 4, 5, 6].map((size) => (
+              {[4, 5, 6, 7].map((size) => (
                 <button
                   key={size}
                   className={gridSize === size ? "active" : ""}
@@ -116,7 +110,6 @@ function Pokemons() {
         </div>
       </div>
 
-      {/* --- TAMBAHKAN WRAPPER DAN REF --- */}
       <div className="list-pokemon-wrapper" ref={listWrapperRef}>
         <div
           className="list-pokemon"
@@ -136,8 +129,11 @@ function Pokemons() {
               />
             </div>
           ) : (
-            processedPokemons.map((pokemon) => (
-              <PokemonItem key={pokemon.id} pokemon={pokemon} />
+            processedPokemons.map((evolutionLine) => (
+              <PokemonItem
+                key={evolutionLine[0].id}
+                evolutionLine={evolutionLine}
+              />
             ))
           )}
         </div>

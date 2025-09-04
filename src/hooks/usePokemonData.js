@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 
 const usePokemonData = () => {
-  // ... (state yang sudah ada)
   const [pokemons, setPokemons] = useState(() => {
     const cachedData = localStorage.getItem("pokemonData");
     return cachedData ? JSON.parse(cachedData) : [];
@@ -15,12 +14,29 @@ const usePokemonData = () => {
   const [filterType, setFilterType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortByName, setSortByName] = useState(false);
-  const [gridSize, setGridSize] = useState(4); // --- TAMBAHKAN STATE INI ---
+  const [gridSize, setGridSize] = useState(4);
 
   useEffect(() => {
-    // ... (useEffect yang sudah ada)
     const fetchPokemons = async () => {
-      if (pokemons.length > 0) {
+      const cachedData = localStorage.getItem("pokemonData");
+      if (cachedData) {
+        try {
+          const parsed = JSON.parse(cachedData);
+          if (
+            Array.isArray(parsed) &&
+            parsed.length > 0 &&
+            !Array.isArray(parsed[0])
+          ) {
+            console.log("Old data format detected, clearing cache.");
+            localStorage.removeItem("pokemonData");
+          }
+        } catch (error) {
+          localStorage.removeItem("pokemonData");
+          console.error("Error parsing cached data:", error);
+        }
+      }
+
+      if (pokemons.length > 0 && Array.isArray(pokemons[0])) {
         setLoading(false);
         return;
       }
@@ -29,40 +45,70 @@ const usePokemonData = () => {
       setError(null);
       try {
         const response = await fetch(
-          "https://pokeapi.co/api/v2/pokemon?limit=500"
+          "https://pokeapi.co/api/v2/pokemon-species?limit=500"
         );
         if (!response.ok) {
           throw new Error("Gagal mengambil data dari server.");
         }
         const data = await response.json();
 
-        const pokemonDetails = await Promise.all(
-          data.results.map(async (pokemon) => {
-            const pokeResponse = await fetch(pokemon.url);
-            const pokeData = await pokeResponse.json();
-            const speciesResponse = await fetch(pokeData.species.url);
+        const evolutionChains = await Promise.all(
+          data.results.map(async (species) => {
+            const speciesResponse = await fetch(species.url);
             const speciesData = await speciesResponse.json();
-            const description = speciesData.flavor_text_entries.find(
-              (entry) => entry.language.name === "en"
-            );
-
-            const imageUrl =
-              pokeData.sprites.other["official-artwork"].front_default ||
-              pokeData.sprites.front_default;
-
-            return {
-              id: pokeData.id,
-              name: pokeData.name,
-              imageUrl: imageUrl,
-              types: pokeData.types.map((typeInfo) => typeInfo.type.name),
-              description: description
-                ? description.flavor_text.replace(/\s+/g, " ")
-                : "No description available.",
-            };
+            const evolutionChainUrl = speciesData.evolution_chain.url;
+            const evolutionResponse = await fetch(evolutionChainUrl);
+            return await evolutionResponse.json();
           })
         );
-        setPokemons(pokemonDetails);
-        localStorage.setItem("pokemonData", JSON.stringify(pokemonDetails));
+
+        const uniqueChains = Array.from(
+          new Set(evolutionChains.map((chain) => chain.id))
+        ).map((id) => evolutionChains.find((chain) => chain.id === id));
+
+        const pokemonDetails = await Promise.all(
+          uniqueChains.map(async (chain) => {
+            const evolutionLine = [];
+            let current = chain.chain;
+            while (current) {
+              const pokemonName = current.species.name;
+              const pokeResponse = await fetch(
+                `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
+              );
+
+              // FIX: Check if the request was successful before processing
+              if (pokeResponse.ok) {
+                const pokeData = await pokeResponse.json();
+                const speciesResponse = await fetch(pokeData.species.url);
+                const speciesData = await speciesResponse.json();
+                const description = speciesData.flavor_text_entries.find(
+                  (entry) => entry.language.name === "en"
+                );
+
+                const imageUrl =
+                  pokeData.sprites.other["official-artwork"].front_default ||
+                  pokeData.sprites.front_default;
+
+                evolutionLine.push({
+                  id: pokeData.id,
+                  name: pokeData.name,
+                  imageUrl: imageUrl,
+                  types: pokeData.types.map((typeInfo) => typeInfo.type.name),
+                  description: description
+                    ? description.flavor_text.replace(/\s+/g, " ")
+                    : "No description available.",
+                });
+              }
+              current = current.evolves_to[0];
+            }
+            return evolutionLine;
+          })
+        );
+        const nonEmptyChains = pokemonDetails.filter(
+          (chain) => chain.length > 0
+        );
+        setPokemons(nonEmptyChains);
+        localStorage.setItem("pokemonData", JSON.stringify(nonEmptyChains));
       } catch (error) {
         console.error("Gagal mengambil data Pokemon:", error);
         setError(error.message);
@@ -72,23 +118,32 @@ const usePokemonData = () => {
     };
 
     fetchPokemons();
-  }, [pokemons.length]);
+  }, [pokemons]);
 
   const processedPokemons = useMemo(() => {
-    // ... (useMemo yang sudah ada)
     return pokemons
-      .filter((pokemon) => {
+      .filter((evolutionLine) => {
+        if (!Array.isArray(evolutionLine)) {
+          return false;
+        }
         if (filterType === "all") return true;
-        return pokemon.types.includes(filterType);
+        return evolutionLine.some((pokemon) =>
+          pokemon.types.includes(filterType)
+        );
       })
-      .filter((pokemon) =>
-        pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      .filter((evolutionLine) => {
+        if (!Array.isArray(evolutionLine)) {
+          return false;
+        }
+        return evolutionLine.some((pokemon) =>
+          pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      })
       .sort((a, b) => {
         if (sortByName) {
-          return a.name.localeCompare(b.name);
+          return a[0].name.localeCompare(b[0].name);
         }
-        return a.id - b.id;
+        return a[0].id - b[0].id;
       });
   }, [pokemons, filterType, searchQuery, sortByName]);
 
@@ -102,8 +157,8 @@ const usePokemonData = () => {
     setFilterType,
     sortByName,
     setSortByName,
-    gridSize, // --- EKSPOR STATE ---
-    setGridSize, // --- EKSPOR FUNGSI SETTER ---
+    gridSize,
+    setGridSize,
     colours: {
       normal: "#A8A77A",
       fire: "#EE8130",
