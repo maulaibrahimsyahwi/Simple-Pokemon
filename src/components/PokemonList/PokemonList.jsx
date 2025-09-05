@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import PokemonItem from "../PokemonItem/PokemonItem";
 import usePokemonData from "../../hooks/usePokemonData";
-import PokemonCardSkeleton from "../PokemonItem/PokemonCardSkeleton";
+import PokemonCardSkeleton from "../PokemonItem/PokemonCardSkeleton/PokemonCardSkeleton";
 import ErrorDisplay from "../ErrorDisplay/ErrorDisplay"; // Impor komponen error
 import "./PokemonList.css";
 import NotfoundImage from "./img/Not Found Pokemon.webp";
