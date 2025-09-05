@@ -40,48 +40,64 @@ const useFetchPokemon = (allPokemonNames) => {
       return false;
     });
 
+    // **PERBAIKAN UTAMA: PARALELISASI PANGGILAN API**
     const pokemonDetails = await Promise.all(
       uniqueChains.map(async (chain) => {
-        const evolutionLine = [];
+        const pokemonNames = [];
         let current = chain.chain;
         while (current) {
-          const pokemonName = current.species.name;
-          const pokeResponse = await fetch(
-            `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
-          );
-
-          if (pokeResponse.ok) {
-            const pokeData = await pokeResponse.json();
-            const speciesResponse = await fetch(pokeData.species.url);
-            const speciesData = await speciesResponse.json();
-            const descriptionEntry =
-              speciesData.flavor_text_entries.find(
-                (entry) => entry.language.name === "en"
-              ) || speciesData.flavor_text_entries[0];
-            const imageUrl =
-              pokeData.sprites.other["official-artwork"].front_default ||
-              pokeData.sprites.front_default;
-            const stats = {};
-            pokeData.stats.forEach((stat) => {
-              stats[stat.stat.name] = stat.base_stat;
-            });
-
-            evolutionLine.push({
-              id: pokeData.id,
-              name: pokeData.name,
-              imageUrl: imageUrl,
-              types: pokeData.types.map((typeInfo) => typeInfo.type.name),
-              description: descriptionEntry
-                ? descriptionEntry.flavor_text.replace(/\s+/g, " ")
-                : "No description available.",
-              stats: stats,
-              height: pokeData.height,
-              weight: pokeData.weight,
-            });
-          }
+          pokemonNames.push(current.species.name);
           current = current.evolves_to[0];
         }
-        return evolutionLine.sort((a, b) => a.id - b.id);
+
+        const pokemonDataArray = await Promise.all(
+          pokemonNames.map(async (pokemonName) => {
+            try {
+              const pokeResponse = await fetch(
+                `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
+              );
+              if (!pokeResponse.ok) return null;
+              const pokeData = await pokeResponse.json();
+
+              const speciesResponse = await fetch(pokeData.species.url);
+              const speciesData = await speciesResponse.json();
+
+              const descriptionEntry =
+                speciesData.flavor_text_entries.find(
+                  (entry) => entry.language.name === "en"
+                ) || speciesData.flavor_text_entries[0];
+
+              const imageUrl =
+                pokeData.sprites.other["official-artwork"].front_default ||
+                pokeData.sprites.front_default;
+
+              const stats = {};
+              pokeData.stats.forEach((stat) => {
+                stats[stat.stat.name] = stat.base_stat;
+              });
+
+              return {
+                id: pokeData.id,
+                name: pokeData.name,
+                imageUrl: imageUrl,
+                types: pokeData.types.map((typeInfo) => typeInfo.type.name),
+                description: descriptionEntry
+                  ? descriptionEntry.flavor_text.replace(/\s+/g, " ")
+                  : "No description available.",
+                stats: stats,
+                height: pokeData.height,
+                weight: pokeData.weight,
+              };
+            } catch (e) {
+              console.error(`Failed to fetch details for ${pokemonName}:`, e);
+              return null;
+            }
+          })
+        );
+
+        return pokemonDataArray
+          .filter((p) => p !== null)
+          .sort((a, b) => a.id - b.id);
       })
     );
     return pokemonDetails.filter((chain) => chain.length > 0);
