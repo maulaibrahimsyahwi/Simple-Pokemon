@@ -51,6 +51,11 @@
     "selectTwoPokemonsMessage": "Mohon pilih dua Pokémon untuk dibandingkan.",
     "comparisonTitle": "Perbandingan Pokémon",
     "comparisonMessage": "Pilih dua Pokémon dari daftar untuk membandingkan statistik mereka.",
-    "backButton": "Kembali ke Daftar"
+    "backButton": "Kembali ke Daftar",
+    "winnerTitle": "Pemenang",
+    "winnerMessage": "adalah pemenangnya berdasarkan total statistik!",
+    "tieMessage": "Hasil imbang! Kedua Pokémon memiliki total statistik yang sama.",
+    "totalStatsMessage": "Total Statistik: {{total1}} vs {{total2}}",
+    "winnerBreakdownTitle": "Rincian Statistik"
   }
 }

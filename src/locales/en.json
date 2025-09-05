@@ -33,6 +33,11 @@
     "selectTwoPokemonsMessage": "Please select two Pokemons to compare.",
     "comparisonTitle": "Pokemon Comparison",
     "comparisonMessage": "Select two Pokemons from the list to compare their stats.",
-    "backButton": "Back to List"
+    "backButton": "Back to List",
+    "winnerTitle": "Winner",
+    "winnerMessage": "is the winner based on total stats!",
+    "tieMessage": "It's a tie! Both Pokemons have the same total stats.",
+    "totalStatsMessage": "Total Stats: {{total1}} vs {{total2}}",
+    "winnerBreakdownTitle": "Stat Breakdown"
   }
 }

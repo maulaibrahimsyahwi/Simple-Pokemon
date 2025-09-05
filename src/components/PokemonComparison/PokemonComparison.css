@@ -2,118 +2,134 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 10px; /* Perkecil padding kontainer utama */
 }
 
 .comparison-container.empty-state {
   margin-top: 50px;
 }
 
+.comparison-content-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px; /* Perkecil jarak antar elemen */
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
 .pokemon-comparison-cards {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 40px;
-  flex-wrap: wrap;
+  gap: 20px; /* Perkecil jarak antar kartu */
+  flex-wrap: nowrap;
+  width: auto; /* Biarkan lebarnya menyesuaikan konten */
 }
 
-/* ... (kode di atas sama) */
-
 .pokemon-card-comparison {
-  width: 400px;
+  width: 300px; /* Perkecil lebar kartu */
   border-radius: 10px;
-  padding: 20px;
+  padding: 10px; /* Perkecil padding di dalam kartu */
   text-align: center;
   box-shadow: 5px 5px black;
   border: 2px solid black;
-  display: flex; /* Gunakan flexbox */
+  display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Untuk mendorong konten ke bawah */
+  justify-content: space-between;
+}
+
+.pokemon-card-comparison.winner {
+  border: 4px solid #f7d02c;
+  box-shadow: 5px 5px #f7d02c;
 }
 
 .pokemon-card-comparison h1 {
+  font-size: 1.5rem; /* Perkecil ukuran font judul */
   text-transform: capitalize;
-  margin: 10px 0;
+  margin: 5px 0;
 }
 
 .pokemon-card-comparison img {
-  width: 200px;
+  width: 150px; /* Perkecil ukuran gambar */
   height: auto;
-  margin: 0 auto 10px auto; /* Pusatkan gambar */
+  margin: 0 auto 5px auto;
 }
 
 .pokemon-card-comparison h3 {
-  /* Gaya untuk judul "Base Stats" */
-  font-size: 1.3rem;
-  margin-top: 20px;
-  margin-bottom: 10px;
-  color: #333;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 5px;
+  font-size: 1.1rem; /* Perkecil ukuran font sub-judul */
+  margin-top: 10px;
+  margin-bottom: 5px;
 }
 
-/* --- Gunakan stats-grid yang baru --- */
 .stats-grid {
-  /* Ganti .stats-container menjadi .stats-grid */
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 kolom */
-  gap: 10px; /* Jarak antar item */
-  margin-top: 15px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px; /* Perkecil jarak antar item stat */
 }
 
 .stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  padding: 8px;
-  border-radius: 8px;
-  background-color: #f8f8f8; /* Background ringan untuk setiap stat */
-  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 5px; /* Perkecil padding item stat */
 }
 
 .stat-name {
-  color: white;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.75em;
-  font-weight: bold;
-  min-width: 50px;
-  text-align: center;
-}
-.stat-name.hp {
-  background-color: #f54242;
-}
-.stat-name.atk {
-  background-color: #f58a42;
-}
-.stat-name.def {
-  background-color: #72f542;
-}
-.stat-name.sp-atk {
-  background-color: #42b6f5;
-}
-.stat-name.sp-def {
-  background-color: #4269f5;
-}
-.stat-name.speed {
-  background-color: #f5e142;
+  font-size: 0.7rem; /* Perkecil ukuran font nama stat */
+  min-width: 40px;
 }
 
 .stat-value {
-  font-weight: bold;
-  font-size: 1.1em;
-  color: #444;
+  font-size: 0.9em; /* Perkecil ukuran font nilai stat */
 }
 
-/* ... (kode di bawah sama) */
-@media (max-width: 768px) {
-  .pokemon-comparison-cards {
-    flex-direction: column;
-    align-items: center;
-  }
-  .vs-text {
-    margin: 20px 0;
-  }
+.vs-text {
+  font-size: 1.5rem; /* Perkecil ukuran font "VS" */
+  font-weight: bold;
+  color: #333;
+}
+
+.winner-summary {
+  width: 300px; /* Perkecil lebar ringkasan pemenang */
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #f7d02c50;
+  border: 2px solid #f7d02c;
+  box-shadow: 5px 5px #f7d02c;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.winner-summary h2 {
+  font-size: 1.5rem; /* Perkecil ukuran font judul pemenang */
+  margin-bottom: 5px;
+}
+
+.winner-name {
+  font-size: 2rem; /* Perkecil ukuran font nama pemenang */
+}
+
+.winner-message,
+.tie-message {
+  font-size: 1rem; /* Perkecil ukuran font pesan */
+}
+
+.winner-badge {
+  padding: 5px 10px;
+  margin-top: 10px;
+}
+
+.total-stats-info {
+  margin-top: 10px;
+  font-size: 0.9rem; /* Perkecil ukuran font info total stat */
+}
+
+.stats-breakdown h3 {
+  font-size: 1.2rem; /* Perkecil ukuran font rincian stat */
+  margin-bottom: 10px;
+}
+
+.stat-row {
+  padding: 3px 0;
 }

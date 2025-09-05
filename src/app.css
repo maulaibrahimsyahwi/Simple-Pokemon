@@ -6,6 +6,10 @@
   text-align: center;
 }
 
+.app-container.comparison-page {
+  padding-top: 20px; /* Atur ulang padding-top untuk halaman perbandingan */
+}
+
 .app-container h1 {
   font-size: 2.5rem;
   margin-bottom: 20px;
@@ -24,6 +28,12 @@
   background-color: white; /* Tambahkan warna latar belakang agar konten di bawah tidak terlihat */
   z-index: 100; /* Pastikan header selalu di atas */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Opsional: tambahkan bayangan untuk efek */
+}
+
+.header.static-header {
+  position: static;
+  box-shadow: none;
+  background-color: transparent;
 }
 
 .header h1 {

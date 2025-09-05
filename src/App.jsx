@@ -68,18 +68,32 @@ function App() {
   };
 
   return (
-    <div className="app-container">
+    <div
+      className={`app-container ${view === "compare" ? "comparison-page" : ""}`}
+    >
       {isLogin ? (
         <>
-          <div className="header">
+          <div
+            className={`header ${view === "compare" ? "static-header" : ""}`}
+          >
             <div className="header-left-controls">
-              <button
-                className="compare-button"
-                onClick={handleCompareClick}
-                disabled={selectedPokemons.length !== 2}
-              >
-                {t("compareButton")} ({selectedPokemons.length}/2)
-              </button>
+              {view === "list" && (
+                <button
+                  className="compare-button"
+                  onClick={handleCompareClick}
+                  disabled={selectedPokemons.length !== 2}
+                >
+                  {t("compareButton")} ({selectedPokemons.length}/2)
+                </button>
+              )}
+              {view === "compare" && (
+                <button
+                  className="compare-button back-to-list-button"
+                  onClick={handleClearComparison}
+                >
+                  {t("backButton")}
+                </button>
+              )}
             </div>
             <h1>{t("appTitle")}</h1>
             <div className="header-controls">
@@ -112,10 +126,7 @@ function App() {
             />
           )}
           {view === "compare" && (
-            <PokemonComparison
-              selectedPokemons={selectedPokemons}
-              onClearComparison={handleClearComparison}
-            />
+            <PokemonComparison selectedPokemons={selectedPokemons} />
           )}
         </>
       ) : (
