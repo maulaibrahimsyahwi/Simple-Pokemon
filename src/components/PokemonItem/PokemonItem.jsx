@@ -4,7 +4,12 @@ import { colours } from "../../data/colours";
 import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
-function PokemonItem({ evolutionLine, onAddForComparison, selectedPokemons }) {
+function PokemonItem({
+  evolutionLine,
+  onAddForComparison,
+  onRemoveFromComparison,
+  selectedPokemons,
+}) {
   const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
@@ -27,15 +32,19 @@ function PokemonItem({ evolutionLine, onAddForComparison, selectedPokemons }) {
     setShowDetails((prev) => !prev);
   };
 
-  const handleAddClick = (event) => {
-    event.stopPropagation();
-    onAddForComparison(pokemon);
-  };
-
   const pokemon = evolutionLine[currentIndex];
   const mainType = pokemon.types[0].toLowerCase();
   const cardBackgroundColor = colours[mainType];
   const isSelected = selectedPokemons.some((p) => p.id === pokemon.id);
+
+  const handleAddClick = (event) => {
+    event.stopPropagation();
+    if (isSelected) {
+      onRemoveFromComparison(pokemon);
+    } else {
+      onAddForComparison(pokemon);
+    }
+  };
 
   const renderStats = (pokemon) => {
     if (!pokemon.stats) return null;
@@ -120,11 +129,11 @@ function PokemonItem({ evolutionLine, onAddForComparison, selectedPokemons }) {
 
       <div className="card-actions">
         <button
-          className="add-compare-button"
+          className={`add-compare-button ${isSelected ? "remove" : ""}`}
           onClick={handleAddClick}
-          disabled={isSelected || selectedPokemons.length >= 2}
+          disabled={!isSelected && selectedPokemons.length >= 2}
         >
-          {isSelected ? t("addedToCompare") : t("addToCompare")}
+          {isSelected ? t("removeFromCompare") : t("addToCompare")}
         </button>
 
         <button className="details-toggle-button" onClick={toggleDetails}>

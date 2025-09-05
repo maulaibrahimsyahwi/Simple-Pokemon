@@ -11,6 +11,7 @@ function Pokemons({
   isInitialLoad,
   setIsInitialLoad,
   onAddForComparison,
+  onRemoveFromComparison,
   selectedPokemons,
 }) {
   const { t } = useTranslation();
@@ -169,6 +170,7 @@ function Pokemons({
                 key={index}
                 evolutionLine={evolutionLine}
                 onAddForComparison={onAddForComparison}
+                onRemoveFromComparison={onRemoveFromComparison}
                 selectedPokemons={selectedPokemons}
               />
             ))

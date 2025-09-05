@@ -48,6 +48,12 @@ function App() {
     }
   };
 
+  const handleRemoveFromComparison = (pokemonToRemove) => {
+    setSelectedPokemons((prev) =>
+      prev.filter((pokemon) => pokemon.id !== pokemonToRemove.id)
+    );
+  };
+
   const handleCompareClick = () => {
     if (selectedPokemons.length === 2) {
       setView("compare");
@@ -101,6 +107,7 @@ function App() {
               isInitialLoad={isInitialLoad}
               setIsInitialLoad={setIsInitialLoad}
               onAddForComparison={handleAddForComparison}
+              onRemoveFromComparison={handleRemoveFromComparison}
               selectedPokemons={selectedPokemons}
             />
           )}

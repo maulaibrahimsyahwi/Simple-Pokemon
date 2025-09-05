@@ -45,6 +45,7 @@
     "hintPassword": "Kata Sandi: admin",
     "addToCompare": "Tambahkan untuk Bandingkan",
     "addedToCompare": "Ditambahkan!",
+    "removeFromCompare": "Hapus",
     "compareButton": "Bandingkan",
     "comparisonLimitMessage": "Anda hanya bisa memilih maksimal 2 Pokémon untuk dibandingkan.",
     "selectTwoPokemonsMessage": "Mohon pilih dua Pokémon untuk dibandingkan.",
