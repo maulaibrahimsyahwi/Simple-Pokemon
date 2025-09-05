@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import PokemonItem from "../PokemonItem/PokemonItem";
 import usePokemonData from "../../hooks/usePokemonData";
 import PokemonCardSkeleton from "../PokemonItem/PokemonCardSkeleton/PokemonCardSkeleton";
@@ -17,33 +17,46 @@ function Pokemons({
   const { t } = useTranslation();
   const {
     loading,
+    moreLoading,
     error,
     processedPokemons,
+    searchQuery,
     setSearchQuery,
     filterType,
     setFilterType,
-    sortByName,
-    setSortByName,
     gridSize,
     setGridSize,
     colours,
-    searchSuggestions, // Tambahkan ini
+    searchSuggestions,
+    loadMore,
+    hasMore,
+    loadPokemons,
+    searchPokemon,
   } = usePokemonData();
 
   const listWrapperRef = useRef(null);
   const listRef = useRef(null);
-
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
-
-  // State untuk rekomendasi
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchInputRef = useRef(null);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
+  const observer = useRef();
+  const lastPokemonElementRef = useCallback(
+    (node) => {
+      if (moreLoading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          loadMore();
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [moreLoading, hasMore, loadMore]
+  );
 
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -82,22 +95,40 @@ function Pokemons({
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
     setShowSuggestions(e.target.value.length > 0);
+    if (e.target.value === "") {
+      loadPokemons(filterType);
+    }
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery) {
+      searchPokemon(searchQuery);
+      setShowSuggestions(false);
+    }
   };
 
   const handleSuggestionClick = (name) => {
     setSearchQuery(name);
+    searchPokemon(name);
     setShowSuggestions(false);
-    // Fokuskan kembali ke input setelah memilih
-    if (searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
+  };
+
+  const handleFilterChange = (type) => {
+    setFilterType(type);
+    setSearchQuery("");
+    loadPokemons(type);
   };
 
   return (
     <>
-      <div className="search-container-with-suggestions">
+      <form
+        className="search-container-with-suggestions"
+        onSubmit={handleSearchSubmit}
+      >
         <input
           type="text"
+          value={searchQuery}
           ref={searchInputRef}
           placeholder={t("searchPlaceholder")}
           className="search"
@@ -112,7 +143,7 @@ function Pokemons({
             ))}
           </ul>
         )}
-      </div>
+      </form>
 
       <div className="controls-container">
         <div className="filter-container">
@@ -120,7 +151,7 @@ function Pokemons({
           <select
             className="type-dropdown"
             value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
+            onChange={(e) => handleFilterChange(e.target.value)}
             style={{ "--type-color": colours[filterType] }}
           >
             <option value="all">{t("allType")}</option>
@@ -133,7 +164,7 @@ function Pokemons({
           <div className="type-buttons">
             <button
               className={filterType === "all" ? "active" : ""}
-              onClick={() => setFilterType("all")}
+              onClick={() => handleFilterChange("all")}
             >
               {t("allType")}
             </button>
@@ -141,7 +172,7 @@ function Pokemons({
               <button
                 key={type}
                 className={filterType === type ? "active" : ""}
-                onClick={() => setFilterType(type)}
+                onClick={() => handleFilterChange(type)}
                 style={{ "--type-color": colours[type] }}
               >
                 {t(type.charAt(0).toUpperCase() + type.slice(1))}
@@ -150,11 +181,6 @@ function Pokemons({
           </div>
         </div>
         <div className="settings-container">
-          <div className="sort-container">
-            <button onClick={() => setSortByName(!sortByName)}>
-              {sortByName ? t("sortByName") : t("sortById")}
-            </button>
-          </div>
           {!isMobile && (
             <div className="grid-size-container">
               <strong>{t("columnSize")}</strong>
@@ -173,19 +199,15 @@ function Pokemons({
           )}
         </div>
       </div>
+
       <div className="list-pokemon-wrapper" ref={listWrapperRef}>
         <div
           className="list-pokemon"
           ref={listRef}
           style={{ "--grid-size": isMobile ? 3 : gridSize }}
         >
-          {error ? (
-            <ErrorDisplay message={t("errorMessage")} />
-          ) : isInitialLoad || loading ? (
-            Array.from({ length: 12 }).map((_, index) => (
-              <PokemonCardSkeleton key={index} />
-            ))
-          ) : processedPokemons.length === 0 ? (
+          {error && !loading && <ErrorDisplay message={error} />}
+          {!error && !loading && processedPokemons.length === 0 && (
             <div className="not-found-container">
               <img
                 src={NotfoundImage}
@@ -195,17 +217,37 @@ function Pokemons({
               <h2>{t("notFoundTitle")}</h2>
               <p>{t("notFoundMessage")}</p>
             </div>
-          ) : (
-            processedPokemons.map((evolutionLine, index) => (
-              <PokemonItem
-                key={index}
-                evolutionLine={evolutionLine}
-                onAddForComparison={onAddForComparison}
-                onRemoveFromComparison={onRemoveFromComparison}
-                selectedPokemons={selectedPokemons}
-              />
-            ))
           )}
+          {processedPokemons.map((evolutionLine, index) => {
+            if (processedPokemons.length === index + 1) {
+              return (
+                <div ref={lastPokemonElementRef} key={index}>
+                  <PokemonItem
+                    evolutionLine={evolutionLine}
+                    onAddForComparison={onAddForComparison}
+                    onRemoveFromComparison={onRemoveFromComparison}
+                    selectedPokemons={selectedPokemons}
+                  />
+                </div>
+              );
+            } else {
+              return (
+                <PokemonItem
+                  key={index}
+                  evolutionLine={evolutionLine}
+                  onAddForComparison={onAddForComparison}
+                  onRemoveFromComparison={onRemoveFromComparison}
+                  selectedPokemons={selectedPokemons}
+                />
+              );
+            }
+          })}
+
+          {/* PERBAIKAN UTAMA ADA DI SINI */}
+          {(loading || moreLoading) &&
+            Array.from({ length: loading ? gridSize * 2 : gridSize }).map(
+              (_, index) => <PokemonCardSkeleton key={`skeleton-${index}`} />
+            )}
         </div>
       </div>
     </>

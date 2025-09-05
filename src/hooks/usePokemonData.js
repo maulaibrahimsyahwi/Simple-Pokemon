@@ -5,32 +5,47 @@ import usePokemonFilteringAndSorting from "./usePokemonFilteringAndSorting";
 
 const usePokemonData = () => {
   const [gridSize, setGridSize] = useState(4);
-  const { pokemons, loading, error } = useFetchPokemon();
+
   const {
-    processedPokemons,
+    allPokemonNamesSorted,
     searchQuery,
     setSearchQuery,
     filterType,
     setFilterType,
-    sortByName,
-    setSortByName,
-    searchSuggestions, // Tambahkan ini
-  } = usePokemonFilteringAndSorting(pokemons);
+    searchSuggestions,
+  } = usePokemonFilteringAndSorting();
+
+  const {
+    pokemons,
+    loading,
+    moreLoading,
+    error,
+    loadMore,
+    hasMore,
+    loadPokemons,
+    searchPokemon,
+  } = useFetchPokemon(allPokemonNamesSorted);
+
+  // `processedPokemons` dari sini sekarang sudah dijamin terurut dengan benar
+  const { processedPokemons } = usePokemonFilteringAndSorting(pokemons);
 
   return {
     loading,
+    moreLoading,
     error,
     processedPokemons,
     searchQuery,
     setSearchQuery,
     filterType,
     setFilterType,
-    sortByName,
-    setSortByName,
     gridSize,
     setGridSize,
     colours,
-    searchSuggestions, // Tambahkan ini
+    searchSuggestions,
+    loadMore,
+    hasMore,
+    loadPokemons,
+    searchPokemon,
   };
 };
 

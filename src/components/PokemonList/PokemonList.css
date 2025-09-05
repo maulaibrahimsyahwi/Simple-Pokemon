@@ -241,7 +241,26 @@
 .suggestions-list li:hover {
   background-color: #f0f0f0;
 }
+.load-more-container {
+  margin-top: 20px;
+  text-align: center;
+}
 
+.load-more-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  background-color: #3d7dca;
+  border: 2px solid #2a588d;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.load-more-button:hover {
+  background-color: #2a588d;
+}
 /* Tampilan untuk layar 1280px ke bawah */
 @media (max-width: 1280px) {
   .controls-container {

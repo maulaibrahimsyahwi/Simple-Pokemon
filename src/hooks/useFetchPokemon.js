@@ -1,34 +1,44 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import i18n from "../i18n";
 
-const useFetchPokemon = () => {
-  const [pokemons, setPokemons] = useState(() => {
-    const cachedData = localStorage.getItem("pokemonData");
-    return cachedData ? JSON.parse(cachedData) : [];
-  });
-  const [initialLoading, setInitialLoading] = useState(
-    () => !localStorage.getItem("pokemonData")
-  );
+const useFetchPokemon = (allPokemonNames) => {
+  const [pokemons, setPokemons] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [moreLoading, setMoreLoading] = useState(false);
   const [error, setError] = useState(null);
-  const totalPokemonFetched = useRef(pokemons.length);
+  const [page, setPage] = useState(0);
+  const limit = 20;
+  const hasMore = useRef(true);
   const isFetchingRef = useRef(false);
+  const currentFilterType = useRef("all");
+  const processedChainIds = useRef(new Set());
 
-  // Fungsi untuk mengambil detail evolusi dari serangkaian Pokémon
   const fetchPokemonDetails = async (pokemonList) => {
     const evolutionChains = await Promise.all(
       pokemonList.map(async (species) => {
-        const speciesResponse = await fetch(species.url);
-        const speciesData = await speciesResponse.json();
-        const evolutionChainUrl = speciesData.evolution_chain.url;
-        const evolutionResponse = await fetch(evolutionChainUrl);
-        return await evolutionResponse.json();
+        try {
+          const speciesResponse = await fetch(species.url);
+          if (!speciesResponse.ok) return null;
+          const speciesData = await speciesResponse.json();
+          const evolutionChainUrl = speciesData.evolution_chain.url;
+          const evolutionResponse = await fetch(evolutionChainUrl);
+          if (!evolutionResponse.ok) return null;
+          return await evolutionResponse.json();
+        } catch (e) {
+          console.error(e);
+          return null;
+        }
       })
     );
 
-    const uniqueChains = Array.from(
-      new Set(evolutionChains.map((chain) => chain.id))
-    ).map((id) => evolutionChains.find((chain) => chain.id === id));
+    const validChains = evolutionChains.filter((chain) => chain !== null);
+
+    const uniqueChains = validChains.filter((chain) => {
+      if (!processedChainIds.current.has(chain.id)) {
+        processedChainIds.current.add(chain.id);
+        return true;
+      }
+      return false;
+    });
 
     const pokemonDetails = await Promise.all(
       uniqueChains.map(async (chain) => {
@@ -44,17 +54,13 @@ const useFetchPokemon = () => {
             const pokeData = await pokeResponse.json();
             const speciesResponse = await fetch(pokeData.species.url);
             const speciesData = await speciesResponse.json();
-
-            // PERBAIKAN: Mencari deskripsi dalam bahasa Inggris, lalu fallback ke entri pertama jika tidak ditemukan.
             const descriptionEntry =
               speciesData.flavor_text_entries.find(
                 (entry) => entry.language.name === "en"
               ) || speciesData.flavor_text_entries[0];
-
             const imageUrl =
               pokeData.sprites.other["official-artwork"].front_default ||
               pokeData.sprites.front_default;
-
             const stats = {};
             pokeData.stats.forEach((stat) => {
               stats[stat.stat.name] = stat.base_stat;
@@ -75,95 +81,154 @@ const useFetchPokemon = () => {
           }
           current = current.evolves_to[0];
         }
-        return evolutionLine;
+        return evolutionLine.sort((a, b) => a.id - b.id);
       })
     );
-
     return pokemonDetails.filter((chain) => chain.length > 0);
   };
 
-  const fetchAllPokemon = useCallback(async () => {
+  const fetchPokemonsByType = useCallback(async (type) => {
     if (isFetchingRef.current) return;
     isFetchingRef.current = true;
+    setLoading(true);
     setError(null);
+    setPokemons([]);
     try {
-      // Ambil 500 spesies Pokémon pertama untuk muat awal
-      const initialResponse = await fetch(
-        "https://pokeapi.co/api/v2/pokemon-species?limit=500"
+      const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
+      if (!response.ok) throw new Error("Failed to fetch data for this type.");
+      const data = await response.json();
+      const pokemonsFromType = data.pokemon.map((p) => ({
+        ...p.pokemon,
+        url: p.pokemon.url.replace("/pokemon/", "/pokemon-species/"),
+      }));
+      const newPokemons = await fetchPokemonDetails(pokemonsFromType);
+      setPokemons(
+        newPokemons.sort((a, b) => a[0].name.localeCompare(b[0].name))
       );
-      if (!initialResponse.ok) throw new Error("Gagal mengambil data awal.");
-      const initialData = await initialResponse.json();
-      const initialPokemons = await fetchPokemonDetails(initialData.results);
-
-      if (initialPokemons.length > 0) {
-        setPokemons(initialPokemons);
-        setInitialLoading(false);
-        totalPokemonFetched.current = initialPokemons.length;
-      } else {
-        throw new Error("Tidak ada data Pokémon yang ditemukan.");
-      }
-
-      // Ambil sisa data di latar belakang
-      setMoreLoading(true);
-      const remainingResponse = await fetch(
-        `https://pokeapi.co/api/v2/pokemon-species?limit=1202&offset=500`
-      );
-      if (!remainingResponse.ok) throw new Error("Gagal mengambil sisa data.");
-      const remainingData = await remainingResponse.json();
-      const remainingPokemons = await fetchPokemonDetails(
-        remainingData.results
-      );
-      setPokemons((prev) => [...prev, ...remainingPokemons]);
-      setMoreLoading(false);
-      localStorage.setItem(
-        "pokemonData",
-        JSON.stringify([...initialPokemons, ...remainingPokemons])
-      );
+      hasMore.current = false;
     } catch (err) {
       setError(err.message);
-      setInitialLoading(false);
-      setMoreLoading(false);
     } finally {
+      setLoading(false);
       isFetchingRef.current = false;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setPokemons, setInitialLoading, setMoreLoading, setError, i18n.language]);
-
-  const refetch = useCallback(() => {
-    localStorage.removeItem("pokemonData");
-    setPokemons([]);
-    totalPokemonFetched.current = 0;
-    setInitialLoading(true);
   }, []);
 
-  useEffect(() => {
-    const cachedData = localStorage.getItem("pokemonData");
-    if (cachedData) {
+  const fetchAlphabetizedPokemons = useCallback(
+    async (currentPage) => {
+      if (
+        isFetchingRef.current ||
+        !hasMore.current ||
+        allPokemonNames.length === 0
+      )
+        return;
+      isFetchingRef.current = true;
+      setError(null);
+      if (currentPage === 0) setLoading(true);
+      else setMoreLoading(true);
+
       try {
-        const parsed = JSON.parse(cachedData);
-        if (
-          Array.isArray(parsed) &&
-          parsed.length > 0 &&
-          !Array.isArray(parsed[0])
-        ) {
-          localStorage.removeItem("pokemonData");
-        } else if (Array.isArray(parsed) && parsed.length > 0) {
-          setPokemons(parsed);
-          setInitialLoading(false);
-          return;
+        const start = currentPage * limit;
+        const end = start + limit;
+        const namesToFetch = allPokemonNames.slice(start, end);
+
+        if (namesToFetch.length === 0) {
+          hasMore.current = false;
+        } else {
+          const speciesList = namesToFetch.map((name) => ({
+            name,
+            url: `https://pokeapi.co/api/v2/pokemon-species/${name}/`,
+          }));
+
+          const newPokemons = await fetchPokemonDetails(speciesList);
+
+          setPokemons((prev) => [...prev, ...newPokemons]);
+          setPage(currentPage + 1);
         }
       } catch (err) {
-        console.error("Error parsing cached data:", err);
-        localStorage.removeItem("pokemonData");
+        setError(err.message);
+      } finally {
+        setLoading(false);
+        setMoreLoading(false);
+        isFetchingRef.current = false;
       }
-    }
+    },
+    [allPokemonNames]
+  );
 
-    if (pokemons.length === 0 && initialLoading && !isFetchingRef.current) {
-      fetchAllPokemon();
+  const searchPokemon = useCallback(async (name) => {
+    if (!name) return;
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+    setLoading(true);
+    setError(null);
+    setPokemons([]);
+    processedChainIds.current.clear();
+    try {
+      const pokeResponse = await fetch(
+        `https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`
+      );
+      if (!pokeResponse.ok) {
+        setPokemons([]);
+        throw new Error("Pokemon not found.");
+      }
+      const pokeData = await pokeResponse.json();
+      const speciesList = [
+        { name: pokeData.species.name, url: pokeData.species.url },
+      ];
+      const foundPokemon = await fetchPokemonDetails(speciesList);
+      setPokemons(foundPokemon);
+      hasMore.current = false;
+    } catch (err) {
+      setError(err.message);
+      setPokemons([]);
+    } finally {
+      setLoading(false);
+      isFetchingRef.current = false;
     }
-  }, [initialLoading, pokemons.length, fetchAllPokemon]);
+  }, []);
 
-  return { pokemons, initialLoading, moreLoading, error, refetch };
+  const loadPokemons = useCallback(
+    (type = "all") => {
+      processedChainIds.current.clear();
+      currentFilterType.current = type;
+      setError(null);
+      setPokemons([]);
+      setPage(0);
+      if (type === "all") {
+        hasMore.current = true;
+        if (allPokemonNames.length > 0) {
+          fetchAlphabetizedPokemons(0);
+        }
+      } else {
+        fetchPokemonsByType(type);
+      }
+    },
+    [fetchAlphabetizedPokemons, fetchPokemonsByType, allPokemonNames]
+  );
+
+  useEffect(() => {
+    if (allPokemonNames.length > 0 && currentFilterType.current === "all") {
+      loadPokemons("all");
+    }
+  }, [allPokemonNames, loadPokemons]);
+
+  const loadMore = () => {
+    if (currentFilterType.current === "all" && hasMore.current) {
+      fetchAlphabetizedPokemons(page);
+    }
+  };
+
+  return {
+    pokemons,
+    loading,
+    moreLoading,
+    error,
+    loadMore,
+    hasMore: hasMore.current,
+    loadPokemons,
+    searchPokemon,
+  };
 };
 
 export default useFetchPokemon;
