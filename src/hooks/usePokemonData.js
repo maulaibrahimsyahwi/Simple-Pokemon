@@ -52,7 +52,7 @@ const usePokemonData = () => {
       setError(null);
       try {
         const response = await fetch(
-          "https://pokeapi.co/api/v2/pokemon-species?limit=501"
+          "https://pokeapi.co/api/v2/pokemon-species?limit=1302"
         );
         if (!response.ok) {
           throw new Error("Gagal mengambil data spesies dari server.");
@@ -109,6 +109,8 @@ const usePokemonData = () => {
                     ? description.flavor_text.replace(/\s+/g, " ")
                     : "No description available.",
                   stats: stats,
+                  height: pokeData.height, // Menambahkan tinggi
+                  weight: pokeData.weight,
                 });
               }
               current = current.evolves_to[0];

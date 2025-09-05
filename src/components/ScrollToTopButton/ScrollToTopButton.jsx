@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./ScrollToTopButton.css";
+import { FaCaretUp } from "react-icons/fa";
 
 function ScrollToTopButton() {
   const [isVisible, setIsVisible] = useState(false);
@@ -34,13 +35,11 @@ function ScrollToTopButton() {
   return (
     <div className="scroll-to-top">
       {isVisible && (
-        <button
+        <FaCaretUp
           onClick={scrollToTop}
           className="scroll-button"
-          title="Kembali ke atas"
-        >
-          ▲
-        </button>
+          title="Back To Top"
+        ></FaCaretUp>
       )}
     </div>
   );

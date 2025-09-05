@@ -1,17 +1,20 @@
 import { useState } from "react";
 import "./PokemonItem.css";
 import { colours } from "../../data/colours";
+import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
 
 function PokemonItem({ evolutionLine }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showDescription, setShowDescription] = useState(false);
 
-  const handleNext = () => {
+  const handleNext = (event) => {
+    event.stopPropagation(); // Mencegah klik menyebar ke kartu
     setShowDescription(false);
     setCurrentIndex((prevIndex) => (prevIndex + 1) % evolutionLine.length);
   };
 
-  const handlePrev = () => {
+  const handlePrev = (event) => {
+    event.stopPropagation(); // Mencegah klik menyebar ke kartu
     setShowDescription(false);
     setCurrentIndex(
       (prevIndex) =>
@@ -33,7 +36,12 @@ function PokemonItem({ evolutionLine }) {
       style={{
         backgroundColor: `${cardBackgroundColor}aa`,
       }}
+      onClick={toggleDescription} // Kartu sekarang bisa diklik
     >
+      <div className="pokemon-measurements">
+        <span className="measurement-tag">Tinggi: {pokemon.height / 10} m</span>
+        <span className="measurement-tag">Berat: {pokemon.weight / 10} kg</span>
+      </div>
       <img src={pokemon.imageUrl} alt={pokemon.name} width={250} />
       <h1 style={{ textTransform: "capitalize" }}>{pokemon.name}</h1>
       <div className="types-container">
@@ -48,7 +56,6 @@ function PokemonItem({ evolutionLine }) {
         ))}
       </div>
 
-      {/* Tombol toggle utama yang selalu terlihat */}
       <button className="description-toggle-button" onClick={toggleDescription}>
         {showDescription ? "Sembunyikan Deskripsi" : "Lihat Deskripsi"}
       </button>
@@ -92,14 +99,13 @@ function PokemonItem({ evolutionLine }) {
         </div>
       </div>
 
-      {/* Kontrol evolusi tetap di sini */}
       {evolutionLine.length > 1 && (
         <div className="evolution-controls">
-          <button onClick={handlePrev}>&lt;</button>
+          <MdArrowBackIos onClick={handlePrev}>&lt;</MdArrowBackIos>
           <span>
             {currentIndex + 1} / {evolutionLine.length}
           </span>
-          <button onClick={handleNext}>&gt;</button>
+          <MdArrowForwardIos onClick={handleNext}>&gt;</MdArrowForwardIos>
         </div>
       )}
     </div>

@@ -33,7 +33,11 @@ function Login({ setIsLogin }) {
   return (
     <div className="login-container">
       <form onSubmit={handleLogin} className="login-form">
-        <img src="/pokemon.webp" alt="Pokeball Logo" className="login-logo" />
+        <img
+          src="../../../public/Pokemon.webp"
+          alt="Pokeball Logo"
+          className="login-logo"
+        />
         <h1>Welcome, Trainer!</h1>
         <p className="login-subtitle">
           Masukkan kredensial untuk memulai petualanganmu.

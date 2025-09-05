@@ -176,3 +176,21 @@
   font-weight: bold;
   font-size: 1.1rem;
 }
+.pokemon-measurements {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 10;
+}
+
+.measurement-tag {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
