@@ -88,7 +88,6 @@ function PokemonComparison({ selectedPokemons, onClearComparison }) {
               <strong>{t("weight")}</strong>: {pokemon1.weight / 10} kg
             </p>
           </div>
-          <h3>Base Stats</h3> {/* Tambahkan judul */}
           {renderStats(pokemon1)}
         </div>
 
@@ -121,7 +120,6 @@ function PokemonComparison({ selectedPokemons, onClearComparison }) {
               <strong>{t("weight")}</strong>: {pokemon2.weight / 10} kg
             </p>
           </div>
-          <h3>Base Stats</h3> {/* Tambahkan judul */}
           {renderStats(pokemon2)}
         </div>
       </div>

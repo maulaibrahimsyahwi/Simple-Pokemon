@@ -2,6 +2,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
+  padding-top: 100px; /* Tambahkan padding-top untuk mengkompensasi header tetap */
   text-align: center;
 }
 
@@ -15,8 +16,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative;
+  position: fixed; /* Ubah dari 'relative' ke 'fixed' */
+  top: 0;
+  left: 0;
   width: 100%;
+  padding: 20px;
+  background-color: white; /* Tambahkan warna latar belakang agar konten di bawah tidak terlihat */
+  z-index: 100; /* Pastikan header selalu di atas */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Opsional: tambahkan bayangan untuk efek */
 }
 
 .header h1 {
