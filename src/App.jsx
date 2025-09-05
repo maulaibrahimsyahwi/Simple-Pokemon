@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Pokemons from "./components/PokemonList/PokemonList";
 import Login from "./components/Login/Login";
-import ScrollToTopButton from "./components/ScrollToTopButton/ScrollToTopButton"; // --- 1. IMPORT KOMPONEN BARU ---
+import ScrollToTopButton from "./components/ScrollToTopButton/ScrollToTopButton";
 import "./app.css";
 
 function App() {
@@ -18,8 +18,7 @@ function App() {
   }, [isLogin]);
 
   const handleLogout = () => {
-    // --- TAMBAHKAN BARIS INI ---
-    localStorage.removeItem("pokemonData"); // Membersihkan cache data Pokemon
+    localStorage.removeItem("pokemonData");
     setIsLogin(false);
   };
 

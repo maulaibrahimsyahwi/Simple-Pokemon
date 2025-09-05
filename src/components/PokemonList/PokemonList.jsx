@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import PokemonItem from "../PokemonItem/PokemonItem";
 import usePokemonData from "../../hooks/usePokemonData";
 import PokemonCardSkeleton from "../PokemonItem/PokemonCardSkeleton/PokemonCardSkeleton";
-import ErrorDisplay from "../ErrorDisplay/ErrorDisplay"; // Impor komponen error
+import ErrorDisplay from "../ErrorDisplay/ErrorDisplay";
 import "./PokemonList.css";
 import NotfoundImage from "./img/Not Found Pokemon.webp";
 
@@ -19,7 +19,6 @@ function Pokemons() {
     gridSize,
     setGridSize,
     colours,
-    refetch, // Ambil fungsi refetch dari hook
   } = usePokemonData();
 
   const listWrapperRef = useRef(null);
@@ -61,9 +60,8 @@ function Pokemons() {
     };
   }, [gridSize, isMobile, processedPokemons, loading]);
 
-  // Gunakan komponen ErrorDisplay jika ada error
   if (error) {
-    return <ErrorDisplay message={error} onRetry={refetch} />;
+    return <ErrorDisplay message={error} />;
   }
 
   return (
@@ -78,7 +76,6 @@ function Pokemons() {
       <div className="controls-container">
         <div className="filter-container">
           <strong>Filter by Type:</strong>
-
           <select
             className="type-dropdown"
             value={filterType}
@@ -92,7 +89,6 @@ function Pokemons() {
               </option>
             ))}
           </select>
-
           <div className="type-buttons">
             <button
               className={filterType === "all" ? "active" : ""}
@@ -118,7 +114,6 @@ function Pokemons() {
               {sortByName ? "Sort by ID" : "Sort by Name"}
             </button>
           </div>
-
           {!isMobile && (
             <div className="grid-size-container">
               <strong>Column Size:</strong>
@@ -137,44 +132,32 @@ function Pokemons() {
           )}
         </div>
       </div>
-
       <div className="list-pokemon-wrapper" ref={listWrapperRef}>
-        {/* --- AWAL PERUBAHAN LOGIKA TAMPILAN --- */}
-        {loading ? (
-          <div
-            className="list-pokemon"
-            ref={listRef}
-            style={{ "--grid-size": isMobile ? 3 : gridSize }}
-          >
-            {Array.from({ length: 12 }).map((_, index) => (
+        <div
+          className="list-pokemon"
+          ref={listRef}
+          style={{ "--grid-size": isMobile ? 3 : gridSize }}
+        >
+          {loading ? (
+            Array.from({ length: 12 }).map((_, index) => (
               <PokemonCardSkeleton key={index} />
-            ))}
-          </div>
-        ) : processedPokemons.length === 0 ? (
-          <div className="not-found-container">
-            <img
-              src={NotfoundImage}
-              alt="Not Found"
-              style={{ width: "350px", marginBottom: "20px" }}
-            />
-            <h2>Pokémon Tidak Ditemukan</h2>
-            <p>Coba gunakan kata kunci atau filter yang lain.</p>
-          </div>
-        ) : (
-          <div
-            className="list-pokemon"
-            ref={listRef}
-            style={{ "--grid-size": isMobile ? 3 : gridSize }}
-          >
-            {processedPokemons.map((evolutionLine) => (
-              <PokemonItem
-                key={evolutionLine[0].id}
-                evolutionLine={evolutionLine}
+            ))
+          ) : processedPokemons.length === 0 ? (
+            <div className="not-found-container">
+              <img
+                src={NotfoundImage}
+                alt="Not Found"
+                style={{ width: "350px", marginBottom: "20px" }}
               />
-            ))}
-          </div>
-        )}
-        {/* --- AKHIR PERUBAHAN LOGIKA TAMPILAN --- */}
+              <h2>Pokémon Tidak Ditemukan</h2>
+              <p>Coba gunakan kata kunci atau filter yang lain.</p>
+            </div>
+          ) : (
+            processedPokemons.map((evolutionLine, index) => (
+              <PokemonItem key={index} evolutionLine={evolutionLine} />
+            ))
+          )}
+        </div>
       </div>
     </>
   );
