@@ -33,7 +33,7 @@ const usePokemonFilteringAndSorting = (pokemons = []) => {
 
     return allPokemonNames
       .filter((name) => name.toLowerCase().includes(searchQuery.toLowerCase()))
-      .slice(0, 5);
+      .slice(0, 10);
   }, [allPokemonNames, searchQuery]);
 
   // **PERBAIKAN UTAMA ADA DI SINI**
