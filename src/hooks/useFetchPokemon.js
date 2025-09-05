@@ -1,5 +1,27 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+
+const getCache = (key) => {
+  const cachedData = localStorage.getItem(key);
+  if (!cachedData) return null;
+
+  const { timestamp, data } = JSON.parse(cachedData);
+  if (Date.now() - timestamp > CACHE_DURATION) {
+    localStorage.removeItem(key);
+    return null;
+  }
+  return data;
+};
+
+const setCache = (key, data) => {
+  const cacheEntry = {
+    timestamp: Date.now(),
+    data,
+  };
+  localStorage.setItem(key, JSON.stringify(cacheEntry));
+};
+
 const useFetchPokemon = (allPokemonNames) => {
   const [pokemons, setPokemons] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,7 +62,6 @@ const useFetchPokemon = (allPokemonNames) => {
       return false;
     });
 
-    // **PERBAIKAN UTAMA: PARALELISASI PANGGILAN API**
     const pokemonDetails = await Promise.all(
       uniqueChains.map(async (chain) => {
         const pokemonNames = [];
@@ -104,11 +125,24 @@ const useFetchPokemon = (allPokemonNames) => {
   };
 
   const fetchPokemonsByType = useCallback(async (type) => {
+    const cacheKey = `pokemons_type_${type}`;
+    const cachedPokemons = getCache(cacheKey);
+
+    if (cachedPokemons) {
+      setPokemons(cachedPokemons);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+
     if (isFetchingRef.current) return;
     isFetchingRef.current = true;
-    setLoading(true);
     setError(null);
-    setPokemons([]);
+
+    if (!cachedPokemons) {
+      setPokemons([]);
+    }
+
     try {
       const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
       if (!response.ok) throw new Error("Failed to fetch data for this type.");
@@ -118,9 +152,11 @@ const useFetchPokemon = (allPokemonNames) => {
         url: p.pokemon.url.replace("/pokemon/", "/pokemon-species/"),
       }));
       const newPokemons = await fetchPokemonDetails(pokemonsFromType);
-      setPokemons(
-        newPokemons.sort((a, b) => a[0].name.localeCompare(b[0].name))
+      const sortedPokemons = newPokemons.sort((a, b) =>
+        a[0].name.localeCompare(b[0].name)
       );
+      setPokemons(sortedPokemons);
+      setCache(cacheKey, sortedPokemons);
       hasMore.current = false;
     } catch (err) {
       setError(err.message);
@@ -131,7 +167,27 @@ const useFetchPokemon = (allPokemonNames) => {
   }, []);
 
   const fetchAlphabetizedPokemons = useCallback(
-    async (currentPage) => {
+    async (currentPage, isInitialLoad = false) => {
+      const cacheKey = `pokemons_all_page_${currentPage}`;
+      if (isInitialLoad) {
+        const allCachedPages = [];
+        let hasAllCache = true;
+        for (let i = 0; i <= currentPage; i++) {
+          const pageCacheKey = `pokemons_all_page_${i}`;
+          const cachedPage = getCache(pageCacheKey);
+          if (cachedPage) {
+            allCachedPages.push(...cachedPage);
+          } else {
+            hasAllCache = false;
+            break;
+          }
+        }
+        if (hasAllCache && allCachedPages.length > 0) {
+          setPokemons(allCachedPages);
+          setLoading(false);
+        }
+      }
+
       if (
         isFetchingRef.current ||
         !hasMore.current ||
@@ -158,6 +214,8 @@ const useFetchPokemon = (allPokemonNames) => {
 
           const newPokemons = await fetchPokemonDetails(speciesList);
 
+          setCache(cacheKey, newPokemons);
+
           setPokemons((prev) => [...prev, ...newPokemons]);
           setPage(currentPage + 1);
         }
@@ -174,11 +232,24 @@ const useFetchPokemon = (allPokemonNames) => {
 
   const searchPokemon = useCallback(async (name) => {
     if (!name) return;
+
+    const cacheKey = `pokemon_search_${name.toLowerCase()}`;
+    const cachedPokemon = getCache(cacheKey);
+
+    if (cachedPokemon) {
+      setPokemons(cachedPokemon);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+
     if (isFetchingRef.current) return;
     isFetchingRef.current = true;
-    setLoading(true);
+
     setError(null);
-    setPokemons([]);
+    if (!cachedPokemon) {
+      setPokemons([]);
+    }
     processedChainIds.current.clear();
     try {
       const pokeResponse = await fetch(
@@ -194,6 +265,7 @@ const useFetchPokemon = (allPokemonNames) => {
       ];
       const foundPokemon = await fetchPokemonDetails(speciesList);
       setPokemons(foundPokemon);
+      setCache(cacheKey, foundPokemon);
       hasMore.current = false;
     } catch (err) {
       setError(err.message);
@@ -214,7 +286,7 @@ const useFetchPokemon = (allPokemonNames) => {
       if (type === "all") {
         hasMore.current = true;
         if (allPokemonNames.length > 0) {
-          fetchAlphabetizedPokemons(0);
+          fetchAlphabetizedPokemons(0, true);
         }
       } else {
         fetchPokemonsByType(type);
