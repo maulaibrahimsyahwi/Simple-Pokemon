@@ -5,22 +5,20 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import en from "./locales/en.json";
 import id from "./locales/id.json";
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources: {
-      en: {
-        translation: en.translation,
-      },
-      id: {
-        translation: id.translation,
-      },
+i18n.use(initReactI18next).init({
+  resources: {
+    en: {
+      translation: en.translation,
     },
-    fallbackLng: "en",
-    interpolation: {
-      escapeValue: false,
+    id: {
+      translation: id.translation,
     },
-  });
+  },
+  lng: "en",
+  fallbackLng: "en",
+  interpolation: {
+    escapeValue: false,
+  },
+});
 
 export default i18n;

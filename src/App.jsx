@@ -10,6 +10,8 @@ function App() {
   const [isLogin, setIsLogin] = useState(() => {
     return localStorage.getItem("isLoggedIn") === "true";
   });
+  // State baru untuk menangani loading awal setelah login
+  const [isInitialLoad, setIsInitialLoad] = useState(false);
 
   useEffect(() => {
     if (isLogin) {
@@ -20,8 +22,19 @@ function App() {
   }, [isLogin]);
 
   const handleLogout = () => {
-    localStorage.removeItem("pokemonData");
+    // PERBAIKAN: Menghapus baris yang menghapus data Pokémon dari localStorage
     setIsLogin(false);
+  };
+
+  // Fungsi login yang diperbarui
+  const handleLoginSuccess = () => {
+    setIsLogin(true);
+    // HANYA SET isInitialLoad JIKA DATA TIDAK ADA DI LOCALSTORAGE
+    if (!localStorage.getItem("pokemonData")) {
+      setIsInitialLoad(true);
+    } else {
+      setIsInitialLoad(false);
+    }
   };
 
   const changeLanguage = (lng) => {
@@ -55,10 +68,14 @@ function App() {
               </button>
             </div>
           </div>
-          <Pokemons />
+          {/* Meneruskan prop isInitialLoad */}
+          <Pokemons
+            isInitialLoad={isInitialLoad}
+            setIsInitialLoad={setIsInitialLoad}
+          />
         </>
       ) : (
-        <Login setIsLogin={setIsLogin} />
+        <Login setIsLogin={handleLoginSuccess} />
       )}
       <ScrollToTopButton />
     </div>

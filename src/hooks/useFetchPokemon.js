@@ -45,10 +45,11 @@ const useFetchPokemon = () => {
             const speciesResponse = await fetch(pokeData.species.url);
             const speciesData = await speciesResponse.json();
 
-            // PERBAIKAN UTAMA: Mencari deskripsi berdasarkan bahasa yang aktif
-            const description = speciesData.flavor_text_entries.find(
-              (entry) => entry.language.name === i18n.language // Gunakan i18n.language
-            );
+            // PERBAIKAN: Mencari deskripsi dalam bahasa Inggris, lalu fallback ke entri pertama jika tidak ditemukan.
+            const descriptionEntry =
+              speciesData.flavor_text_entries.find(
+                (entry) => entry.language.name === "en"
+              ) || speciesData.flavor_text_entries[0];
 
             const imageUrl =
               pokeData.sprites.other["official-artwork"].front_default ||
@@ -64,8 +65,8 @@ const useFetchPokemon = () => {
               name: pokeData.name,
               imageUrl: imageUrl,
               types: pokeData.types.map((typeInfo) => typeInfo.type.name),
-              description: description
-                ? description.flavor_text.replace(/\s+/g, " ")
+              description: descriptionEntry
+                ? descriptionEntry.flavor_text.replace(/\s+/g, " ")
                 : "No description available.",
               stats: stats,
               height: pokeData.height,
@@ -93,9 +94,14 @@ const useFetchPokemon = () => {
       if (!initialResponse.ok) throw new Error("Gagal mengambil data awal.");
       const initialData = await initialResponse.json();
       const initialPokemons = await fetchPokemonDetails(initialData.results);
-      setPokemons(initialPokemons);
-      setInitialLoading(false);
-      totalPokemonFetched.current = initialPokemons.length;
+
+      if (initialPokemons.length > 0) {
+        setPokemons(initialPokemons);
+        setInitialLoading(false);
+        totalPokemonFetched.current = initialPokemons.length;
+      } else {
+        throw new Error("Tidak ada data Pokémon yang ditemukan.");
+      }
 
       // Ambil sisa data di latar belakang
       setMoreLoading(true);
