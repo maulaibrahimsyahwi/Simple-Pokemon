@@ -5,8 +5,10 @@ import PokemonCardSkeleton from "../PokemonItem/PokemonCardSkeleton/PokemonCardS
 import ErrorDisplay from "../ErrorDisplay/ErrorDisplay";
 import "./PokemonList.css";
 import NotfoundImage from "./img/Not Found Pokemon.webp";
+import { useTranslation } from "react-i18next";
 
 function Pokemons() {
+  const { t } = useTranslation();
   const {
     loading,
     error,
@@ -61,31 +63,31 @@ function Pokemons() {
   }, [gridSize, isMobile, processedPokemons, loading]);
 
   if (error) {
-    return <ErrorDisplay message={error} />;
+    return <ErrorDisplay message={t("errorMessage")} />;
   }
 
   return (
     <>
       <input
         type="text"
-        placeholder="Search pokemon..."
+        placeholder={t("searchPlaceholder")}
         className="search"
         onChange={(e) => setSearchQuery(e.target.value)}
       />
 
       <div className="controls-container">
         <div className="filter-container">
-          <strong>Filter by Type:</strong>
+          <strong>{t("filterByType")}</strong>
           <select
             className="type-dropdown"
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
             style={{ "--type-color": colours[filterType] }}
           >
-            <option value="all">All</option>
+            <option value="all">{t("allType")}</option>
             {Object.keys(colours).map((type) => (
               <option key={type} value={type}>
-                {type}
+                {t(type.charAt(0).toUpperCase() + type.slice(1))}
               </option>
             ))}
           </select>
@@ -94,7 +96,7 @@ function Pokemons() {
               className={filterType === "all" ? "active" : ""}
               onClick={() => setFilterType("all")}
             >
-              All
+              {t("allType")}
             </button>
             {Object.keys(colours).map((type) => (
               <button
@@ -103,7 +105,7 @@ function Pokemons() {
                 onClick={() => setFilterType(type)}
                 style={{ "--type-color": colours[type] }}
               >
-                {type}
+                {t(type.charAt(0).toUpperCase() + type.slice(1))}
               </button>
             ))}
           </div>
@@ -111,12 +113,12 @@ function Pokemons() {
         <div className="settings-container">
           <div className="sort-container">
             <button onClick={() => setSortByName(!sortByName)}>
-              {sortByName ? "Sort by ID" : "Sort by Name"}
+              {sortByName ? t("sortByName") : t("sortById")}
             </button>
           </div>
           {!isMobile && (
             <div className="grid-size-container">
-              <strong>Column Size:</strong>
+              <strong>{t("columnSize")}</strong>
               <div className="grid-buttons">
                 {[4, 5, 6, 7].map((size) => (
                   <button
@@ -149,8 +151,8 @@ function Pokemons() {
                 alt="Not Found"
                 style={{ width: "350px", marginBottom: "20px" }}
               />
-              <h2>Pokémon Tidak Ditemukan</h2>
-              <p>Coba gunakan kata kunci atau filter yang lain.</p>
+              <h2>{t("notFoundTitle")}</h2>
+              <p>{t("notFoundMessage")}</p>
             </div>
           ) : (
             processedPokemons.map((evolutionLine, index) => (

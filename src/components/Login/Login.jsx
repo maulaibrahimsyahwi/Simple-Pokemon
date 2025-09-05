@@ -1,14 +1,16 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next"; // Impor useTranslation
 import "./Login.css";
 
 function Login({ setIsLogin }) {
+  const { t } = useTranslation(); // Gunakan hook useTranslation
   const [user, setUser] = useState({
     username: "",
     password: "",
   });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showHint, setShowHint] = useState(false); // State baru untuk hint box
+  const [showHint, setShowHint] = useState(false);
 
   const handleChange = (event) => {
     setUser({
@@ -22,7 +24,7 @@ function Login({ setIsLogin }) {
     if (user.username === "admin" && user.password === "admin") {
       setIsLogin(true);
     } else {
-      setError("Username atau password salah!");
+      setError(t("loginError"));
     }
   };
 
@@ -38,16 +40,14 @@ function Login({ setIsLogin }) {
           alt="Pokeball Logo"
           className="login-logo"
         />
-        <h1>Welcome, Trainer!</h1>
-        <p className="login-subtitle">
-          Masukkan kredensial untuk memulai petualanganmu.
-        </p>
+        <h1>{t("loginWelcome")}</h1>
+        <p className="login-subtitle">{t("loginSubtitle")}</p>
 
         <div className="input-group">
           <input
             type="text"
             name="username"
-            placeholder="Username"
+            placeholder={t("usernamePlaceholder")}
             onChange={handleChange}
             required
           />
@@ -57,7 +57,7 @@ function Login({ setIsLogin }) {
           <input
             type={showPassword ? "text" : "password"}
             name="password"
-            placeholder="Password"
+            placeholder={t("passwordPlaceholder")}
             onChange={handleChange}
             required
           />
@@ -69,26 +69,24 @@ function Login({ setIsLogin }) {
           </span>
         </div>
 
-        {/* --- BAGIAN HINT BOX DIPERBARUI --- */}
         <p className="hint-toggle" onClick={() => setShowHint(true)}>
-          Butuh petunjuk?
+          {t("hintToggle")}
         </p>
 
         {showHint && (
           <div className="hint-box">
             <p>
-              <strong>Username:</strong> admin
+              <strong>{t("hintUsername")}</strong>
             </p>
             <p>
-              <strong>Password:</strong> admin
+              <strong>{t("hintPassword")}</strong>
             </p>
           </div>
         )}
-        {/* --- AKHIR BAGIAN YANG DIPERBARUI --- */}
 
         {error && <p className="error-message">{error}</p>}
         <button type="submit" className="login-button">
-          Masuk
+          {t("loginButton")}
         </button>
       </form>
     </div>

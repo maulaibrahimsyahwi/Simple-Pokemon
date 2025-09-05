@@ -1,13 +1,15 @@
 import React from "react";
+import { useTranslation } from "react-i18next"; // Impor useTranslation
 import "./ErrorDisplay.css";
 
 function ErrorDisplay({ message, onRetry }) {
+  const { t } = useTranslation(); // Gunakan hook useTranslation
   return (
     <div className="error-container">
-      <h3>Oops! Terjadi Kesalahan</h3>
-      <p>{message || "Gagal memuat data. Periksa koneksi internet Anda."}</p>
+      <h3>Oops! {t("errorMessage")}</h3>
+      <p>{message || t("errorMessage")}</p>
       <button onClick={onRetry} className="retry-button">
-        Coba Lagi
+        {t("retryButton")}
       </button>
     </div>
   );

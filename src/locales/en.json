@@ -1,0 +1,29 @@
+{
+  "translation": {
+    "appTitle": "Simple Pokémon",
+    "logoutButton": "Logout",
+    "searchPlaceholder": "Search pokemon...",
+    "filterByType": "Filter by Type:",
+    "allType": "All",
+    "sortByName": "Sort by Name",
+    "sortById": "Sort by ID",
+    "columnSize": "Column Size:",
+    "notFoundTitle": "Pokémon Not Found",
+    "notFoundMessage": "Try using a different keyword or filter.",
+    "height": "Height",
+    "weight": "Weight",
+    "showDescription": "Show Description",
+    "hideDescription": "Hide Description",
+    "errorMessage": "Failed to load data. Check your internet connection.",
+    "retryButton": "Try Again",
+    "loginWelcome": "Welcome, Trainer!",
+    "loginSubtitle": "Enter your credentials to start your adventure.",
+    "usernamePlaceholder": "Username",
+    "passwordPlaceholder": "Password",
+    "loginButton": "Login",
+    "loginError": "Incorrect username or password!",
+    "hintToggle": "Need a hint?",
+    "hintUsername": "Username: admin",
+    "hintPassword": "Password: admin"
+  }
+}

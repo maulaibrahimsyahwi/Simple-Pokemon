@@ -1,5 +1,5 @@
 .app-container {
-  max-width: 1400px; /* Diubah dari max-content agar lebar stabil */
+  max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
   text-align: center;
@@ -13,20 +13,54 @@
 
 .header {
   display: flex;
-  justify-content: center;
+  justify-content: center; /* Mengubah ini untuk tetap di tengah secara visual */
   align-items: center;
-  position: relative;
+  position: relative; /* Penting untuk absolute positioning anak */
   width: 100%;
 }
 
-.logout-button {
+/* PERBAIKAN: H1 tetap terpusat dengan flexbox */
+.header h1 {
+  font-size: 2.5rem;
+  margin: 0;
+  color: #333;
+  flex-grow: 1; /* Biarkan h1 mengisi ruang yang tersedia */
+  text-align: center; /* Memastikan teks di tengah */
+}
+
+/* KODE BARU: Mengatur posisi tombol-tombol ke kanan atas */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   position: absolute;
   right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.language-switcher button {
+  background-color: #efefef;
+  border: 2px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 8px 12px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.language-switcher button.active {
+  background-color: #4a90e2;
+  color: white;
+  transform: scale(1.1);
+}
+
+.logout-button {
   padding: 8px 15px;
   font-size: 1rem;
   font-family: "Jura", sans-serif;
   font-weight: bold;
-  background-color: #ff6347; /* Warna merah tomat */
+  background-color: #ff6347;
   color: white;
   border: 2px solid black;
   border-radius: 5px;

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import i18n from "../i18n";
 
 const useFetchPokemon = () => {
   const [pokemons, setPokemons] = useState(() => {
@@ -43,8 +44,10 @@ const useFetchPokemon = () => {
             const pokeData = await pokeResponse.json();
             const speciesResponse = await fetch(pokeData.species.url);
             const speciesData = await speciesResponse.json();
+
+            // PERBAIKAN UTAMA: Mencari deskripsi berdasarkan bahasa yang aktif
             const description = speciesData.flavor_text_entries.find(
-              (entry) => entry.language.name === "en"
+              (entry) => entry.language.name === i18n.language // Gunakan i18n.language
             );
 
             const imageUrl =
@@ -117,7 +120,8 @@ const useFetchPokemon = () => {
     } finally {
       isFetchingRef.current = false;
     }
-  }, [setPokemons, setInitialLoading, setMoreLoading, setError]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setPokemons, setInitialLoading, setMoreLoading, setError, i18n.language]);
 
   const refetch = useCallback(() => {
     localStorage.removeItem("pokemonData");

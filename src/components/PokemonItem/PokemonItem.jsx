@@ -2,8 +2,10 @@ import { useState } from "react";
 import "./PokemonItem.css";
 import { colours } from "../../data/colours";
 import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
+import { useTranslation } from "react-i18next";
 
 function PokemonItem({ evolutionLine }) {
+  const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showDescription, setShowDescription] = useState(false);
 
@@ -42,8 +44,12 @@ function PokemonItem({ evolutionLine }) {
       onClick={toggleDescription}
     >
       <div className="pokemon-measurements">
-        <span className="measurement-tag">Tinggi: {pokemon.height / 10} m</span>
-        <span className="measurement-tag">Berat: {pokemon.weight / 10} kg</span>
+        <span className="measurement-tag">
+          {t("height")} {pokemon.height / 10} m
+        </span>
+        <span className="measurement-tag">
+          {t("weight")} {pokemon.weight / 10} kg
+        </span>
       </div>
       <img src={pokemon.imageUrl} alt={pokemon.name} width={250} />
       <h1 style={{ textTransform: "capitalize" }}>{pokemon.name}</h1>
@@ -60,7 +66,7 @@ function PokemonItem({ evolutionLine }) {
       </div>
 
       <button className="description-toggle-button" onClick={handleButtonClick}>
-        {showDescription ? "Sembunyikan Deskripsi" : "Lihat Deskripsi"}
+        {showDescription ? t("hideDescription") : t("showDescription")}
       </button>
 
       <div className={`description-overlay ${showDescription ? "show" : ""}`}>
