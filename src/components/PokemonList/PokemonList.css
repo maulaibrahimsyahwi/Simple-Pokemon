@@ -198,6 +198,50 @@
   text-transform: capitalize;
 }
 
+.search-container-with-suggestions {
+  position: relative;
+  width: 70vh;
+  margin: 20px auto 30px;
+  max-width: 90vw;
+}
+
+.search {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  font-size: 1rem;
+  box-shadow: 3px 5px;
+  border-radius: 5px;
+  border: 2px solid black;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  list-style: none;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.suggestions-list li {
+  padding: 10px 15px;
+  cursor: pointer;
+  text-align: left;
+  text-transform: capitalize;
+}
+
+.suggestions-list li:hover {
+  background-color: #f0f0f0;
+}
+
 /* Tampilan untuk layar 1280px ke bawah */
 @media (max-width: 1280px) {
   .controls-container {

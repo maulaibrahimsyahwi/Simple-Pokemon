@@ -27,12 +27,17 @@ function Pokemons({
     gridSize,
     setGridSize,
     colours,
+    searchSuggestions, // Tambahkan ini
   } = usePokemonData();
 
   const listWrapperRef = useRef(null);
   const listRef = useRef(null);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+
+  // State untuk rekomendasi
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchInputRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -74,14 +79,40 @@ function Pokemons({
     }
   }, [loading, processedPokemons, isInitialLoad, setIsInitialLoad]);
 
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setShowSuggestions(e.target.value.length > 0);
+  };
+
+  const handleSuggestionClick = (name) => {
+    setSearchQuery(name);
+    setShowSuggestions(false);
+    // Fokuskan kembali ke input setelah memilih
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  };
+
   return (
     <>
-      <input
-        type="text"
-        placeholder={t("searchPlaceholder")}
-        className="search"
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
+      <div className="search-container-with-suggestions">
+        <input
+          type="text"
+          ref={searchInputRef}
+          placeholder={t("searchPlaceholder")}
+          className="search"
+          onChange={handleSearchChange}
+        />
+        {showSuggestions && searchSuggestions.length > 0 && (
+          <ul className="suggestions-list">
+            {searchSuggestions.map((name, index) => (
+              <li key={index} onClick={() => handleSuggestionClick(name)}>
+                {name}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       <div className="controls-container">
         <div className="filter-container">

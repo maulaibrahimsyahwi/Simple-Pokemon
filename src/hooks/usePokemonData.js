@@ -14,6 +14,7 @@ const usePokemonData = () => {
     setFilterType,
     sortByName,
     setSortByName,
+    searchSuggestions, // Tambahkan ini
   } = usePokemonFilteringAndSorting(pokemons);
 
   return {
@@ -29,6 +30,7 @@ const usePokemonData = () => {
     gridSize,
     setGridSize,
     colours,
+    searchSuggestions, // Tambahkan ini
   };
 };
 

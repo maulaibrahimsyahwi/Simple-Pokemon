@@ -5,6 +5,30 @@ const usePokemonFilteringAndSorting = (pokemons) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortByName, setSortByName] = useState(true);
 
+  // Buat daftar rekomendasi pencarian
+  const searchSuggestions = useMemo(() => {
+    if (!searchQuery) return [];
+    const uniqueNames = new Set();
+    const suggestions = pokemons
+      .flatMap((evolutionLine) => (evolutionLine[0] ? [evolutionLine[0]] : []))
+      .filter((pokemon) => {
+        if (!pokemon.name) return false;
+        const name = pokemon.name.toLowerCase();
+        // Hanya tambahkan ke suggestions jika belum ada
+        if (
+          name.includes(searchQuery.toLowerCase()) &&
+          !uniqueNames.has(name)
+        ) {
+          uniqueNames.add(name);
+          return true;
+        }
+        return false;
+      })
+      .slice(0, 5) // Batasi jumlah rekomendasi
+      .map((pokemon) => pokemon.name);
+    return suggestions;
+  }, [pokemons, searchQuery]);
+
   const processedPokemons = useMemo(() => {
     return pokemons
       .filter((evolutionLine) => {
@@ -37,6 +61,7 @@ const usePokemonFilteringAndSorting = (pokemons) => {
     setFilterType,
     sortByName,
     setSortByName,
+    searchSuggestions, // Tambahkan ini
   };
 };
 
