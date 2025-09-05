@@ -1,5 +1,18 @@
-@import url("https://fonts.googleapis.com/css2?family=Jura:wght@300;500;700&display=swap");
+body {
+  cursor: url("../public/pointer/cursor.png"), auto;
+}
 
+/* Cursor pointer untuk elemen yang bisa diklik */
+button,
+a,
+input,
+select,
+div [onclick] {
+  cursor: url("../public/pointer/pointer.png"), pointer !important;
+}
+.pokemon-card {
+  cursor: url("../public/pointer/pointer.png"), pointer;
+}
 * {
   margin: 0;
   padding: 0;
