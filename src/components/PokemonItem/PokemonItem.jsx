@@ -7,23 +7,28 @@ function PokemonItem({ evolutionLine }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showDescription, setShowDescription] = useState(false);
 
+  // --- PERUBAHAN DI SINI ---
   const handleNext = (event) => {
-    event.stopPropagation(); // Mencegah klik menyebar ke kartu
-    setShowDescription(false);
+    event.stopPropagation(); // Hanya hentikan event bubbling, jangan tutup deskripsi
     setCurrentIndex((prevIndex) => (prevIndex + 1) % evolutionLine.length);
   };
 
   const handlePrev = (event) => {
-    event.stopPropagation(); // Mencegah klik menyebar ke kartu
-    setShowDescription(false);
+    event.stopPropagation(); // Hanya hentikan event bubbling, jangan tutup deskripsi
     setCurrentIndex(
       (prevIndex) =>
         (prevIndex - 1 + evolutionLine.length) % evolutionLine.length
     );
   };
+  // --- AKHIR PERUBAHAN ---
 
   const toggleDescription = () => {
     setShowDescription((prev) => !prev);
+  };
+
+  const handleButtonClick = (event) => {
+    event.stopPropagation();
+    toggleDescription();
   };
 
   const pokemon = evolutionLine[currentIndex];
@@ -36,7 +41,7 @@ function PokemonItem({ evolutionLine }) {
       style={{
         backgroundColor: `${cardBackgroundColor}aa`,
       }}
-      onClick={toggleDescription} // Kartu sekarang bisa diklik
+      onClick={toggleDescription}
     >
       <div className="pokemon-measurements">
         <span className="measurement-tag">Tinggi: {pokemon.height / 10} m</span>
@@ -56,7 +61,7 @@ function PokemonItem({ evolutionLine }) {
         ))}
       </div>
 
-      <button className="description-toggle-button" onClick={toggleDescription}>
+      <button className="description-toggle-button" onClick={handleButtonClick}>
         {showDescription ? "Sembunyikan Deskripsi" : "Lihat Deskripsi"}
       </button>
 
