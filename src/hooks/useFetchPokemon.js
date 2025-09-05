@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 jam
 
 const getCache = (key) => {
   const cachedData = localStorage.getItem(key);
@@ -34,7 +34,8 @@ const useFetchPokemon = (allPokemonNames) => {
   const currentFilterType = useRef("all");
   const processedChainIds = useRef(new Set());
 
-  const fetchPokemonDetails = async (pokemonList) => {
+  const fetchPokemonDetails = useCallback(async (pokemonList) => {
+    // ... (implementasi sama seperti sebelumnya, tidak perlu diubah)
     const evolutionChains = await Promise.all(
       pokemonList.map(async (species) => {
         try {
@@ -79,19 +80,15 @@ const useFetchPokemon = (allPokemonNames) => {
               );
               if (!pokeResponse.ok) return null;
               const pokeData = await pokeResponse.json();
-
               const speciesResponse = await fetch(pokeData.species.url);
               const speciesData = await speciesResponse.json();
-
               const descriptionEntry =
                 speciesData.flavor_text_entries.find(
                   (entry) => entry.language.name === "en"
                 ) || speciesData.flavor_text_entries[0];
-
               const imageUrl =
                 pokeData.sprites.other["official-artwork"].front_default ||
                 pokeData.sprites.front_default;
-
               const stats = {};
               pokeData.stats.forEach((stat) => {
                 stats[stat.stat.name] = stat.base_stat;
@@ -122,81 +119,60 @@ const useFetchPokemon = (allPokemonNames) => {
       })
     );
     return pokemonDetails.filter((chain) => chain.length > 0);
-  };
-
-  const fetchPokemonsByType = useCallback(async (type) => {
-    const cacheKey = `pokemons_type_${type}`;
-    const cachedPokemons = getCache(cacheKey);
-
-    if (cachedPokemons) {
-      setPokemons(cachedPokemons);
-      setLoading(false);
-    } else {
-      setLoading(true);
-    }
-
-    if (isFetchingRef.current) return;
-    isFetchingRef.current = true;
-    setError(null);
-
-    if (!cachedPokemons) {
-      setPokemons([]);
-    }
-
-    try {
-      const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
-      if (!response.ok) throw new Error("Failed to fetch data for this type.");
-      const data = await response.json();
-      const pokemonsFromType = data.pokemon.map((p) => ({
-        ...p.pokemon,
-        url: p.pokemon.url.replace("/pokemon/", "/pokemon-species/"),
-      }));
-      const newPokemons = await fetchPokemonDetails(pokemonsFromType);
-      const sortedPokemons = newPokemons.sort((a, b) =>
-        a[0].name.localeCompare(b[0].name)
-      );
-      setPokemons(sortedPokemons);
-      setCache(cacheKey, sortedPokemons);
-      hasMore.current = false;
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-      isFetchingRef.current = false;
-    }
   }, []);
 
-  const fetchAlphabetizedPokemons = useCallback(
-    async (currentPage, isInitialLoad = false) => {
-      const cacheKey = `pokemons_all_page_${currentPage}`;
-      if (isInitialLoad) {
-        const allCachedPages = [];
-        let hasAllCache = true;
-        for (let i = 0; i <= currentPage; i++) {
-          const pageCacheKey = `pokemons_all_page_${i}`;
-          const cachedPage = getCache(pageCacheKey);
-          if (cachedPage) {
-            allCachedPages.push(...cachedPage);
-          } else {
-            hasAllCache = false;
-            break;
-          }
-        }
-        if (hasAllCache && allCachedPages.length > 0) {
-          setPokemons(allCachedPages);
-          setLoading(false);
-        }
-      }
-
-      if (
-        isFetchingRef.current ||
-        !hasMore.current ||
-        allPokemonNames.length === 0
-      )
-        return;
+  const fetchPokemonsByType = useCallback(
+    async (type) => {
+      setLoading(true);
+      setPokemons([]);
       isFetchingRef.current = true;
       setError(null);
-      if (currentPage === 0) setLoading(true);
+      processedChainIds.current.clear();
+
+      const cacheKey = `pokemons_type_${type}`;
+      const cachedData = getCache(cacheKey);
+      if (cachedData) {
+        setPokemons(cachedData);
+        setLoading(false);
+        isFetchingRef.current = false;
+        hasMore.current = false;
+        return;
+      }
+
+      try {
+        const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
+        if (!response.ok)
+          throw new Error("Failed to fetch data for this type.");
+        const data = await response.json();
+        const pokemonsFromType = data.pokemon.map((p) => ({
+          ...p.pokemon,
+          url: p.pokemon.url.replace("/pokemon/", "/pokemon-species/"),
+        }));
+        const newPokemons = await fetchPokemonDetails(pokemonsFromType);
+        const sortedPokemons = newPokemons.sort((a, b) =>
+          a[0].name.localeCompare(b[0].name)
+        );
+        setPokemons(sortedPokemons);
+        setCache(cacheKey, sortedPokemons); // Simpan ke cache
+        hasMore.current = false;
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+        isFetchingRef.current = false;
+      }
+    },
+    [fetchPokemonDetails]
+  );
+
+  const fetchAlphabetizedPokemons = useCallback(
+    async (currentPage, reset = false) => {
+      if (isFetchingRef.current || (!hasMore.current && !reset)) return;
+
+      isFetchingRef.current = true;
+      setError(null);
+
+      if (reset) setLoading(true);
       else setMoreLoading(true);
 
       try {
@@ -213,10 +189,9 @@ const useFetchPokemon = (allPokemonNames) => {
           }));
 
           const newPokemons = await fetchPokemonDetails(speciesList);
-
-          setCache(cacheKey, newPokemons);
-
-          setPokemons((prev) => [...prev, ...newPokemons]);
+          setPokemons((prev) =>
+            reset ? newPokemons : [...prev, ...newPokemons]
+          );
           setPage(currentPage + 1);
         }
       } catch (err) {
@@ -227,85 +202,88 @@ const useFetchPokemon = (allPokemonNames) => {
         isFetchingRef.current = false;
       }
     },
-    [allPokemonNames]
+    [allPokemonNames, fetchPokemonDetails]
   );
 
-  const searchPokemon = useCallback(async (name) => {
-    if (!name) return;
-
-    const cacheKey = `pokemon_search_${name.toLowerCase()}`;
-    const cachedPokemon = getCache(cacheKey);
-
-    if (cachedPokemon) {
-      setPokemons(cachedPokemon);
-      setLoading(false);
-    } else {
+  const searchPokemon = useCallback(
+    async (name) => {
+      if (!name) return;
       setLoading(true);
-    }
-
-    if (isFetchingRef.current) return;
-    isFetchingRef.current = true;
-
-    setError(null);
-    if (!cachedPokemon) {
       setPokemons([]);
-    }
-    processedChainIds.current.clear();
-    try {
-      const pokeResponse = await fetch(
-        `https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`
-      );
-      if (!pokeResponse.ok) {
-        setPokemons([]);
-        throw new Error("Pokemon not found.");
+      isFetchingRef.current = true;
+      setError(null);
+      processedChainIds.current.clear();
+
+      const cacheKey = `pokemon_search_${name.toLowerCase()}`;
+      const cachedData = getCache(cacheKey);
+      if (cachedData) {
+        setPokemons(cachedData);
+        setLoading(false);
+        isFetchingRef.current = false;
+        hasMore.current = false;
+        return;
       }
-      const pokeData = await pokeResponse.json();
-      const speciesList = [
-        { name: pokeData.species.name, url: pokeData.species.url },
-      ];
-      const foundPokemon = await fetchPokemonDetails(speciesList);
-      setPokemons(foundPokemon);
-      setCache(cacheKey, foundPokemon);
-      hasMore.current = false;
-    } catch (err) {
-      setError(err.message);
-      setPokemons([]);
-    } finally {
-      setLoading(false);
-      isFetchingRef.current = false;
-    }
-  }, []);
+
+      try {
+        const pokeResponse = await fetch(
+          `https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`
+        );
+        if (!pokeResponse.ok) {
+          throw new Error("Pokemon not found.");
+        }
+        const pokeData = await pokeResponse.json();
+        const speciesList = [
+          { name: pokeData.species.name, url: pokeData.species.url },
+        ];
+        const foundPokemon = await fetchPokemonDetails(speciesList);
+        setPokemons(foundPokemon);
+        setCache(cacheKey, foundPokemon); // Simpan ke cache
+        hasMore.current = false;
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+        isFetchingRef.current = false;
+      }
+    },
+    [fetchPokemonDetails]
+  );
 
   const loadPokemons = useCallback(
     (type = "all") => {
       processedChainIds.current.clear();
       currentFilterType.current = type;
-      setError(null);
-      setPokemons([]);
       setPage(0);
+      setPokemons([]);
+
       if (type === "all") {
         hasMore.current = true;
         if (allPokemonNames.length > 0) {
           fetchAlphabetizedPokemons(0, true);
         }
       } else {
+        hasMore.current = false;
         fetchPokemonsByType(type);
       }
     },
-    [fetchAlphabetizedPokemons, fetchPokemonsByType, allPokemonNames]
+    [allPokemonNames, fetchAlphabetizedPokemons, fetchPokemonsByType]
   );
 
   useEffect(() => {
-    if (allPokemonNames.length > 0 && currentFilterType.current === "all") {
+    if (allPokemonNames.length > 0) {
       loadPokemons("all");
     }
   }, [allPokemonNames, loadPokemons]);
 
-  const loadMore = () => {
-    if (currentFilterType.current === "all" && hasMore.current) {
-      fetchAlphabetizedPokemons(page);
+  const loadMore = useCallback(() => {
+    if (
+      currentFilterType.current === "all" &&
+      hasMore.current &&
+      !isFetchingRef.current
+    ) {
+      fetchAlphabetizedPokemons(page, false);
     }
-  };
+  }, [page, fetchAlphabetizedPokemons]);
 
   return {
     pokemons,

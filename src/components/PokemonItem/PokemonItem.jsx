@@ -16,20 +16,20 @@ function PokemonItem({
   const [showDetails, setShowDetails] = useState(false);
 
   const handleNext = (event) => {
-    event.stopPropagation();
+    event.stopPropagation(); // Mencegah card ikut ter-klik
     setCurrentIndex((prevIndex) => (prevIndex + 1) % evolutionLine.length);
   };
 
   const handlePrev = (event) => {
-    event.stopPropagation();
+    event.stopPropagation(); // Mencegah card ikut ter-klik
     setCurrentIndex(
       (prevIndex) =>
         (prevIndex - 1 + evolutionLine.length) % evolutionLine.length
     );
   };
 
-  const toggleDetails = (event) => {
-    event.stopPropagation();
+  const toggleDetails = () => {
+    // Tidak perlu event lagi
     setShowDetails((prev) => !prev);
   };
 
@@ -39,7 +39,7 @@ function PokemonItem({
   const isSelected = selectedPokemons.some((p) => p.id === pokemon.id);
 
   const handleAddClick = (event) => {
-    event.stopPropagation();
+    event.stopPropagation(); // Mencegah card ikut ter-klik
     if (isSelected) {
       onRemoveFromComparison(pokemon);
     } else {
@@ -53,6 +53,7 @@ function PokemonItem({
       style={{
         backgroundColor: `${cardBackgroundColor}aa`,
       }}
+      onClick={toggleDetails} // Tambahkan onClick di sini
     >
       <div className="card-header">
         <div className="pokemon-measurements">
@@ -105,8 +106,15 @@ function PokemonItem({
           {isSelected ? t("removeFromCompare") : t("addToCompare")}
         </button>
 
-        <button className="details-toggle-button" onClick={toggleDetails}>
-          {showDetails ? t("hideDetails") : t("showDetails")}
+        {/* Tombol ini sekarang hanya sebagai visual atau bisa dihapus */}
+        <button
+          className="details-toggle-button"
+          onClick={(e) => {
+            e.stopPropagation(); // Mencegah card ikut ter-klik
+            toggleDetails();
+          }}
+        >
+          {showDetails ? t("hideDescription") : t("showDescription")}
         </button>
       </div>
 
@@ -115,8 +123,14 @@ function PokemonItem({
           <p>{pokemon.description}</p>
           {pokemon.stats && <StatGrid stats={pokemon.stats} />}
         </div>
-        <button className="details-close-button" onClick={toggleDetails}>
-          {t("hideDetails")}
+        <button
+          className="details-close-button"
+          onClick={(e) => {
+            e.stopPropagation(); // Mencegah card ikut ter-klik
+            toggleDetails();
+          }}
+        >
+          {t("hideDescription")}
         </button>
       </div>
     </div>

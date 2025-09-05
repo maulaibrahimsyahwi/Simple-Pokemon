@@ -1,9 +1,11 @@
+// Tidak ada perubahan dari kode perbaikan sebelumnya
 import { useState, useEffect } from "react";
 import Pokemons from "./components/PokemonList/PokemonList";
 import Login from "./components/Login/Login";
 import ScrollToTopButton from "./components/ScrollToTopButton/ScrollToTopButton";
 import PokemonComparison from "./components/PokemonComparison/PokemonComparison";
 import { useTranslation } from "react-i18next";
+import usePokemonData from "./hooks/usePokemonData";
 import "./app.css";
 
 function App() {
@@ -13,7 +15,9 @@ function App() {
   });
   const [isInitialLoad, setIsInitialLoad] = useState(false);
   const [selectedPokemons, setSelectedPokemons] = useState([]);
-  const [view, setView] = useState("list"); // 'list' atau 'compare'
+  const [view, setView] = useState("list");
+
+  const pokemonData = usePokemonData();
 
   useEffect(() => {
     if (isLogin) {
@@ -65,6 +69,8 @@ function App() {
   const handleClearComparison = () => {
     setSelectedPokemons([]);
     setView("list");
+    // Panggilan ini sekarang akan bekerja dengan benar
+    pokemonData.loadPokemons();
   };
 
   return (
@@ -118,6 +124,7 @@ function App() {
           </div>
           {view === "list" && (
             <Pokemons
+              {...pokemonData}
               isInitialLoad={isInitialLoad}
               setIsInitialLoad={setIsInitialLoad}
               onAddForComparison={handleAddForComparison}

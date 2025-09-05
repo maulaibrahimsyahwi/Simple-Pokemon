@@ -1,38 +1,38 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import PokemonItem from "../PokemonItem/PokemonItem";
-import usePokemonData from "../../hooks/usePokemonData";
+// Hapus impor usePokemonData
 import PokemonCardSkeleton from "../PokemonItem/PokemonCardSkeleton/PokemonCardSkeleton";
 import ErrorDisplay from "../ErrorDisplay/ErrorDisplay";
 import "./PokemonList.css";
 import NotfoundImage from "./img/Not Found Pokemon.webp";
 import { useTranslation } from "react-i18next";
 
+// Terima semua props yang diperlukan dari App.jsx
 function Pokemons({
   isInitialLoad,
   setIsInitialLoad,
   onAddForComparison,
   onRemoveFromComparison,
   selectedPokemons,
+  loading,
+  moreLoading,
+  error,
+  processedPokemons,
+  searchQuery,
+  setSearchQuery,
+  filterType,
+  setFilterType,
+  gridSize,
+  setGridSize,
+  colours,
+  searchSuggestions,
+  loadMore,
+  hasMore,
+  loadPokemons,
+  searchPokemon,
 }) {
   const { t } = useTranslation();
-  const {
-    loading,
-    moreLoading,
-    error,
-    processedPokemons,
-    searchQuery,
-    setSearchQuery,
-    filterType,
-    setFilterType,
-    gridSize,
-    setGridSize,
-    colours,
-    searchSuggestions,
-    loadMore,
-    hasMore,
-    loadPokemons,
-    searchPokemon,
-  } = usePokemonData();
+  // Hapus panggilan usePokemonData dari sini
 
   const listWrapperRef = useRef(null);
   const listRef = useRef(null);
@@ -243,7 +243,6 @@ function Pokemons({
             }
           })}
 
-          {/* PERBAIKAN UTAMA ADA DI SINI */}
           {(loading || moreLoading) &&
             Array.from({ length: loading ? gridSize * 2 : gridSize }).map(
               (_, index) => <PokemonCardSkeleton key={`skeleton-${index}`} />
