@@ -21,7 +21,7 @@ function Login({ setIsLogin }) {
 
   const handleLogin = (event) => {
     event.preventDefault();
-    if (user.username === "admin" && user.password === "admin") {
+    if (user.username?.toLowerCase() === "admin" && user.password === "admin") {
       setIsLogin(true);
     } else {
       setError(t("loginError"));

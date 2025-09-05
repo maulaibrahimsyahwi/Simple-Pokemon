@@ -1,0 +1,75 @@
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #f8f8f8;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-name {
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  min-width: 50px;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.stat-name.hp {
+  background-color: #f54242;
+}
+.stat-name.atk {
+  background-color: #f58a42;
+}
+.stat-name.def {
+  background-color: #72f542;
+}
+.stat-name.sp-atk {
+  background-color: #42b6f5;
+}
+.stat-name.sp-def {
+  background-color: #4269f5;
+}
+.stat-name.speed {
+  background-color: #f5e142;
+}
+
+.stat-value {
+  font-weight: bold;
+  font-size: 1em;
+  color: #444;
+}
+.stat-value.winning {
+  color: #f7d02c; /* Warna khusus untuk nilai stat pemenang */
+  font-weight: 900;
+}
+
+/* Penyesuaian untuk halaman perbandingan */
+.comparison-container .stats-grid {
+  gap: 5px;
+}
+
+.comparison-container .stat-item {
+  padding: 5px;
+}
+
+.comparison-container .stat-name {
+  font-size: 0.7rem;
+}
+
+.comparison-container .stat-value {
+  font-size: 0.9em;
+}

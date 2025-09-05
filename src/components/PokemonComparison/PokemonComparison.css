@@ -130,6 +130,53 @@
   margin-bottom: 10px;
 }
 
-.stat-row {
-  padding: 3px 0;
+/* Stat Bar Styles - Baru */
+.stat-progress-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.stat-progress-bar-container .stat-name {
+  font-weight: bold;
+  font-size: 0.9em;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.bar-wrapper {
+  display: flex;
+  width: 100%;
+  height: 25px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #333;
+}
+
+.bar-segment {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.5s ease-in-out;
+  position: relative;
+}
+
+.bar-segment .value {
+  color: white;
+  font-weight: bold;
+  font-size: 0.8em;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 2;
+}
+
+.pokemon1-segment {
+  background-color: #4a90e2; /* Warna biru Pokemon */
+}
+
+.pokemon2-segment {
+  background-color: #c22e28; /* Warna merah Pokemon */
 }

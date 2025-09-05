@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./PokemonItem.css";
 import { colours } from "../../data/colours";
 import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
+import StatGrid from "../../StatGrid/StatGrid"; // Import komponen baru
 import { useTranslation } from "react-i18next";
 
 function PokemonItem({
@@ -44,38 +45,6 @@ function PokemonItem({
     } else {
       onAddForComparison(pokemon);
     }
-  };
-
-  const renderStats = (pokemon) => {
-    if (!pokemon.stats) return null;
-    return (
-      <div className="stats-grid">
-        <div className="stat-item">
-          <span className="stat-name hp">HP</span>
-          <span className="stat-value">{pokemon.stats["hp"]}</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-name atk">ATK</span>
-          <span className="stat-value">{pokemon.stats["attack"]}</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-name def">DEF</span>
-          <span className="stat-value">{pokemon.stats["defense"]}</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-name sp-atk">SP.ATK</span>
-          <span className="stat-value">{pokemon.stats["special-attack"]}</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-name sp-def">SP.DEF</span>
-          <span className="stat-value">{pokemon.stats["special-defense"]}</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-name speed">SPEED</span>
-          <span className="stat-value">{pokemon.stats["speed"]}</span>
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -144,7 +113,7 @@ function PokemonItem({
       <div className={`details-overlay ${showDetails ? "show" : ""}`}>
         <div className="details-content">
           <p>{pokemon.description}</p>
-          {pokemon.stats && <>{renderStats(pokemon)}</>}
+          {pokemon.stats && <StatGrid stats={pokemon.stats} />}
         </div>
         <button className="details-close-button" onClick={toggleDetails}>
           {t("hideDetails")}

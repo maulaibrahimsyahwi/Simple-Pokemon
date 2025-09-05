@@ -1,0 +1,57 @@
+.stat-progress-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.stat-label-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.stat-label-container .stat-name {
+  font-weight: bold;
+  color: #555;
+  text-align: center;
+  flex-grow: 1; /* Agar nama stat berada di tengah */
+}
+
+.stat-label-container .stat-value {
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.stat-label-container .pokemon1-value {
+  color: #4a90e2;
+}
+
+.stat-label-container .pokemon2-value {
+  color: #c22e28;
+}
+
+.bar-wrapper {
+  display: flex;
+  width: 100%;
+  height: 15px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #e9e9e9;
+}
+
+.bar-segment {
+  height: 100%;
+  transition: width 0.5s ease-in-out;
+}
+
+.pokemon1-segment {
+  background-color: #4a90e2;
+}
+
+.pokemon2-segment {
+  background-color: #c22e28;
+}

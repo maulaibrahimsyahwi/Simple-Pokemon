@@ -41,11 +41,11 @@ function App() {
   };
 
   const handleAddForComparison = (pokemon) => {
-    if (selectedPokemons.length < 2) {
-      setSelectedPokemons((prev) => [...prev, pokemon]);
-    } else {
-      alert(t("comparisonLimitMessage"));
-    }
+    setSelectedPokemons((prev) =>
+      prev.length < 2
+        ? [...prev, pokemon]
+        : (alert(t("comparisonLimitMessage")), prev)
+    );
   };
 
   const handleRemoveFromComparison = (pokemonToRemove) => {

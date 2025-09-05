@@ -2,6 +2,7 @@ import React from "react";
 import "./PokemonComparison.css";
 import { useTranslation } from "react-i18next";
 import { colours } from "../../data/colours";
+import StatProgressBar from "../StatProgressBar/StatProgressBar";
 
 function PokemonComparison({ selectedPokemons }) {
   const { t } = useTranslation();
@@ -67,29 +68,6 @@ function PokemonComparison({ selectedPokemons }) {
       </div>
     );
   };
-
-  const getWinningStats = () => {
-    const statKeys = Object.keys(pokemon1.stats);
-    return statKeys.map((statName) => {
-      const stat1 = pokemon1.stats[statName];
-      const stat2 = pokemon2.stats[statName];
-      let winStatus = "tie";
-      if (stat1 > stat2) {
-        winStatus = "pokemon1";
-      } else if (stat2 > stat1) {
-        winStatus = "pokemon2";
-      }
-
-      return {
-        statName,
-        stat1,
-        stat2,
-        winStatus,
-      };
-    });
-  };
-
-  const winningStats = winner ? getWinningStats() : [];
 
   return (
     <div className="comparison-container">
@@ -184,26 +162,15 @@ function PokemonComparison({ selectedPokemons }) {
               </p>
               <div className="stats-breakdown">
                 <h3>{t("winnerBreakdownTitle")}</h3>
-                {winningStats.map((stat) => (
-                  <div key={stat.statName} className="stat-row">
-                    <span
-                      className={`stat-value ${
-                        stat.winStatus === "pokemon1" ? "winning" : ""
-                      }`}
-                    >
-                      {stat.stat1}
-                    </span>
-                    <span className="stat-name">
-                      {stat.statName.toUpperCase()}
-                    </span>
-                    <span
-                      className={`stat-value ${
-                        stat.winStatus === "pokemon2" ? "winning" : ""
-                      }`}
-                    >
-                      {stat.stat2}
-                    </span>
-                  </div>
+                {Object.keys(pokemon1.stats).map((statName) => (
+                  <StatProgressBar
+                    key={statName}
+                    statName={statName}
+                    value1={pokemon1.stats[statName]}
+                    value2={pokemon2.stats[statName]}
+                    color1={colours[pokemon1.types[0].toLowerCase()]}
+                    color2={colours[pokemon2.types[0].toLowerCase()]}
+                  />
                 ))}
               </div>
             </>
