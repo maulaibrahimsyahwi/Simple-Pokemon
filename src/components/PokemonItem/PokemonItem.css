@@ -1,6 +1,6 @@
 .pokemon-card {
   width: 300px;
-  height: 520px; /* Tinggi tetap agar stabil */
+  height: 520px;
   border-radius: 10px;
   text-align: center;
   padding: 20px;
@@ -68,7 +68,7 @@
   transition: max-height 0.4s ease-out;
   box-sizing: border-box;
   z-index: 20;
-  overflow-y: hidden; /* <-- PERBAIKAN SCROLLBAR SUDAH DI SINI */
+  overflow-y: hidden;
 }
 
 .description-overlay.show {
@@ -88,7 +88,7 @@
   text-transform: capitalize;
 }
 
-/* --- KODE STATISTIK ANDA YANG SAYA KEMBALIKAN --- */
+/* --- KODE STATISTIK --- */
 .stats-container {
   display: flex;
   justify-content: space-around;
@@ -148,7 +148,7 @@
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  width: 45%;
+  width: 55%;
   justify-content: space-between;
   background-color: rgba(255, 255, 255, 0.85);
   padding: 5px 15px;
@@ -160,15 +160,23 @@
 .evolution-controls button {
   background: none;
   border: none;
+  cursor: pointer;
+  padding: 0 5px; /* Sesuaikan padding untuk area klik yang lebih besar */
+  transition: transform 0.2s;
+}
+
+.evolution-controls button:hover {
+  transform: scale(1.1);
+}
+
+.evolution-controls .evolution-icon {
   font-size: 1.5rem;
   font-weight: bold;
-  cursor: pointer;
-  padding: 0 8px;
   color: #333;
   transition: color 0.2s;
 }
 
-.evolution-controls button:hover {
+.evolution-controls button:hover .evolution-icon {
   color: #007bff;
 }
 
@@ -176,6 +184,7 @@
   font-weight: bold;
   font-size: 1.1rem;
 }
+
 .pokemon-measurements {
   display: flex;
   justify-content: space-between;

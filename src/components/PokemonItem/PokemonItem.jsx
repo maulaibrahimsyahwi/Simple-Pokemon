@@ -7,20 +7,18 @@ function PokemonItem({ evolutionLine }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showDescription, setShowDescription] = useState(false);
 
-  // --- PERUBAHAN DI SINI ---
   const handleNext = (event) => {
-    event.stopPropagation(); // Hanya hentikan event bubbling, jangan tutup deskripsi
+    event.stopPropagation();
     setCurrentIndex((prevIndex) => (prevIndex + 1) % evolutionLine.length);
   };
 
   const handlePrev = (event) => {
-    event.stopPropagation(); // Hanya hentikan event bubbling, jangan tutup deskripsi
+    event.stopPropagation();
     setCurrentIndex(
       (prevIndex) =>
         (prevIndex - 1 + evolutionLine.length) % evolutionLine.length
     );
   };
-  // --- AKHIR PERUBAHAN ---
 
   const toggleDescription = () => {
     setShowDescription((prev) => !prev);
@@ -106,11 +104,15 @@ function PokemonItem({ evolutionLine }) {
 
       {evolutionLine.length > 1 && (
         <div className="evolution-controls">
-          <MdArrowBackIos onClick={handlePrev}>&lt;</MdArrowBackIos>
+          <button onClick={handlePrev}>
+            <MdArrowBackIos className="evolution-icon" />
+          </button>
           <span>
             {currentIndex + 1} / {evolutionLine.length}
           </span>
-          <MdArrowForwardIos onClick={handleNext}>&gt;</MdArrowForwardIos>
+          <button onClick={handleNext}>
+            <MdArrowForwardIos className="evolution-icon" />
+          </button>
         </div>
       )}
     </div>
