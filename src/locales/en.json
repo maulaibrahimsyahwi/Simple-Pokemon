@@ -24,6 +24,14 @@
     "loginError": "Incorrect username or password!",
     "hintToggle": "Need a hint?",
     "hintUsername": "Username: admin",
-    "hintPassword": "Password: admin"
+    "hintPassword": "Password: admin",
+    "addToCompare": "Add to Compare",
+    "addedToCompare": "Added!",
+    "compareButton": "Compare",
+    "comparisonLimitMessage": "You can only select up to 2 Pokemons for comparison.",
+    "selectTwoPokemonsMessage": "Please select two Pokemons to compare.",
+    "comparisonTitle": "Pokemon Comparison",
+    "comparisonMessage": "Select two Pokemons from the list to compare their stats.",
+    "backButton": "Back to List"
   }
 }

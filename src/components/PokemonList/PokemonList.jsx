@@ -7,7 +7,12 @@ import "./PokemonList.css";
 import NotfoundImage from "./img/Not Found Pokemon.webp";
 import { useTranslation } from "react-i18next";
 
-function Pokemons({ isInitialLoad, setIsInitialLoad }) {
+function Pokemons({
+  isInitialLoad,
+  setIsInitialLoad,
+  onAddForComparison,
+  selectedPokemons,
+}) {
   const { t } = useTranslation();
   const {
     loading,
@@ -62,14 +67,12 @@ function Pokemons({ isInitialLoad, setIsInitialLoad }) {
     };
   }, [gridSize, isMobile, processedPokemons, loading]);
 
-  // Efek baru untuk mematikan status loading awal setelah data berhasil dimuat
   useEffect(() => {
     if (!loading && processedPokemons.length > 0 && isInitialLoad) {
       setIsInitialLoad(false);
     }
   }, [loading, processedPokemons, isInitialLoad, setIsInitialLoad]);
 
-  // Perbaikan utama: Mengatur logika rendering agar elemen kontrol selalu terlihat.
   return (
     <>
       <input
@@ -144,7 +147,6 @@ function Pokemons({ isInitialLoad, setIsInitialLoad }) {
           ref={listRef}
           style={{ "--grid-size": isMobile ? 3 : gridSize }}
         >
-          {/* Logika rendering kondisional untuk konten di bawah kontrol */}
           {error ? (
             <ErrorDisplay message={t("errorMessage")} />
           ) : isInitialLoad || loading ? (
@@ -163,7 +165,12 @@ function Pokemons({ isInitialLoad, setIsInitialLoad }) {
             </div>
           ) : (
             processedPokemons.map((evolutionLine, index) => (
-              <PokemonItem key={index} evolutionLine={evolutionLine} />
+              <PokemonItem
+                key={index}
+                evolutionLine={evolutionLine}
+                onAddForComparison={onAddForComparison}
+                selectedPokemons={selectedPokemons}
+              />
             ))
           )}
         </div>

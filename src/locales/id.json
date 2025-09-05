@@ -42,6 +42,14 @@
     "loginError": "Nama pengguna atau kata sandi salah!",
     "hintToggle": "Butuh petunjuk?",
     "hintUsername": "Nama Pengguna: admin",
-    "hintPassword": "Kata Sandi: admin"
+    "hintPassword": "Kata Sandi: admin",
+    "addToCompare": "Tambahkan untuk Bandingkan",
+    "addedToCompare": "Ditambahkan!",
+    "compareButton": "Bandingkan",
+    "comparisonLimitMessage": "Anda hanya bisa memilih maksimal 2 Pokémon untuk dibandingkan.",
+    "selectTwoPokemonsMessage": "Mohon pilih dua Pokémon untuk dibandingkan.",
+    "comparisonTitle": "Perbandingan Pokémon",
+    "comparisonMessage": "Pilih dua Pokémon dari daftar untuk membandingkan statistik mereka.",
+    "backButton": "Kembali ke Daftar"
   }
 }

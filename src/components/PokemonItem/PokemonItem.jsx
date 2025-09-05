@@ -4,10 +4,10 @@ import { colours } from "../../data/colours";
 import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
-function PokemonItem({ evolutionLine }) {
+function PokemonItem({ evolutionLine, onAddForComparison, selectedPokemons }) {
   const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [showDescription, setShowDescription] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   const handleNext = (event) => {
     event.stopPropagation();
@@ -22,36 +22,89 @@ function PokemonItem({ evolutionLine }) {
     );
   };
 
-  const toggleDescription = () => {
-    setShowDescription((prev) => !prev);
+  const toggleDetails = (event) => {
+    event.stopPropagation();
+    setShowDetails((prev) => !prev);
   };
 
-  const handleButtonClick = (event) => {
+  const handleAddClick = (event) => {
     event.stopPropagation();
-    toggleDescription();
+    onAddForComparison(pokemon);
   };
 
   const pokemon = evolutionLine[currentIndex];
   const mainType = pokemon.types[0].toLowerCase();
   const cardBackgroundColor = colours[mainType];
+  const isSelected = selectedPokemons.some((p) => p.id === pokemon.id);
+
+  const renderStats = (pokemon) => {
+    if (!pokemon.stats) return null;
+    return (
+      <div className="stats-grid">
+        <div className="stat-item">
+          <span className="stat-name hp">HP</span>
+          <span className="stat-value">{pokemon.stats["hp"]}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-name atk">ATK</span>
+          <span className="stat-value">{pokemon.stats["attack"]}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-name def">DEF</span>
+          <span className="stat-value">{pokemon.stats["defense"]}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-name sp-atk">SP.ATK</span>
+          <span className="stat-value">{pokemon.stats["special-attack"]}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-name sp-def">SP.DEF</span>
+          <span className="stat-value">{pokemon.stats["special-defense"]}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-name speed">SPEED</span>
+          <span className="stat-value">{pokemon.stats["speed"]}</span>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div
-      className="pokemon-card"
+      className={`pokemon-card ${isSelected ? "selected" : ""}`}
       style={{
         backgroundColor: `${cardBackgroundColor}aa`,
       }}
-      onClick={toggleDescription}
     >
-      <div className="pokemon-measurements">
-        <span className="measurement-tag">
-          {t("height")} {pokemon.height / 10} m
-        </span>
-        <span className="measurement-tag">
-          {t("weight")} {pokemon.weight / 10} kg
-        </span>
+      <div className="card-header">
+        <div className="pokemon-measurements">
+          <span className="measurement-tag">
+            {t("height")} {pokemon.height / 10} m
+          </span>
+          <span className="measurement-tag">
+            {t("weight")} {pokemon.weight / 10} kg
+          </span>
+        </div>
+        {evolutionLine.length > 1 && (
+          <div className="evolution-controls top-controls">
+            <button onClick={handlePrev}>
+              <MdArrowBackIos className="evolution-icon" />
+            </button>
+            <span>
+              {currentIndex + 1} / {evolutionLine.length}
+            </span>
+            <button onClick={handleNext}>
+              <MdArrowForwardIos className="evolution-icon" />
+            </button>
+          </div>
+        )}
       </div>
-      <img src={pokemon.imageUrl} alt={pokemon.name} width={250} />
+
+      <img
+        src={pokemon.imageUrl}
+        alt={pokemon.name}
+        className="pokemon-image"
+      />
       <h1 style={{ textTransform: "capitalize" }}>{pokemon.name}</h1>
       <div className="types-container">
         {pokemon.types.map((type, index) => (
@@ -65,62 +118,29 @@ function PokemonItem({ evolutionLine }) {
         ))}
       </div>
 
-      <button className="description-toggle-button" onClick={handleButtonClick}>
-        {showDescription ? t("hideDescription") : t("showDescription")}
-      </button>
+      <div className="card-actions">
+        <button
+          className="add-compare-button"
+          onClick={handleAddClick}
+          disabled={isSelected || selectedPokemons.length >= 2}
+        >
+          {isSelected ? t("addedToCompare") : t("addToCompare")}
+        </button>
 
-      <div className={`description-overlay ${showDescription ? "show" : ""}`}>
-        <div className="description-content">
-          <p>{pokemon.description}</p>
-
-          {pokemon.stats && (
-            <div className="stats-container">
-              <div className="stat-item">
-                <span className="stat-name hp">HP</span>
-                <span className="stat-value">{pokemon.stats["hp"]}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-name atk">ATK</span>
-                <span className="stat-value">{pokemon.stats["attack"]}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-name def">DEF</span>
-                <span className="stat-value">{pokemon.stats["defense"]}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-name sp-atk">SP.ATK</span>
-                <span className="stat-value">
-                  {pokemon.stats["special-attack"]}
-                </span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-name sp-def">SP.DEF</span>
-                <span className="stat-value">
-                  {pokemon.stats["special-defense"]}
-                </span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-name speed">SPEED</span>
-                <span className="stat-value">{pokemon.stats["speed"]}</span>
-              </div>
-            </div>
-          )}
-        </div>
+        <button className="details-toggle-button" onClick={toggleDetails}>
+          {showDetails ? t("hideDetails") : t("showDetails")}
+        </button>
       </div>
 
-      {evolutionLine.length > 1 && (
-        <div className="evolution-controls">
-          <button onClick={handlePrev}>
-            <MdArrowBackIos className="evolution-icon" />
-          </button>
-          <span>
-            {currentIndex + 1} / {evolutionLine.length}
-          </span>
-          <button onClick={handleNext}>
-            <MdArrowForwardIos className="evolution-icon" />
-          </button>
+      <div className={`details-overlay ${showDetails ? "show" : ""}`}>
+        <div className="details-content">
+          <p>{pokemon.description}</p>
+          {pokemon.stats && <>{renderStats(pokemon)}</>}
         </div>
-      )}
+        <button className="details-close-button" onClick={toggleDetails}>
+          {t("hideDetails")}
+        </button>
+      </div>
     </div>
   );
 }

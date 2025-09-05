@@ -3,121 +3,243 @@
   height: 520px;
   border-radius: 10px;
   text-align: center;
-  padding: 20px;
+  padding: 15px;
   border: 2px solid black;
   box-shadow: 5px 5px black;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.pokemon-card.selected {
+  border: 4px solid #4a90e2;
+  box-shadow: 5px 5px #4a90e2;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 10;
+}
+
+.pokemon-measurements {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.measurement-tag {
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.evolution-controls.top-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 5px 10px;
+  border-radius: 15px;
+  border: 1px solid #bbb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-left: auto;
+}
+
+.evolution-controls.top-controls button {
+  background: none;
+  border: none;
   cursor: pointer;
+  padding: 0 2px;
+  transition: transform 0.2s;
+}
+
+.evolution-controls.top-controls button:hover {
+  transform: scale(1.1);
+}
+
+.evolution-controls.top-controls .evolution-icon {
+  font-size: 1.3rem;
+  color: #555;
+}
+
+.evolution-controls.top-controls span {
+  font-weight: bold;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.pokemon-image {
+  max-width: 100%;
+  height: auto;
+  max-height: 150px;
+  object-fit: contain;
+  margin: 0 auto 10px auto;
+  display: block;
+  position: relative;
+  z-index: 1;
 }
 
 .pokemon-card h1 {
-  text-transform: capitalize;
+  font-size: 1.8rem;
   margin: 10px 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 100%;
 }
 
 .types-container {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-top: 15px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-top: 5px;
+  margin-bottom: 15px;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
 }
 
 .type-badge {
-  width: 100px;
-  padding: 4px;
-  border-radius: 6px;
-  border: 2px solid black;
+  width: 90px;
+  padding: 3px;
+  border-radius: 5px;
+  border: 1px solid black;
   color: white;
   text-transform: capitalize;
+  font-size: 0.85rem;
 }
 
-.description-toggle-button {
-  background-color: #3d7dca;
-  color: white;
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.add-compare-button,
+.details-toggle-button {
   padding: 8px 15px;
-  border: 2px solid #2a588d;
+  font-size: 0.95em;
+  font-weight: bold;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 0.9em;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-  margin-top: 15px;
-  position: relative;
-  z-index: 30;
+  box-shadow: 2px 2px black;
+  transition: all 0.2s;
+  width: 100%;
 }
 
-.description-toggle-button:hover {
+.add-compare-button {
+  background-color: #4a90e2;
+  color: white;
+  border: 2px solid #3d7dca;
+}
+
+.add-compare-button:hover:not(:disabled) {
+  background-color: #3d7dca;
+}
+
+.add-compare-button:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  border-color: #999;
+  box-shadow: none;
+}
+
+.details-toggle-button {
+  background-color: #3d7dca;
+  color: white;
+  border: 2px solid #2a588d;
+}
+
+.details-toggle-button:hover {
   background-color: #2a588d;
 }
 
-.description-overlay {
+/* --- Perbaikan utama ada di sini --- */
+.details-overlay {
   position: absolute;
-  bottom: 0;
   left: 0;
+  bottom: 0;
   width: 100%;
-  max-height: 0;
+  max-height: 0; /* Awalnya 0, akan meluas ke atas */
   background-color: rgba(255, 255, 255, 0.98);
   color: #333;
-  transition: max-height 0.4s ease-out;
+  transition: max-height 0.4s ease-out; /* Transisi untuk 'max-height' */
   box-sizing: border-box;
-  z-index: 20;
-  overflow-y: hidden;
+  z-index: 30;
+  overflow-y: hidden; /* Sembunyikan konten yang meluber saat transisi */
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
-.description-overlay.show {
-  max-height: 100%;
+.details-overlay.show {
+  max-height: 80%; /* Atur tinggi maksimal yang diinginkan, misal 80% dari kartu */
+  overflow-y: auto; /* Aktifkan scroll saat sudah tampil */
 }
 
-.description-content {
+.details-content {
   text-align: left;
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.4;
-  padding: 20px 20px 80px 20px;
+  padding: 15px;
+  padding-bottom: 70px;
 }
 
-.description-content p {
+.details-content h3 {
+  font-size: 1.2rem;
+  margin-top: 0; /* Hapus margin atas di dalam overlay */
+  margin-bottom: 8px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.details-content p {
+  margin-bottom: 15px;
+  font-weight: normal;
+  text-transform: none;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 15px;
   margin-bottom: 20px;
-  font-weight: bold;
-  text-transform: capitalize;
-}
-
-/* --- KODE STATISTIK --- */
-.stats-container {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  text-align: center;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 40px;
 }
 
 .stat-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #f8f8f8;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .stat-name {
   color: white;
-  padding: 5px 10px;
-  border-radius: 15px;
-  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
   font-weight: bold;
-  min-width: 60px;
-}
-
-.stat-value {
-  font-weight: bold;
-  font-size: 1.1rem;
+  min-width: 50px;
+  text-align: center;
 }
 
 .stat-name.hp {
@@ -138,68 +260,32 @@
 .stat-name.speed {
   background-color: #f5e142;
 }
-/* --- AKHIR DARI KODE STATISTIK --- */
 
-/* --- KODE EVOLUTION CONTROLS YANG SUDAH DIPERBAIKI --- */
-.evolution-controls {
+.stat-value {
+  font-weight: bold;
+  font-size: 1em;
+  color: #444;
+}
+
+.details-close-button {
   position: absolute;
-  bottom: 10px;
+  bottom: 15px;
   left: 50%;
   transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  width: 55%;
-  justify-content: space-between;
-  background-color: rgba(255, 255, 255, 0.85);
-  padding: 5px 15px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-  z-index: 40;
-}
-
-.evolution-controls button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0 5px; /* Sesuaikan padding untuk area klik yang lebih besar */
-  transition: transform 0.2s;
-}
-
-.evolution-controls button:hover {
-  transform: scale(1.1);
-}
-
-.evolution-controls .evolution-icon {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #333;
-  transition: color 0.2s;
-}
-
-.evolution-controls button:hover .evolution-icon {
-  color: #007bff;
-}
-
-.evolution-controls span {
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-
-.pokemon-measurements {
-  display: flex;
-  justify-content: space-between;
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  z-index: 10;
-}
-
-.measurement-tag {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: #ff6347;
   color: white;
-  padding: 5px 10px;
-  border-radius: 15px;
-  font-size: 0.8rem;
+  padding: 8px 20px;
+  border: 2px solid black;
+  border-radius: 5px;
+  cursor: pointer;
   font-weight: bold;
+  box-shadow: 2px 2px black;
+  transition: all 0.2s;
+  z-index: 40;
+  width: 80%;
+  max-width: 200px;
+}
+
+.details-close-button:hover {
+  background-color: #e5533d;
 }

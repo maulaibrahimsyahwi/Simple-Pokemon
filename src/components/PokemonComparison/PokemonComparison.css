@@ -1,0 +1,119 @@
+.comparison-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.comparison-container.empty-state {
+  margin-top: 50px;
+}
+
+.pokemon-comparison-cards {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+/* ... (kode di atas sama) */
+
+.pokemon-card-comparison {
+  width: 400px;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 5px 5px black;
+  border: 2px solid black;
+  display: flex; /* Gunakan flexbox */
+  flex-direction: column;
+  justify-content: space-between; /* Untuk mendorong konten ke bawah */
+}
+
+.pokemon-card-comparison h1 {
+  text-transform: capitalize;
+  margin: 10px 0;
+}
+
+.pokemon-card-comparison img {
+  width: 200px;
+  height: auto;
+  margin: 0 auto 10px auto; /* Pusatkan gambar */
+}
+
+.pokemon-card-comparison h3 {
+  /* Gaya untuk judul "Base Stats" */
+  font-size: 1.3rem;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+/* --- Gunakan stats-grid yang baru --- */
+.stats-grid {
+  /* Ganti .stats-container menjadi .stats-grid */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 kolom */
+  gap: 10px; /* Jarak antar item */
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #f8f8f8; /* Background ringan untuk setiap stat */
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-name {
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: bold;
+  min-width: 50px;
+  text-align: center;
+}
+.stat-name.hp {
+  background-color: #f54242;
+}
+.stat-name.atk {
+  background-color: #f58a42;
+}
+.stat-name.def {
+  background-color: #72f542;
+}
+.stat-name.sp-atk {
+  background-color: #42b6f5;
+}
+.stat-name.sp-def {
+  background-color: #4269f5;
+}
+.stat-name.speed {
+  background-color: #f5e142;
+}
+
+.stat-value {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #444;
+}
+
+/* ... (kode di bawah sama) */
+@media (max-width: 768px) {
+  .pokemon-comparison-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+  .vs-text {
+    margin: 20px 0;
+  }
+}
