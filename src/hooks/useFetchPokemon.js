@@ -65,6 +65,7 @@ const useFetchPokemon = (allPokemonNames) => {
   const isFetchingRef = useRef(false);
   const currentFilterType = useRef("all");
   const processedChainIds = useRef(new Set());
+  const typePokemonNames = useRef([]); // State baru untuk menyimpan nama Pokémon berdasarkan tipe
 
   const fetchPokemonDetails = useCallback(async (pokemonList) => {
     const evolutionChains = await Promise.all(
@@ -161,65 +162,14 @@ const useFetchPokemon = (allPokemonNames) => {
     return pokemonDetails.filter((chain) => chain.length > 0);
   }, []);
 
-  const fetchPokemonsByType = useCallback(
-    async (type) => {
-      setLoading(true);
-      setPokemons([]);
+  // Fungsi baru untuk mengambil dan memuat Pokémon secara paginasi berdasarkan nama
+  const fetchPaginatedPokemons = useCallback(
+    async (namesToFetch, currentPage, reset) => {
       isFetchingRef.current = true;
-      setError(null);
-      processedChainIds.current.clear();
-
-      const cacheKey = `pokemons_type_${type}`;
-      const cachedData = getCache(cacheKey);
-      if (cachedData) {
-        setPokemons(cachedData);
-        setLoading(false);
-        isFetchingRef.current = false;
-        hasMore.current = false;
-        return;
-      }
-
-      try {
-        const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
-        if (!response.ok)
-          throw new Error("Failed to fetch data for this type.");
-        const data = await response.json();
-        const pokemonsFromType = data.pokemon.map((p) => ({
-          ...p.pokemon,
-          url: p.pokemon.url.replace("/pokemon/", "/pokemon-species/"),
-        }));
-        const newPokemons = await fetchPokemonDetails(pokemonsFromType);
-        const sortedPokemons = newPokemons.sort((a, b) =>
-          a[0].name.localeCompare(b[0].name)
-        );
-        setPokemons(sortedPokemons);
-        setCache(cacheKey, sortedPokemons);
-        hasMore.current = false;
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-        isFetchingRef.current = false;
-      }
-    },
-    [fetchPokemonDetails]
-  );
-
-  const fetchAlphabetizedPokemons = useCallback(
-    async (currentPage, reset = false) => {
-      if (isFetchingRef.current || (!hasMore.current && !reset)) return;
-
-      isFetchingRef.current = true;
-      setError(null);
-
       if (reset) setLoading(true);
       else setMoreLoading(true);
 
       try {
-        const start = currentPage * limit;
-        const end = start + limit;
-        const namesToFetch = allPokemonNames.slice(start, end);
-
         if (namesToFetch.length === 0) {
           hasMore.current = false;
         } else {
@@ -242,7 +192,59 @@ const useFetchPokemon = (allPokemonNames) => {
         isFetchingRef.current = false;
       }
     },
-    [allPokemonNames, fetchPokemonDetails]
+    [fetchPokemonDetails]
+  );
+
+  const loadPokemons = useCallback(
+    async (type = "all") => {
+      processedChainIds.current.clear();
+      currentFilterType.current = type;
+      setPage(0);
+      setPokemons([]);
+
+      if (type === "all") {
+        hasMore.current = true;
+        if (allPokemonNames.length > 0) {
+          const namesToFetch = allPokemonNames.slice(0, limit);
+          fetchPaginatedPokemons(namesToFetch, 0, true);
+        }
+      } else {
+        setLoading(true);
+        isFetchingRef.current = true;
+        setError(null);
+        processedChainIds.current.clear();
+
+        const cacheKey = `pokemons_type_names_${type}`;
+        const cachedData = getCache(cacheKey);
+        let pokemonsFromType;
+
+        if (cachedData) {
+          pokemonsFromType = cachedData;
+        } else {
+          try {
+            const response = await fetch(
+              `https://pokeapi.co/api/v2/type/${type}`
+            );
+            if (!response.ok)
+              throw new Error("Failed to fetch data for this type.");
+            const data = await response.json();
+            pokemonsFromType = data.pokemon.map((p) => p.pokemon.name).sort();
+            setCache(cacheKey, pokemonsFromType);
+          } catch (err) {
+            setError(err.message);
+            setLoading(false);
+            isFetchingRef.current = false;
+            hasMore.current = false;
+            return;
+          }
+        }
+        typePokemonNames.current = pokemonsFromType;
+        const namesToFetch = typePokemonNames.current.slice(0, limit);
+        hasMore.current = typePokemonNames.current.length > limit;
+        fetchPaginatedPokemons(namesToFetch, 0, true);
+      }
+    },
+    [allPokemonNames, fetchPaginatedPokemons]
   );
 
   const searchPokemon = useCallback(
@@ -290,25 +292,26 @@ const useFetchPokemon = (allPokemonNames) => {
     [fetchPokemonDetails]
   );
 
-  const loadPokemons = useCallback(
-    (type = "all") => {
-      processedChainIds.current.clear();
-      currentFilterType.current = type;
-      setPage(0);
-      setPokemons([]);
-
-      if (type === "all") {
-        hasMore.current = true;
-        if (allPokemonNames.length > 0) {
-          fetchAlphabetizedPokemons(0, true);
-        }
-      } else {
-        hasMore.current = false;
-        fetchPokemonsByType(type);
+  const loadMore = useCallback(() => {
+    if (isFetchingRef.current) return;
+    if (currentFilterType.current === "all") {
+      if (hasMore.current) {
+        const start = page * limit;
+        const end = start + limit;
+        const namesToFetch = allPokemonNames.slice(start, end);
+        hasMore.current = namesToFetch.length > 0;
+        fetchPaginatedPokemons(namesToFetch, page, false);
       }
-    },
-    [allPokemonNames, fetchAlphabetizedPokemons, fetchPokemonsByType]
-  );
+    } else {
+      if (hasMore.current) {
+        const start = page * limit;
+        const end = start + limit;
+        const namesToFetch = typePokemonNames.current.slice(start, end);
+        hasMore.current = namesToFetch.length > 0;
+        fetchPaginatedPokemons(namesToFetch, page, false);
+      }
+    }
+  }, [page, allPokemonNames, fetchPaginatedPokemons]);
 
   const fetchWeaknesses = useCallback(async (types) => {
     try {
@@ -376,16 +379,6 @@ const useFetchPokemon = (allPokemonNames) => {
       loadPokemons("all");
     }
   }, [allPokemonNames, loadPokemons]);
-
-  const loadMore = useCallback(() => {
-    if (
-      currentFilterType.current === "all" &&
-      hasMore.current &&
-      !isFetchingRef.current
-    ) {
-      fetchAlphabetizedPokemons(page, false);
-    }
-  }, [page, fetchAlphabetizedPokemons]);
 
   return {
     pokemons,

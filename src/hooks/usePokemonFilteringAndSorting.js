@@ -32,11 +32,11 @@ const usePokemonFilteringAndSorting = (pokemons = []) => {
       .slice(0, 10);
   }, [allPokemonNames, searchQuery]);
 
-  // PERBAIKAN UTAMA: Mengembalikan pengurutan berdasarkan nama
+  // PERBAIKAN: Mengubah pengurutan dari nama ke ID
   const processedPokemons = useMemo(() => {
     return [...pokemons].sort((a, b) => {
       if (!a[0] || !b[0]) return 0;
-      return a[0].name.localeCompare(b[0].name);
+      return a[0].id - b[0].id; // Mengurutkan berdasarkan ID
     });
   }, [pokemons]);
 
