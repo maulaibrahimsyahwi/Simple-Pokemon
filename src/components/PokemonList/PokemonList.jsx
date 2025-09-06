@@ -146,46 +146,12 @@ function Pokemons({
       </form>
 
       <div className="controls-container">
-        <div className="filter-container">
-          <strong>{t("filterByType")}</strong>
-          <select
-            className="type-dropdown"
-            value={filterType}
-            onChange={(e) => handleFilterChange(e.target.value)}
-            style={{ "--type-color": colours[filterType] }}
-          >
-            <option value="all">{t("allType")}</option>
-            {Object.keys(colours).map((type) => (
-              <option key={type} value={type}>
-                {t(type.charAt(0).toUpperCase() + type.slice(1))}
-              </option>
-            ))}
-          </select>
-          <div className="type-buttons">
-            <button
-              className={filterType === "all" ? "active" : ""}
-              onClick={() => handleFilterChange("all")}
-            >
-              {t("allType")}
-            </button>
-            {Object.keys(colours).map((type) => (
-              <button
-                key={type}
-                className={filterType === type ? "active" : ""}
-                onClick={() => handleFilterChange(type)}
-                style={{ "--type-color": colours[type] }}
-              >
-                {t(type.charAt(0).toUpperCase() + type.slice(1))}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="settings-container">
-          {!isMobile && (
+        {isMobile ? (
+          <div className="mobile-controls-row">
             <div className="grid-size-container">
-              <strong>{t("columnSize")}</strong>
+              <strong>{t("Size")}</strong>
               <div className="grid-buttons">
-                {[4, 5, 6, 7].map((size) => (
+                {[2, 3].map((size) => (
                   <button
                     key={size}
                     className={gridSize === size ? "active" : ""}
@@ -196,15 +162,84 @@ function Pokemons({
                 ))}
               </div>
             </div>
-          )}
-        </div>
+            <div className="filter-container">
+              <strong>{t("filterByType")}</strong>
+              <select
+                className="type-dropdown"
+                value={filterType}
+                onChange={(e) => handleFilterChange(e.target.value)}
+                style={{ "--type-color": colours[filterType] }}
+              >
+                <option value="all">{t("allType")}</option>
+                {Object.keys(colours).map((type) => (
+                  <option key={type} value={type}>
+                    {t(type.charAt(0).toUpperCase() + type.slice(1))}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="filter-container">
+              <strong>{t("filterByType")}</strong>
+              <select
+                className="type-dropdown"
+                value={filterType}
+                onChange={(e) => handleFilterChange(e.target.value)}
+                style={{ "--type-color": colours[filterType] }}
+              >
+                <option value="all">{t("allType")}</option>
+                {Object.keys(colours).map((type) => (
+                  <option key={type} value={type}>
+                    {t(type.charAt(0).toUpperCase() + type.slice(1))}
+                  </option>
+                ))}
+              </select>
+              <div className="type-buttons">
+                <button
+                  className={filterType === "all" ? "active" : ""}
+                  onClick={() => handleFilterChange("all")}
+                >
+                  {t("allType")}
+                </button>
+                {Object.keys(colours).map((type) => (
+                  <button
+                    key={type}
+                    className={filterType === type ? "active" : ""}
+                    onClick={() => handleFilterChange(type)}
+                    style={{ "--type-color": colours[type] }}
+                  >
+                    {t(type.charAt(0).toUpperCase() + type.slice(1))}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="settings-container">
+              <div className="grid-size-container">
+                <strong>{t("Size")}</strong>
+                <div className="grid-buttons">
+                  {[4, 5, 6, 7].map((size) => (
+                    <button
+                      key={size}
+                      className={gridSize === size ? "active" : ""}
+                      onClick={() => setGridSize(size)}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="list-pokemon-wrapper" ref={listWrapperRef}>
         <div
           className="list-pokemon"
           ref={listRef}
-          style={{ "--grid-size": isMobile ? 3 : gridSize }}
+          style={{ "--grid-size": gridSize }}
         >
           {error && !loading && <ErrorDisplay message={error} />}
           {!error && !loading && processedPokemons.length === 0 && (

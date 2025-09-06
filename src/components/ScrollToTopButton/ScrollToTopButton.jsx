@@ -4,6 +4,7 @@ import { FaCaretUp } from "react-icons/fa";
 
 function ScrollToTopButton() {
   const [isVisible, setIsVisible] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false); // State untuk tooltip
 
   // Fungsi untuk menampilkan tombol saat halaman di-scroll ke bawah
   const toggleVisibility = () => {
@@ -17,14 +18,11 @@ function ScrollToTopButton() {
   // Menambahkan event listener saat komponen dimuat
   useEffect(() => {
     window.addEventListener("scroll", toggleVisibility);
-
-    // Membersihkan event listener saat komponen dibongkar
     return () => {
       window.removeEventListener("scroll", toggleVisibility);
     };
   }, []);
 
-  // Fungsi untuk scroll ke atas secara perlahan
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -33,14 +31,17 @@ function ScrollToTopButton() {
   };
 
   return (
-    <div className="scroll-to-top">
-      {isVisible && (
-        <FaCaretUp
-          onClick={scrollToTop}
-          className="scroll-button"
-          title="Back To Top"
-        ></FaCaretUp>
-      )}
+    <div className={`scroll-to-top ${isVisible ? "visible" : ""}`}>
+      <div
+        className="scroll-button-wrapper"
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+      >
+        <FaCaretUp onClick={scrollToTop} className="scroll-button" />
+        {showTooltip && (
+          <span className="scroll-button-tooltip">Back To Top</span>
+        )}
+      </div>
     </div>
   );
 }

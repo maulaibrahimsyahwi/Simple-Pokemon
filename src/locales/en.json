@@ -7,7 +7,7 @@
     "allType": "All",
     "sortByName": "Sort by Name",
     "sortById": "Sort by ID",
-    "columnSize": "Column Size:",
+    "Size": "Size:",
     "notFoundTitle": "Pokémon Not Found",
     "notFoundMessage": "Try using a different keyword or filter.",
     "height": "Height",

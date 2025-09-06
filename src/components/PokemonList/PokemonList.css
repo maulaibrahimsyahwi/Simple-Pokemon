@@ -296,4 +296,29 @@
   .list-pokemon-wrapper {
     display: block;
   }
+
+  .controls-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .mobile-controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .mobile-controls-row .grid-size-container {
+    flex: 1;
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .mobile-controls-row .filter-container {
+    flex: 1;
+    text-align: right;
+    align-items: flex-end;
+  }
 }

@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Pokemons from "./components/PokemonList/PokemonList";
 import Login from "./components/Login/Login";
 import ScrollToTopButton from "./components/ScrollToTopButton/ScrollToTopButton";
 import PokemonComparison from "./components/PokemonComparison/PokemonComparison";
 import { useTranslation } from "react-i18next";
 import usePokemonData from "./hooks/usePokemonData";
-import { IoLogOutOutline } from "react-icons/io5"; // Import ikon Logout
-import { FaCodeCompare } from "react-icons/fa6"; // Import ikon Compare
+import { IoLogOutOutline } from "react-icons/io5";
+import { FaCodeCompare } from "react-icons/fa6";
+import { FaLanguage } from "react-icons/fa";
 import "./app.css";
 
 function App() {
@@ -18,6 +19,8 @@ function App() {
   const [selectedPokemons, setSelectedPokemons] = useState([]);
   const [view, setView] = useState("list");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
+  const languageRef = useRef(null);
 
   const pokemonData = usePokemonData();
 
@@ -37,6 +40,18 @@ function App() {
     }
   }, [isLogin]);
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (languageRef.current && !languageRef.current.contains(event.target)) {
+        setShowLanguageDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [languageRef]);
+
   const handleLogout = () => {
     setIsLogin(false);
   };
@@ -52,6 +67,7 @@ function App() {
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
+    setShowLanguageDropdown(false);
   };
 
   const handleAddForComparison = (pokemon) => {
@@ -82,6 +98,10 @@ function App() {
     pokemonData.loadPokemons();
   };
 
+  const toggleLanguageDropdown = () => {
+    setShowLanguageDropdown((prev) => !prev);
+  };
+
   return (
     <div
       className={`app-container ${view === "compare" ? "comparison-page" : ""}`}
@@ -89,7 +109,6 @@ function App() {
       {isLogin ? (
         <>
           <div className="header">
-            {/* Bagian Kiri: Tombol Bandingkan */}
             <div className="header-left-controls">
               {view === "list" && (
                 <button
@@ -121,27 +140,52 @@ function App() {
               )}
             </div>
 
-            {/* Bagian Tengah: Judul */}
             <div className="header-center-controls">
               <h1>{t("appTitle")}</h1>
             </div>
 
-            {/* Bagian Kanan: Bahasa & Tombol Logout */}
             <div className="header-controls">
-              <div className="language-switcher">
-                <button
-                  onClick={() => changeLanguage("en")}
-                  className={i18n.language === "en" ? "active" : ""}
-                >
-                  EN
-                </button>
-                <button
-                  onClick={() => changeLanguage("id")}
-                  className={i18n.language === "id" ? "active" : ""}
-                >
-                  ID
-                </button>
-              </div>
+              {isMobile ? (
+                <div className="language-dropdown-container" ref={languageRef}>
+                  <button
+                    className="language-toggle-button"
+                    onClick={toggleLanguageDropdown}
+                  >
+                    <FaLanguage />
+                  </button>
+                  {showLanguageDropdown && (
+                    <div className="language-dropdown">
+                      <button
+                        onClick={() => changeLanguage("en")}
+                        className={i18n.language === "en" ? "active" : ""}
+                      >
+                        EN
+                      </button>
+                      <button
+                        onClick={() => changeLanguage("id")}
+                        className={i18n.language === "id" ? "active" : ""}
+                      >
+                        ID
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="language-switcher">
+                  <button
+                    onClick={() => changeLanguage("en")}
+                    className={i18n.language === "en" ? "active" : ""}
+                  >
+                    EN
+                  </button>
+                  <button
+                    onClick={() => changeLanguage("id")}
+                    className={i18n.language === "id" ? "active" : ""}
+                  >
+                    ID
+                  </button>
+                </div>
+              )}
               <button onClick={handleLogout} className="logout-button">
                 {isMobile ? <IoLogOutOutline /> : t("logoutButton")}
               </button>

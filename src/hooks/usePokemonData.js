@@ -4,7 +4,7 @@ import useFetchPokemon from "./useFetchPokemon";
 import usePokemonFilteringAndSorting from "./usePokemonFilteringAndSorting";
 
 const usePokemonData = () => {
-  const [gridSize, setGridSize] = useState(4);
+  const [gridSize, setGridSize] = useState(window.innerWidth <= 640 ? 3 : 4);
 
   const {
     allPokemonNamesSorted,

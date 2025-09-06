@@ -2,12 +2,12 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
-  padding-top: 100px; /* Tambahkan padding-top untuk mengkompensasi header tetap */
+  padding-top: 100px;
   text-align: center;
 }
 
 .app-container.comparison-page {
-  padding-top: 20px; /* Atur ulang padding-top untuk halaman perbandingan */
+  padding-top: 20px;
 }
 
 .app-container h1 {
@@ -20,14 +20,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: fixed; /* Ubah dari 'relative' ke 'fixed' */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   padding: 20px;
-  background-color: white; /* Tambahkan warna latar belakang agar konten di bawah tidak terlihat */
-  z-index: 100; /* Pastikan header selalu di atas */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Opsional: tambahkan bayangan untuk efek */
+  background-color: white;
+  z-index: 100;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .header.static-header {
@@ -42,10 +42,15 @@
   color: #333;
   text-align: center;
 }
-/* ini */
+
 .header-controls {
   display: flex;
   align-items: center;
+  gap: 10px;
+}
+
+.language-switcher {
+  display: flex;
   gap: 10px;
 }
 
@@ -113,6 +118,69 @@
   cursor: not-allowed;
   box-shadow: none;
 }
+/* Style baru untuk pengalih bahasa mobile */
+.language-dropdown-container {
+  position: relative;
+}
+
+.language-toggle-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  background-color: #efefef;
+  border: 2px solid black;
+  box-shadow: 2px 2px black;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #4a90e2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.language-toggle-button:hover {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.language-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 10px;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 110;
+}
+
+.language-dropdown button {
+  background-color: white;
+  border: none;
+  border-bottom: 1px solid #eee;
+  padding: 10px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.language-dropdown button:last-child {
+  border-bottom: none;
+}
+
+.language-dropdown button:hover {
+  background-color: #f0f0f0;
+}
+
+.language-dropdown button.active {
+  background-color: #4a90e2;
+  color: white;
+}
 
 @media (max-width: 640px) {
   .app-container {
@@ -159,7 +227,7 @@
 
   .header-controls {
     order: 3;
-    flex-direction: row; /* Pastikan tombol tetap sejajar horizontal di mobile */
+    flex-direction: row;
   }
 
   .header h1 {
@@ -169,18 +237,14 @@
     text-align: center;
   }
 
-  /* Hapus aturan ini, karena language switcher kini ada di controls */
-  /* .language-switcher {
-    width: auto;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-  } */
+  .language-switcher {
+    display: none;
+  }
 
   .logout-button {
     width: 50px;
     height: 50px;
-    border-radius: 50%;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
