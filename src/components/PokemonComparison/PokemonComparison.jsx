@@ -107,8 +107,11 @@ function PokemonComparison({ selectedPokemons }) {
 
   return (
     <div className="comparison-container">
-      <div className="comparison-content-wrapper">
-        <div className="pokemon-comparison-cards">
+      <div className="comparison-header">
+        <h1>{t("comparisonTitle")}</h1>
+      </div>
+      <div className="comparison-wrapper">
+        <div className="comparison-main-content">
           <div
             className={`pokemon-card-comparison ${
               winner && winner.id === pokemon1.id ? "winner" : ""
@@ -215,7 +218,7 @@ function PokemonComparison({ selectedPokemons }) {
             </div>
           </div>
 
-          <div className="vs-text">VS</div>
+          <div className="vs-text-desktop">VS</div>
 
           <div
             className={`pokemon-card-comparison ${
@@ -323,7 +326,6 @@ function PokemonComparison({ selectedPokemons }) {
             </div>
           </div>
         </div>
-
         <div className="winner-summary">
           <h2>{t("winnerTitle")}</h2>
           {winner ? (
