@@ -7,7 +7,7 @@
   border: 2px solid black;
   box-shadow: 5px 5px black;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -73,7 +73,7 @@
   color: #555;
 }
 
-.evolution-controls.top-controls span {
+.evolution-controls.top-controls .evolution-number {
   font-weight: bold;
   font-size: 0.95rem;
   color: #333;
@@ -178,26 +178,25 @@
   background-color: #2a588d;
 }
 
-/* --- Perbaikan utama ada di sini --- */
 .details-overlay {
   position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
-  max-height: 0; /* Awalnya 0, akan meluas ke atas */
+  max-height: 0;
   background-color: rgba(255, 255, 255, 0.98);
   color: #333;
-  transition: max-height 0.4s ease-out; /* Transisi untuk 'max-height' */
+  transition: max-height 0.4s ease-out;
   box-sizing: border-box;
   z-index: 30;
-  overflow-y: hidden; /* Sembunyikan konten yang meluber saat transisi */
+  overflow-y: hidden;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 }
 
 .details-overlay.show {
-  max-height: 80%; /* Atur tinggi maksimal yang diinginkan, misal 80% dari kartu */
-  overflow-y: hidden; /* Ubah dari 'auto' ke 'hidden' untuk menghilangkan scrollbar */
+  max-height: 80%;
+  overflow-y: hidden;
 }
 
 .details-content {
@@ -205,12 +204,12 @@
   font-size: 0.95rem;
   line-height: 1.4;
   padding: 15px;
-  padding-bottom: 90px; /* Nilai diperbarui untuk mencegah tumpang tindih dengan tombol */
+  padding-bottom: 90px;
 }
 
 .details-content h3 {
   font-size: 1.2rem;
-  margin-top: 0; /* Hapus margin atas di dalam overlay */
+  margin-top: 0;
   margin-bottom: 8px;
   color: #333;
   border-bottom: 1px solid #eee;
@@ -298,4 +297,39 @@
 
 .details-close-button:hover {
   background-color: #e5533d;
+}
+
+.evolution-tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+  z-index: 1000;
+}
+
+.evolution-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  background-color: #333;
+  color: white;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: normal;
+  text-align: center;
+  z-index: 1001;
+  pointer-events: none;
+}
+
+.evolution-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
 }

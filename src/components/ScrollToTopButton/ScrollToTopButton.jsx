@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./ScrollToTopButton.css";
 import { FaCaretUp } from "react-icons/fa";
 
 function ScrollToTopButton() {
   const [isVisible, setIsVisible] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false); // State untuk tooltip
+  const [showTooltip, setShowTooltip] = useState(false);
+  const tooltipTimeoutRef = useRef(null); // Gunakan useRef untuk menyimpan ID timeout
 
   // Fungsi untuk menampilkan tombol saat halaman di-scroll ke bawah
   const toggleVisibility = () => {
@@ -30,12 +31,25 @@ function ScrollToTopButton() {
     });
   };
 
+  // Fungsi untuk menampilkan tooltip dengan delay
+  const handleMouseEnter = () => {
+    tooltipTimeoutRef.current = setTimeout(() => {
+      setShowTooltip(true);
+    }, 500); // Delay 500 ms
+  };
+
+  // Fungsi untuk menyembunyikan tooltip segera dan membatalkan delay
+  const handleMouseLeave = () => {
+    clearTimeout(tooltipTimeoutRef.current);
+    setShowTooltip(false);
+  };
+
   return (
     <div className={`scroll-to-top ${isVisible ? "visible" : ""}`}>
       <div
         className="scroll-button-wrapper"
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
+        onMouseEnter={handleMouseEnter} // Terapkan fungsi baru
+        onMouseLeave={handleMouseLeave} // Terapkan fungsi baru
       >
         <FaCaretUp onClick={scrollToTop} className="scroll-button" />
         {showTooltip && (

@@ -38,6 +38,8 @@
     "winnerMessage": "is the winner based on total stats!",
     "tieMessage": "It's a tie! Both Pokemons have the same total stats.",
     "totalStatsMessage": "Total Stats: {{total1}} vs {{total2}}",
-    "winnerBreakdownTitle": "Stat Breakdown"
+    "winnerBreakdownTitle": "Stat Breakdown",
+    "tooltipPrev": "Previous Evolution",
+    "tooltipNext": "Next Evolution"
   }
 }

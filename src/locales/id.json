@@ -56,6 +56,8 @@
     "winnerMessage": "adalah pemenangnya berdasarkan total statistik!",
     "tieMessage": "Hasil imbang! Kedua Pokémon memiliki total statistik yang sama.",
     "totalStatsMessage": "Total Statistik: {{total1}} vs {{total2}}",
-    "winnerBreakdownTitle": "Rincian Statistik"
+    "winnerBreakdownTitle": "Rincian Statistik",
+    "tooltipPrev": "Evolusi Sebelumnya",
+    "tooltipNext": "Evolusi Selanjutnya"
   }
 }
