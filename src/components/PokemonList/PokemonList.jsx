@@ -253,12 +253,13 @@ function Pokemons({
               <p>{t("notFoundMessage")}</p>
             </div>
           )}
-          {processedPokemons.map((evolutionLine, index) => {
+          {processedPokemons.map((item, index) => {
             if (processedPokemons.length === index + 1) {
               return (
                 <div ref={lastPokemonElementRef} key={index}>
                   <PokemonItem
-                    evolutionLine={evolutionLine}
+                    evolutionLine={item.evolutionLine}
+                    initialIndex={item.initialIndex}
                     onAddForComparison={onAddForComparison}
                     onRemoveFromComparison={onRemoveFromComparison}
                     selectedPokemons={selectedPokemons}
@@ -269,7 +270,8 @@ function Pokemons({
               return (
                 <PokemonItem
                   key={index}
-                  evolutionLine={evolutionLine}
+                  evolutionLine={item.evolutionLine}
+                  initialIndex={item.initialIndex}
                   onAddForComparison={onAddForComparison}
                   onRemoveFromComparison={onRemoveFromComparison}
                   selectedPokemons={selectedPokemons}
@@ -277,11 +279,7 @@ function Pokemons({
               );
             }
           })}
-
-          {(loading || moreLoading) &&
-            Array.from({ length: loading ? gridSize * 2 : gridSize }).map(
-              (_, index) => <PokemonCardSkeleton key={`skeleton-${index}`} />
-            )}
+          {/* ... kode lainnya */}
         </div>
       </div>
     </>

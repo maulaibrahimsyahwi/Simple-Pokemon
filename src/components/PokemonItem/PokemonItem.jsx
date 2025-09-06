@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./PokemonItem.css";
 import { colours } from "../../data/colours";
 import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
@@ -7,12 +7,13 @@ import { useTranslation } from "react-i18next";
 
 function PokemonItem({
   evolutionLine,
+  initialIndex,
   onAddForComparison,
   onRemoveFromComparison,
   selectedPokemons,
 }) {
   const { t } = useTranslation();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [showDetails, setShowDetails] = useState(false);
   const [showPrevTooltip, setShowPrevTooltip] = useState(false);
   const [showNextTooltip, setShowNextTooltip] = useState(false);
@@ -27,6 +28,10 @@ function PokemonItem({
   const nextTooltipTimeoutRef = useRef(null);
   const prevFormTooltipTimeoutRef = useRef(null);
   const nextFormTooltipTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    setCurrentIndex(initialIndex);
+  }, [initialIndex, evolutionLine]);
 
   const handleNext = (event) => {
     event.stopPropagation();
@@ -46,6 +51,7 @@ function PokemonItem({
 
   const handleNextForm = (event) => {
     event.stopPropagation();
+    const pokemon = evolutionLine[currentIndex];
     if (currentFormIndex < pokemon.varieties.length - 1) {
       setCurrentFormIndex((prevIndex) => prevIndex + 1);
     }
@@ -72,9 +78,7 @@ function PokemonItem({
   const mainType = displayedPokemon.types[0].toLowerCase();
   const cardBackgroundColor = colours[mainType];
   const isSelected = selectedPokemons.some((p) => p.id === displayedPokemon.id);
-  const isLastEvolution = currentIndex === evolutionLine.length - 1;
-  const hasMultipleForms =
-    isLastEvolution && pokemon.varieties && pokemon.varieties.length > 1;
+  const hasMultipleForms = pokemon.varieties && pokemon.varieties.length > 1;
 
   const handleAddClick = (event) => {
     event.stopPropagation();

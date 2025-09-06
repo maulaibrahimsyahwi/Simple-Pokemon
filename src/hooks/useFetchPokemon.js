@@ -65,7 +65,7 @@ const useFetchPokemon = (allPokemonNames) => {
   const isFetchingRef = useRef(false);
   const currentFilterType = useRef("all");
   const processedChainIds = useRef(new Set());
-  const typePokemonNames = useRef([]); // State baru untuk menyimpan nama Pokémon berdasarkan tipe
+  const typePokemonNames = useRef([]);
 
   const fetchPokemonDetails = useCallback(async (pokemonList) => {
     const evolutionChains = await Promise.all(
@@ -108,7 +108,7 @@ const useFetchPokemon = (allPokemonNames) => {
         }
 
         const pokemonDataArray = await Promise.all(
-          pokemonNames.map(async (pokemonName, index) => {
+          pokemonNames.map(async (pokemonName) => {
             const speciesUrl = `https://pokeapi.co/api/v2/pokemon-species/${pokemonName}/`;
             const speciesResponse = await fetch(speciesUrl);
             const speciesData = await speciesResponse.json();
@@ -121,23 +121,14 @@ const useFetchPokemon = (allPokemonNames) => {
               : "No description available.";
 
             const varieties = [];
-            const isLastEvolution = index === pokemonNames.length - 1;
 
-            // Ambil semua varian untuk evolusi terakhir
-            if (isLastEvolution && speciesData.varieties.length > 1) {
+            // Memperbaiki logika untuk mengambil SEMUA varian
+            if (speciesData.varieties.length > 0) {
               const varietiesPromises = speciesData.varieties.map((v) =>
                 fetchPokemonDetailsFromUrl(v.pokemon.url, description)
               );
               const fetchedVarieties = await Promise.all(varietiesPromises);
               varieties.push(...fetchedVarieties.filter(Boolean));
-            } else {
-              // Untuk evolusi non-terakhir, ambil bentuk default saja
-              const defaultVarietyUrl = `https://pokeapi.co/api/v2/pokemon/${pokemonName}/`;
-              const defaultVariety = await fetchPokemonDetailsFromUrl(
-                defaultVarietyUrl,
-                description
-              );
-              if (defaultVariety) varieties.push(defaultVariety);
             }
 
             return {
@@ -154,15 +145,15 @@ const useFetchPokemon = (allPokemonNames) => {
           })
         );
 
-        return pokemonDataArray
-          .filter((p) => p !== null)
-          .sort((a, b) => a.id - b.id);
+        return {
+          evolutionLine: pokemonDataArray.filter((p) => p !== null),
+          initialIndex: 0,
+        };
       })
     );
-    return pokemonDetails.filter((chain) => chain.length > 0);
+    return pokemonDetails.filter((chain) => chain.evolutionLine.length > 0);
   }, []);
 
-  // Fungsi baru untuk mengambil dan memuat Pokémon secara paginasi berdasarkan nama
   const fetchPaginatedPokemons = useCallback(
     async (namesToFetch, currentPage, reset) => {
       isFetchingRef.current = true;
@@ -275,12 +266,35 @@ const useFetchPokemon = (allPokemonNames) => {
         }
         const pokeData = await pokeResponse.json();
 
-        const speciesList = [
-          { name: pokeData.species.name, url: pokeData.species.url },
-        ];
-        const foundPokemon = await fetchPokemonDetails(speciesList);
-        setPokemons(foundPokemon);
-        setCache(cacheKey, foundPokemon);
+        const speciesUrl = pokeData.species.url;
+        const speciesResponse = await fetch(speciesUrl);
+        const speciesData = await speciesResponse.json();
+        const evolutionChainUrl = speciesData.evolution_chain.url;
+        const evolutionResponse = await fetch(evolutionChainUrl);
+        const evolutionChainData = await evolutionResponse.json();
+
+        const pokemonNames = [];
+        const traverseEvolution = (chain) => {
+          pokemonNames.push(chain.species.name);
+          if (chain.evolves_to && chain.evolves_to.length > 0) {
+            traverseEvolution(chain.evolves_to[0]);
+          }
+        };
+
+        traverseEvolution(evolutionChainData.chain);
+        const speciesList = pokemonNames.map((p) => ({
+          name: p,
+          url: `https://pokeapi.co/api/v2/pokemon-species/${p}/`,
+        }));
+
+        const evolutionLine = (await fetchPokemonDetails(speciesList))[0]
+          .evolutionLine;
+        const initialIndex = evolutionLine.findIndex(
+          (p) => p.name.toLowerCase() === name.toLowerCase()
+        );
+
+        setPokemons([{ evolutionLine, initialIndex }]);
+        setCache(cacheKey, [{ evolutionLine, initialIndex }]);
         hasMore.current = false;
       } catch (err) {
         setError(err.message);
