@@ -1,4 +1,3 @@
-// Tidak ada perubahan dari kode perbaikan sebelumnya
 import { useState, useEffect } from "react";
 import Pokemons from "./components/PokemonList/PokemonList";
 import Login from "./components/Login/Login";
@@ -6,6 +5,8 @@ import ScrollToTopButton from "./components/ScrollToTopButton/ScrollToTopButton"
 import PokemonComparison from "./components/PokemonComparison/PokemonComparison";
 import { useTranslation } from "react-i18next";
 import usePokemonData from "./hooks/usePokemonData";
+import { IoLogOutOutline } from "react-icons/io5"; // Import ikon Logout
+import { FaCodeCompare } from "react-icons/fa6"; // Import ikon Compare
 import "./app.css";
 
 function App() {
@@ -16,8 +17,17 @@ function App() {
   const [isInitialLoad, setIsInitialLoad] = useState(false);
   const [selectedPokemons, setSelectedPokemons] = useState([]);
   const [view, setView] = useState("list");
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
 
   const pokemonData = usePokemonData();
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 640);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (isLogin) {
@@ -69,7 +79,6 @@ function App() {
   const handleClearComparison = () => {
     setSelectedPokemons([]);
     setView("list");
-    // Panggilan ini sekarang akan bekerja dengan benar
     pokemonData.loadPokemons();
   };
 
@@ -79,9 +88,8 @@ function App() {
     >
       {isLogin ? (
         <>
-          <div
-            className={`header ${view === "compare" ? "static-header" : ""}`}
-          >
+          <div className="header">
+            {/* Bagian Kiri: Tombol Bandingkan */}
             <div className="header-left-controls">
               {view === "list" && (
                 <button
@@ -89,7 +97,18 @@ function App() {
                   onClick={handleCompareClick}
                   disabled={selectedPokemons.length !== 2}
                 >
-                  {t("compareButton")} ({selectedPokemons.length}/2)
+                  {isMobile ? (
+                    <>
+                      <FaCodeCompare />
+                      <span className="compare-count-mobile">
+                        ({selectedPokemons.length}/2)
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      {t("compareButton")} ({selectedPokemons.length}/2)
+                    </>
+                  )}
                 </button>
               )}
               {view === "compare" && (
@@ -101,7 +120,13 @@ function App() {
                 </button>
               )}
             </div>
-            <h1>{t("appTitle")}</h1>
+
+            {/* Bagian Tengah: Judul */}
+            <div className="header-center-controls">
+              <h1>{t("appTitle")}</h1>
+            </div>
+
+            {/* Bagian Kanan: Bahasa & Tombol Logout */}
             <div className="header-controls">
               <div className="language-switcher">
                 <button
@@ -118,7 +143,7 @@ function App() {
                 </button>
               </div>
               <button onClick={handleLogout} className="logout-button">
-                {t("logoutButton")}
+                {isMobile ? <IoLogOutOutline /> : t("logoutButton")}
               </button>
             </div>
           </div>

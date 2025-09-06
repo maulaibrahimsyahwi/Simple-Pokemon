@@ -42,7 +42,7 @@
   color: #333;
   text-align: center;
 }
-
+/* ini */
 .header-controls {
   display: flex;
   align-items: center;
@@ -112,4 +112,115 @@
   color: #666;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+@media (max-width: 640px) {
+  .app-container {
+    padding-top: 80px;
+  }
+
+  .app-container.comparison-page {
+    padding-top: 80px;
+  }
+
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .header-left-controls,
+  .header-controls {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .header-left-controls {
+    order: 1;
+  }
+
+  .header-center-controls {
+    order: 2;
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .header-controls {
+    order: 3;
+    flex-direction: row; /* Pastikan tombol tetap sejajar horizontal di mobile */
+  }
+
+  .header h1 {
+    font-size: 1.8rem;
+    margin: 0;
+    width: auto;
+    text-align: center;
+  }
+
+  /* Hapus aturan ini, karena language switcher kini ada di controls */
+  /* .language-switcher {
+    width: auto;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  } */
+
+  .logout-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .compare-button {
+    width: auto;
+    height: auto;
+    border-radius: 8px;
+    background-color: #4a90e2;
+    color: white;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 2px 2px black;
+  }
+
+  .compare-button svg {
+    font-size: 1.5rem;
+  }
+
+  .logout-button svg {
+    font-size: 1.5rem;
+  }
+
+  .compare-count-mobile {
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+
+  .compare-button:hover:not(:disabled) {
+    background-color: #3d7dca;
+  }
+
+  .compare-button:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
 }
