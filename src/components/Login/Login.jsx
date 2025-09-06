@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next"; // Impor useTranslation
 import "./Login.css";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Login({ setIsLogin }) {
   const { t } = useTranslation(); // Gunakan hook useTranslation
@@ -65,7 +66,7 @@ function Login({ setIsLogin }) {
             onClick={togglePasswordVisibility}
             className="password-toggle-icon"
           >
-            {showPassword ? "🙈" : "👁️"}
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
           </span>
         </div>
 

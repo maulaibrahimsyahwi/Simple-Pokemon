@@ -19,11 +19,13 @@
   color: #555;
   text-align: center;
   flex-grow: 1; /* Agar nama stat berada di tengah */
+  text-transform: capitalize;
 }
 
 .stat-label-container .stat-value {
   font-weight: bold;
   font-size: 0.9em;
+  transition: opacity 0.5s ease-in-out;
 }
 
 .stat-label-container .pokemon1-value {
@@ -45,7 +47,7 @@
 
 .bar-segment {
   height: 100%;
-  transition: width 0.5s ease-in-out;
+  transition: width 1s ease-in-out;
 }
 
 .pokemon1-segment {
