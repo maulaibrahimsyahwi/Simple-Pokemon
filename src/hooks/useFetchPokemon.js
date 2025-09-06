@@ -269,6 +269,67 @@ const useFetchPokemon = (allPokemonNames) => {
     [allPokemonNames, fetchAlphabetizedPokemons, fetchPokemonsByType]
   );
 
+  const fetchWeaknesses = useCallback(async (types) => {
+    try {
+      const typeRelations = {
+        weaknesses: [],
+        resistances: [],
+        immunities: [],
+      };
+
+      const fetchedTypes = await Promise.all(
+        types.map(async (typeName) => {
+          const cacheKey = `type_relations_${typeName.toLowerCase()}`;
+          const cachedData = getCache(cacheKey);
+          if (cachedData) {
+            return cachedData;
+          } else {
+            const response = await fetch(
+              `https://pokeapi.co/api/v2/type/${typeName.toLowerCase()}`
+            );
+            if (!response.ok) return null;
+            const data = await response.json();
+            const relations = {
+              weaknesses: data.damage_relations.double_damage_from.map(
+                (t) => t.name
+              ),
+              resistances: data.damage_relations.half_damage_from.map(
+                (t) => t.name
+              ),
+              immunities: data.damage_relations.no_damage_from.map(
+                (t) => t.name
+              ),
+            };
+            setCache(cacheKey, relations);
+            return relations;
+          }
+        })
+      );
+
+      fetchedTypes.forEach((relations) => {
+        if (relations) {
+          typeRelations.weaknesses = [
+            ...new Set([...typeRelations.weaknesses, ...relations.weaknesses]),
+          ];
+          typeRelations.resistances = [
+            ...new Set([
+              ...typeRelations.resistances,
+              ...relations.resistances,
+            ]),
+          ];
+          typeRelations.immunities = [
+            ...new Set([...typeRelations.immunities, ...relations.immunities]),
+          ];
+        }
+      });
+
+      return typeRelations;
+    } catch (e) {
+      console.error("Failed to fetch type relations:", e);
+      return { weaknesses: [], resistances: [], immunities: [] };
+    }
+  }, []);
+
   useEffect(() => {
     if (allPokemonNames.length > 0) {
       loadPokemons("all");
@@ -294,6 +355,7 @@ const useFetchPokemon = (allPokemonNames) => {
     hasMore: hasMore.current,
     loadPokemons,
     searchPokemon,
+    fetchWeaknesses,
   };
 };
 

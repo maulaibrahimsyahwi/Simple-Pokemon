@@ -28,7 +28,7 @@
 }
 
 .pokemon-card-comparison {
-  width: 400px; /* Perkecil lebar kartu */
+  width: 400px;
   border-radius: 10px;
   padding: 10px; /* Perkecil padding di dalam kartu */
   text-align: center;
@@ -135,7 +135,7 @@
   margin-bottom: 10px;
 }
 
-/* Stat Bar Styles - Baru */
+/* Stat Bar Styles */
 .stat-progress-bar-container {
   display: flex;
   flex-direction: column;
@@ -184,4 +184,113 @@
 
 .pokemon2-segment {
   background-color: #c22e28; /* Warna merah Pokemon */
+}
+
+/* --- PERBAIKAN UNTUK SLIDER DUA HALAMAN --- */
+.slider-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 15px;
+  position: relative; /* Penting untuk posisi absolut tombol anak */
+  padding: 0 40px; /* Tambahkan padding agar tombol tidak menutupi konten */
+  box-sizing: border-box; /* Pastikan padding tidak menambah lebar */
+}
+
+.slider-content {
+  display: flex;
+  width: 100%;
+  flex-shrink: 0;
+  transition: transform 0.5s ease-in-out;
+}
+
+.slider-content.show-weaknesses {
+  transform: translateX(-120%);
+}
+
+.stats-section {
+  width: 300px;
+  flex-shrink: 0;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+.weakness-section {
+  width: 300px;
+  flex-shrink: 0;
+  padding: 0 20px;
+  margin-left: 50px;
+  box-sizing: border-box;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.slider-button {
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.6
+  ); /* Tambahkan background agar tombol lebih jelas */
+  border: none;
+  border-radius: 50%; /* Bentuk lingkaran */
+  cursor: pointer;
+  font-size: 2rem;
+  color: #3d7dca;
+  padding: 5px;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  height: 40px; /* Atur tinggi */
+  width: 40px; /* Atur lebar */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.slider-button:hover:not(:disabled) {
+  transform: translateY(-50%) scale(1.1);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.slider-button:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Penempatan tombol untuk slider internal */
+.slider-container .slider-button:nth-of-type(1) {
+  /* Tombol kiri */
+  left: 5px; /* Sesuaikan jarak dari kiri container */
+}
+
+.slider-container .slider-button:nth-of-type(2) {
+  /* Tombol kanan */
+  right: 5px; /* Sesuaikan jarak dari kanan container */
+}
+
+.weakness-badges {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.weakness-badge {
+  padding: 4px 8px;
+  border-radius: 5px;
+  border: 1px solid black;
+  color: white;
+  text-transform: capitalize;
+  font-size: 0.85rem;
 }

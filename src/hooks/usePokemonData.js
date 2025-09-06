@@ -24,6 +24,7 @@ const usePokemonData = () => {
     hasMore,
     loadPokemons,
     searchPokemon,
+    fetchWeaknesses, // <--- BARU: Ekspor fungsi fetchWeaknesses
   } = useFetchPokemon(allPokemonNamesSorted);
 
   // `processedPokemons` dari sini sekarang sudah dijamin terurut dengan benar
@@ -46,6 +47,7 @@ const usePokemonData = () => {
     hasMore,
     loadPokemons,
     searchPokemon,
+    fetchWeaknesses,
   };
 };
 

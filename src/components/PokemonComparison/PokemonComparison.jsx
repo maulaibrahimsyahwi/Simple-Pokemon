@@ -1,11 +1,47 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./PokemonComparison.css";
 import { useTranslation } from "react-i18next";
 import { colours } from "../../data/colours";
 import StatProgressBar from "../StatProgressBar/StatProgressBar";
+import { IoChevronForward, IoChevronBack } from "react-icons/io5";
+import usePokemonData from "../../hooks/usePokemonData";
 
 function PokemonComparison({ selectedPokemons }) {
   const { t } = useTranslation();
+  // Menggunakan dua state terpisah untuk setiap slider
+  const [showPokemon1Weaknesses, setShowPokemon1Weaknesses] = useState(false);
+  const [showPokemon2Weaknesses, setShowPokemon2Weaknesses] = useState(false);
+
+  const [pokemon1Relations, setPokemon1Relations] = useState({
+    weaknesses: [],
+    resistances: [],
+    immunities: [],
+  });
+  const [pokemon2Relations, setPokemon2Relations] = useState({
+    weaknesses: [],
+    resistances: [],
+    immunities: [],
+  });
+  const { fetchWeaknesses } = usePokemonData();
+
+  useEffect(() => {
+    if (selectedPokemons.length === 2) {
+      const fetchAllRelations = async () => {
+        const types1 = selectedPokemons[0].types;
+        const types2 = selectedPokemons[1].types;
+
+        const relations1 = await fetchWeaknesses(types1);
+        const relations2 = await fetchWeaknesses(types2);
+
+        setPokemon1Relations(relations1);
+        setPokemon2Relations(relations2);
+      };
+
+      if (typeof fetchWeaknesses === "function") {
+        fetchAllRelations();
+      }
+    }
+  }, [selectedPokemons, fetchWeaknesses]);
 
   if (selectedPokemons.length < 2) {
     return (
@@ -102,8 +138,81 @@ function PokemonComparison({ selectedPokemons }) {
                 <strong>{t("weight")}</strong>: {pokemon1.weight / 10} kg
               </p>
             </div>
-            <h3>Base Stats</h3>
-            {renderStats(pokemon1)}
+
+            <div className="slider-container">
+              <button
+                className="slider-button"
+                onClick={() => setShowPokemon1Weaknesses(false)}
+                disabled={!showPokemon1Weaknesses}
+              >
+                <IoChevronBack />
+              </button>
+              <div
+                className={`slider-content ${
+                  showPokemon1Weaknesses ? "show-weaknesses" : ""
+                }`}
+              >
+                <div className="stats-section">
+                  <h3 className="section-title">Base Stats</h3>
+                  {renderStats(pokemon1)}
+                </div>
+                <div className="weakness-section">
+                  <h3 className="section-title">Weaknesses</h3>
+                  <div className="weakness-badges">
+                    {pokemon1Relations.weaknesses.map((weakness, index) => (
+                      <span
+                        key={index}
+                        className="weakness-badge"
+                        style={{
+                          backgroundColor: colours[weakness.toLowerCase()],
+                        }}
+                      >
+                        {weakness}
+                      </span>
+                    ))}
+                  </div>
+                  <h3 className="section-title">Resistances</h3>
+                  <div className="weakness-badges">
+                    {pokemon1Relations.resistances.map((resistance, index) => (
+                      <span
+                        key={index}
+                        className="weakness-badge"
+                        style={{
+                          backgroundColor: colours[resistance.toLowerCase()],
+                        }}
+                      >
+                        {resistance}
+                      </span>
+                    ))}
+                  </div>
+                  {pokemon1Relations.immunities.length > 0 && (
+                    <>
+                      <h3 className="section-title">Immunities</h3>
+                      <div className="weakness-badges">
+                        {pokemon1Relations.immunities.map((immunity, index) => (
+                          <span
+                            key={index}
+                            className="weakness-badge"
+                            style={{
+                              backgroundColor: colours[immunity.toLowerCase()],
+                            }}
+                          >
+                            {immunity}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+              <button
+                className="slider-button"
+                onClick={() => setShowPokemon1Weaknesses(true)}
+                disabled={showPokemon1Weaknesses}
+              >
+                <IoChevronForward />
+              </button>
+            </div>
           </div>
 
           <div className="vs-text">VS</div>
@@ -137,8 +246,81 @@ function PokemonComparison({ selectedPokemons }) {
                 <strong>{t("weight")}</strong>: {pokemon2.weight / 10} kg
               </p>
             </div>
-            <h3>Base Stats</h3>
-            {renderStats(pokemon2)}
+
+            <div className="slider-container">
+              <button
+                className="slider-button"
+                onClick={() => setShowPokemon2Weaknesses(false)}
+                disabled={!showPokemon2Weaknesses}
+              >
+                <IoChevronBack />
+              </button>
+              <div
+                className={`slider-content ${
+                  showPokemon2Weaknesses ? "show-weaknesses" : ""
+                }`}
+              >
+                <div className="stats-section">
+                  <h3 className="section-title">Base Stats</h3>
+                  {renderStats(pokemon2)}
+                </div>
+                <div className="weakness-section">
+                  <h3 className="section-title">Weaknesses</h3>
+                  <div className="weakness-badges">
+                    {pokemon2Relations.weaknesses.map((weakness, index) => (
+                      <span
+                        key={index}
+                        className="weakness-badge"
+                        style={{
+                          backgroundColor: colours[weakness.toLowerCase()],
+                        }}
+                      >
+                        {weakness}
+                      </span>
+                    ))}
+                  </div>
+                  <h3 className="section-title">Resistances</h3>
+                  <div className="weakness-badges">
+                    {pokemon2Relations.resistances.map((resistance, index) => (
+                      <span
+                        key={index}
+                        className="weakness-badge"
+                        style={{
+                          backgroundColor: colours[resistance.toLowerCase()],
+                        }}
+                      >
+                        {resistance}
+                      </span>
+                    ))}
+                  </div>
+                  {pokemon2Relations.immunities.length > 0 && (
+                    <>
+                      <h3 className="section-title">Immunities</h3>
+                      <div className="weakness-badges">
+                        {pokemon2Relations.immunities.map((immunity, index) => (
+                          <span
+                            key={index}
+                            className="weakness-badge"
+                            style={{
+                              backgroundColor: colours[immunity.toLowerCase()],
+                            }}
+                          >
+                            {immunity}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+              <button
+                className="slider-button"
+                onClick={() => setShowPokemon2Weaknesses(true)}
+                disabled={showPokemon2Weaknesses}
+              >
+                <IoChevronForward />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -168,8 +350,6 @@ function PokemonComparison({ selectedPokemons }) {
                     statName={statName}
                     value1={pokemon1.stats[statName]}
                     value2={pokemon2.stats[statName]}
-                    color1={colours[pokemon1.types[0].toLowerCase()]}
-                    color2={colours[pokemon2.types[0].toLowerCase()]}
                   />
                 ))}
               </div>
