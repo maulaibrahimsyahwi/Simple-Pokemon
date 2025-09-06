@@ -13,7 +13,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 20px; /* Perkecil jarak antar elemen */
+  gap: 5rem; /* Perkecil jarak antar elemen */
   flex-wrap: nowrap;
   width: 100%;
 }
@@ -22,13 +22,13 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 20px; /* Perkecil jarak antar kartu */
+  gap: 20px;
   flex-wrap: nowrap;
-  width: auto; /* Biarkan lebarnya menyesuaikan konten */
+  width: auto;
 }
 
 .pokemon-card-comparison {
-  width: 300px; /* Perkecil lebar kartu */
+  width: 400px; /* Perkecil lebar kartu */
   border-radius: 10px;
   padding: 10px; /* Perkecil padding di dalam kartu */
   text-align: center;
@@ -82,14 +82,15 @@
 }
 
 .vs-text {
-  font-size: 1.5rem; /* Perkecil ukuran font "VS" */
+  font-size: 3rem;
   font-weight: bold;
   color: #333;
+  margin: auto;
 }
 
 .winner-summary {
-  width: 300px; /* Perkecil lebar ringkasan pemenang */
-  padding: 10px;
+  width: 500px;
+  height: 650px;
   border-radius: 10px;
   background-color: #f7d02c50;
   border: 2px solid #f7d02c;
@@ -102,7 +103,7 @@
 }
 
 .winner-summary h2 {
-  font-size: 1.5rem; /* Perkecil ukuran font judul pemenang */
+  font-size: 1.5rem;
   margin-bottom: 5px;
 }
 
@@ -122,11 +123,15 @@
 
 .total-stats-info {
   margin-top: 10px;
-  font-size: 0.9rem; /* Perkecil ukuran font info total stat */
+  font-size: 0.9rem;
+  padding: 10px 10px;
 }
-
+.stats-breakdown {
+  width: 315px;
+  height: 650px;
+}
 .stats-breakdown h3 {
-  font-size: 1.2rem; /* Perkecil ukuran font rincian stat */
+  font-size: 2rem; /* Perkecil ukuran font rincian stat */
   margin-bottom: 10px;
 }
 

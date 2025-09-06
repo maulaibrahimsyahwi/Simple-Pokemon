@@ -36,7 +36,7 @@ function Login({ setIsLogin }) {
     <div className="login-container">
       <form onSubmit={handleLogin} className="login-form">
         <img
-          src="../../../public/Pokemon.webp"
+          src="../../../public/assets/Pokemon.webp"
           alt="Pokeball Logo"
           className="login-logo"
         />
