@@ -24,10 +24,6 @@ const usePokemonFilteringAndSorting = (pokemons = []) => {
     fetchAllNames();
   }, []);
 
-  const allPokemonNamesSorted = useMemo(() => {
-    return [...allPokemonNames].sort();
-  }, [allPokemonNames]);
-
   const searchSuggestions = useMemo(() => {
     if (!searchQuery || allPokemonNames.length === 0) return [];
 
@@ -36,22 +32,18 @@ const usePokemonFilteringAndSorting = (pokemons = []) => {
       .slice(0, 10);
   }, [allPokemonNames, searchQuery]);
 
-  // **PERBAIKAN UTAMA ADA DI SINI**
-  // Logika ini akan mengambil daftar Pokemon (yang mungkin tidak berurutan)
-  // dan mengurutkannya kembali dengan benar berdasarkan nama evolusi pertama.
+  // PERBAIKAN UTAMA: Mengembalikan pengurutan berdasarkan nama
   const processedPokemons = useMemo(() => {
     return [...pokemons].sort((a, b) => {
       if (!a[0] || !b[0]) return 0;
-      // Selalu bandingkan nama dari Pokemon pertama di setiap rantai evolusi
       return a[0].name.localeCompare(b[0].name);
     });
-  }, [pokemons]); // Jalankan ulang setiap kali daftar 'pokemons' berubah
+  }, [pokemons]);
 
-  // Jika 'pokemons' diberikan, kembalikan data yang sudah diproses
   if (pokemons) {
     return {
       processedPokemons,
-      allPokemonNamesSorted,
+      allPokemonNamesSorted: allPokemonNames,
       searchQuery,
       setSearchQuery,
       filterType,
@@ -60,9 +52,8 @@ const usePokemonFilteringAndSorting = (pokemons = []) => {
     };
   }
 
-  // Jika tidak, kembalikan data untuk inisialisasi
   return {
-    allPokemonNamesSorted,
+    allPokemonNamesSorted: allPokemonNames,
     searchQuery,
     setSearchQuery,
     filterType,

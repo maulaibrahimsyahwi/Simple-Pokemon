@@ -333,3 +333,21 @@
   border-style: solid;
   border-color: #333 transparent transparent transparent;
 }
+
+/* Gaya untuk kontrol evolusi di bagian bawah */
+.evolution-controls.bottom-controls {
+  margin-top: -10px;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 5px 10px;
+  border-radius: 15px;
+  border: 1px solid #bbb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -17,14 +17,22 @@ function PokemonItem({
   const [showPrevTooltip, setShowPrevTooltip] = useState(false);
   const [showNextTooltip, setShowNextTooltip] = useState(false);
 
+  // State untuk mengontrol slider bentuk
+  const [currentFormIndex, setCurrentFormIndex] = useState(0);
+  const [showPrevFormTooltip, setShowPrevFormTooltip] = useState(false);
+  const [showNextFormTooltip, setShowNextFormTooltip] = useState(false);
+
   // Menggunakan useRef untuk menyimpan ID timeout
   const prevTooltipTimeoutRef = useRef(null);
   const nextTooltipTimeoutRef = useRef(null);
+  const prevFormTooltipTimeoutRef = useRef(null);
+  const nextFormTooltipTimeoutRef = useRef(null);
 
   const handleNext = (event) => {
     event.stopPropagation();
     if (currentIndex < evolutionLine.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
+      setCurrentFormIndex(0); // Reset bentuk ke 0 saat evolusi berubah
     }
   };
 
@@ -32,6 +40,21 @@ function PokemonItem({
     event.stopPropagation();
     if (currentIndex > 0) {
       setCurrentIndex((prevIndex) => prevIndex - 1);
+      setCurrentFormIndex(0); // Reset bentuk ke 0 saat evolusi berubah
+    }
+  };
+
+  const handleNextForm = (event) => {
+    event.stopPropagation();
+    if (currentFormIndex < pokemon.varieties.length - 1) {
+      setCurrentFormIndex((prevIndex) => prevIndex + 1);
+    }
+  };
+
+  const handlePrevForm = (event) => {
+    event.stopPropagation();
+    if (currentFormIndex > 0) {
+      setCurrentFormIndex((prevIndex) => prevIndex - 1);
     }
   };
 
@@ -40,23 +63,32 @@ function PokemonItem({
   };
 
   const pokemon = evolutionLine[currentIndex];
-  const mainType = pokemon.types[0].toLowerCase();
+  // Ambil data pokemon dari array varieties jika ada
+  const displayedPokemon =
+    pokemon.varieties && pokemon.varieties[currentFormIndex]
+      ? pokemon.varieties[currentFormIndex]
+      : pokemon;
+
+  const mainType = displayedPokemon.types[0].toLowerCase();
   const cardBackgroundColor = colours[mainType];
-  const isSelected = selectedPokemons.some((p) => p.id === pokemon.id);
+  const isSelected = selectedPokemons.some((p) => p.id === displayedPokemon.id);
+  const isLastEvolution = currentIndex === evolutionLine.length - 1;
+  const hasMultipleForms =
+    isLastEvolution && pokemon.varieties && pokemon.varieties.length > 1;
 
   const handleAddClick = (event) => {
     event.stopPropagation();
     if (isSelected) {
-      onRemoveFromComparison(pokemon);
+      onRemoveFromComparison(displayedPokemon);
     } else {
-      onAddForComparison(pokemon);
+      onAddForComparison(displayedPokemon);
     }
   };
 
   const handlePrevMouseEnter = () => {
     prevTooltipTimeoutRef.current = setTimeout(() => {
       setShowPrevTooltip(true);
-    }, 500); // Delay 500 ms
+    }, 500);
   };
 
   const handlePrevMouseLeave = () => {
@@ -67,12 +99,35 @@ function PokemonItem({
   const handleNextMouseEnter = () => {
     nextTooltipTimeoutRef.current = setTimeout(() => {
       setShowNextTooltip(true);
-    }, 500); // Delay 500 ms
+    }, 500);
   };
 
   const handleNextMouseLeave = () => {
     clearTimeout(nextTooltipTimeoutRef.current);
     setShowNextTooltip(false);
+  };
+
+  // Event handler untuk tooltip bentuk
+  const handlePrevFormMouseEnter = () => {
+    prevFormTooltipTimeoutRef.current = setTimeout(() => {
+      setShowPrevFormTooltip(true);
+    }, 500);
+  };
+
+  const handlePrevFormMouseLeave = () => {
+    clearTimeout(prevFormTooltipTimeoutRef.current);
+    setShowPrevFormTooltip(false);
+  };
+
+  const handleNextFormMouseEnter = () => {
+    nextFormTooltipTimeoutRef.current = setTimeout(() => {
+      setShowNextFormTooltip(true);
+    }, 500);
+  };
+
+  const handleNextFormMouseLeave = () => {
+    clearTimeout(nextFormTooltipTimeoutRef.current);
+    setShowNextFormTooltip(false);
   };
 
   return (
@@ -86,10 +141,10 @@ function PokemonItem({
       <div className="card-header">
         <div className="pokemon-measurements">
           <span className="measurement-tag">
-            {t("height")} {pokemon.height / 10} m
+            {t("height")} {displayedPokemon.height / 10} m
           </span>
           <span className="measurement-tag">
-            {t("weight")} {pokemon.weight / 10} kg
+            {t("weight")} {displayedPokemon.weight / 10} kg
           </span>
         </div>
         {evolutionLine.length > 1 && (
@@ -129,13 +184,13 @@ function PokemonItem({
       </div>
 
       <img
-        src={pokemon.imageUrl}
-        alt={pokemon.name}
+        src={displayedPokemon.imageUrl}
+        alt={displayedPokemon.name}
         className="pokemon-image"
       />
-      <h1 style={{ textTransform: "capitalize" }}>{pokemon.name}</h1>
+      <h1 style={{ textTransform: "capitalize" }}>{displayedPokemon.name}</h1>
       <div className="types-container">
-        {pokemon.types.map((type, index) => (
+        {displayedPokemon.types.map((type, index) => (
           <span
             key={index}
             className="type-badge"
@@ -145,6 +200,41 @@ function PokemonItem({
           </span>
         ))}
       </div>
+
+      {hasMultipleForms && (
+        <div className="evolution-controls bottom-controls">
+          <span
+            className="evolution-tooltip-wrapper"
+            onMouseEnter={handlePrevFormMouseEnter}
+            onMouseLeave={handlePrevFormMouseLeave}
+          >
+            <button onClick={handlePrevForm} disabled={currentFormIndex === 0}>
+              <MdArrowBackIos className="evolution-icon" />
+            </button>
+            {showPrevFormTooltip && (
+              <span className="evolution-tooltip">{t("tooltipPrevForm")}</span>
+            )}
+          </span>
+          <span>
+            Bentuk {currentFormIndex + 1} / {pokemon.varieties.length}
+          </span>
+          <span
+            className="evolution-tooltip-wrapper"
+            onMouseEnter={handleNextFormMouseEnter}
+            onMouseLeave={handleNextFormMouseLeave}
+          >
+            <button
+              onClick={handleNextForm}
+              disabled={currentFormIndex === pokemon.varieties.length - 1}
+            >
+              <MdArrowForwardIos className="evolution-icon" />
+            </button>
+            {showNextFormTooltip && (
+              <span className="evolution-tooltip">{t("tooltipNextForm")}</span>
+            )}
+          </span>
+        </div>
+      )}
 
       <div className="card-actions">
         <button
@@ -168,8 +258,10 @@ function PokemonItem({
 
       <div className={`details-overlay ${showDetails ? "show" : ""}`}>
         <div className="details-content">
-          <p>{pokemon.description}</p>
-          {pokemon.stats && <StatGrid stats={pokemon.stats} />}
+          <p>{displayedPokemon.description}</p>
+          {displayedPokemon.stats && (
+            <StatGrid stats={displayedPokemon.stats} />
+          )}
         </div>
         <button
           className="details-close-button"

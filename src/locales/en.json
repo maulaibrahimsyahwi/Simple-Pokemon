@@ -40,6 +40,8 @@
     "totalStatsMessage": "Total Stats: {{total1}} vs {{total2}}",
     "winnerBreakdownTitle": "Stat Breakdown",
     "tooltipPrev": "Previous Evolution",
-    "tooltipNext": "Next Evolution"
+    "tooltipNext": "Next Evolution",
+    "tooltipPrevForm": "Previous Form",
+    "tooltipNextForm": "Next Form"
   }
 }

@@ -58,6 +58,8 @@
     "totalStatsMessage": "Total Statistik: {{total1}} vs {{total2}}",
     "winnerBreakdownTitle": "Rincian Statistik",
     "tooltipPrev": "Evolusi Sebelumnya",
-    "tooltipNext": "Evolusi Selanjutnya"
+    "tooltipNext": "Evolusi Selanjutnya",
+    "tooltipPrevForm": "Bentuk Sebelumnya",
+    "tooltipNextForm": "Bentuk Selanjutnya"
   }
 }

@@ -22,6 +22,38 @@ const setCache = (key, data) => {
   localStorage.setItem(key, JSON.stringify(cacheEntry));
 };
 
+const fetchPokemonDetailsFromUrl = async (url, description) => {
+  try {
+    const pokeResponse = await fetch(url);
+    if (!pokeResponse.ok) return null;
+    const pokeData = await pokeResponse.json();
+
+    const stats = {};
+    pokeData.stats.forEach((stat) => {
+      stats[stat.stat.name] = stat.base_stat;
+    });
+
+    const imageUrl =
+      pokeData.sprites.other["official-artwork"].front_default ||
+      pokeData.sprites.front_default;
+
+    return {
+      id: pokeData.id,
+      name: pokeData.name,
+      imageUrl: imageUrl,
+      types: pokeData.types.map((typeInfo) => typeInfo.type.name),
+      description: description || "No description available.",
+      stats: stats,
+      height: pokeData.height,
+      weight: pokeData.weight,
+      is_default: pokeData.is_default,
+    };
+  } catch (e) {
+    console.error(`Failed to fetch details from URL ${url}:`, e);
+    return null;
+  }
+};
+
 const useFetchPokemon = (allPokemonNames) => {
   const [pokemons, setPokemons] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,7 +67,6 @@ const useFetchPokemon = (allPokemonNames) => {
   const processedChainIds = useRef(new Set());
 
   const fetchPokemonDetails = useCallback(async (pokemonList) => {
-    // ... (implementasi sama seperti sebelumnya, tidak perlu diubah)
     const evolutionChains = await Promise.all(
       pokemonList.map(async (species) => {
         try {
@@ -45,7 +76,10 @@ const useFetchPokemon = (allPokemonNames) => {
           const evolutionChainUrl = speciesData.evolution_chain.url;
           const evolutionResponse = await fetch(evolutionChainUrl);
           if (!evolutionResponse.ok) return null;
-          return await evolutionResponse.json();
+          return {
+            ...(await evolutionResponse.json()),
+            speciesData,
+          };
         } catch (e) {
           console.error(e);
           return null;
@@ -73,43 +107,49 @@ const useFetchPokemon = (allPokemonNames) => {
         }
 
         const pokemonDataArray = await Promise.all(
-          pokemonNames.map(async (pokemonName) => {
-            try {
-              const pokeResponse = await fetch(
-                `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
-              );
-              if (!pokeResponse.ok) return null;
-              const pokeData = await pokeResponse.json();
-              const speciesResponse = await fetch(pokeData.species.url);
-              const speciesData = await speciesResponse.json();
-              const descriptionEntry =
-                speciesData.flavor_text_entries.find(
-                  (entry) => entry.language.name === "en"
-                ) || speciesData.flavor_text_entries[0];
-              const imageUrl =
-                pokeData.sprites.other["official-artwork"].front_default ||
-                pokeData.sprites.front_default;
-              const stats = {};
-              pokeData.stats.forEach((stat) => {
-                stats[stat.stat.name] = stat.base_stat;
-              });
+          pokemonNames.map(async (pokemonName, index) => {
+            const speciesUrl = `https://pokeapi.co/api/v2/pokemon-species/${pokemonName}/`;
+            const speciesResponse = await fetch(speciesUrl);
+            const speciesData = await speciesResponse.json();
+            const descriptionEntry =
+              speciesData.flavor_text_entries.find(
+                (entry) => entry.language.name === "en"
+              ) || speciesData.flavor_text_entries[0];
+            const description = descriptionEntry
+              ? descriptionEntry.flavor_text.replace(/\s+/g, " ")
+              : "No description available.";
 
-              return {
-                id: pokeData.id,
-                name: pokeData.name,
-                imageUrl: imageUrl,
-                types: pokeData.types.map((typeInfo) => typeInfo.type.name),
-                description: descriptionEntry
-                  ? descriptionEntry.flavor_text.replace(/\s+/g, " ")
-                  : "No description available.",
-                stats: stats,
-                height: pokeData.height,
-                weight: pokeData.weight,
-              };
-            } catch (e) {
-              console.error(`Failed to fetch details for ${pokemonName}:`, e);
-              return null;
+            const varieties = [];
+            const isLastEvolution = index === pokemonNames.length - 1;
+
+            // Ambil semua varian untuk evolusi terakhir
+            if (isLastEvolution && speciesData.varieties.length > 1) {
+              const varietiesPromises = speciesData.varieties.map((v) =>
+                fetchPokemonDetailsFromUrl(v.pokemon.url, description)
+              );
+              const fetchedVarieties = await Promise.all(varietiesPromises);
+              varieties.push(...fetchedVarieties.filter(Boolean));
+            } else {
+              // Untuk evolusi non-terakhir, ambil bentuk default saja
+              const defaultVarietyUrl = `https://pokeapi.co/api/v2/pokemon/${pokemonName}/`;
+              const defaultVariety = await fetchPokemonDetailsFromUrl(
+                defaultVarietyUrl,
+                description
+              );
+              if (defaultVariety) varieties.push(defaultVariety);
             }
+
+            return {
+              id: varieties[0]?.id,
+              name: varieties[0]?.name,
+              imageUrl: varieties[0]?.imageUrl,
+              types: varieties[0]?.types || [],
+              description: varieties[0]?.description,
+              stats: varieties[0]?.stats || {},
+              height: varieties[0]?.height,
+              weight: varieties[0]?.weight,
+              varieties,
+            };
           })
         );
 
@@ -153,7 +193,7 @@ const useFetchPokemon = (allPokemonNames) => {
           a[0].name.localeCompare(b[0].name)
         );
         setPokemons(sortedPokemons);
-        setCache(cacheKey, sortedPokemons); // Simpan ke cache
+        setCache(cacheKey, sortedPokemons);
         hasMore.current = false;
       } catch (err) {
         setError(err.message);
@@ -232,12 +272,13 @@ const useFetchPokemon = (allPokemonNames) => {
           throw new Error("Pokemon not found.");
         }
         const pokeData = await pokeResponse.json();
+
         const speciesList = [
           { name: pokeData.species.name, url: pokeData.species.url },
         ];
         const foundPokemon = await fetchPokemonDetails(speciesList);
         setPokemons(foundPokemon);
-        setCache(cacheKey, foundPokemon); // Simpan ke cache
+        setCache(cacheKey, foundPokemon);
         hasMore.current = false;
       } catch (err) {
         setError(err.message);
