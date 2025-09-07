@@ -15,12 +15,12 @@
 }
 
 .login-form {
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: #fff;
   padding: 40px;
   border-radius: 20px;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 420px;
+  max-width: 500px;
   text-align: center;
   border: 3px solid #333;
   animation: fadeIn 0.5s ease-in-out;
@@ -38,70 +38,9 @@
 }
 
 .login-logo {
-  width: 100px;
-  height: 100px;
-  margin-bottom: 15px;
+  width: 50%;
+  height: 50%;
   border-radius: 50%;
-  border: 4px solid #333;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  /* --- PERBAIKAN UTAMA ADA DI SINI --- */
-  transform-style: preserve-3d;
-  animation: rotate3D 5s infinite ease-in-out;
-}
-
-/* Keyframe baru yang menggabungkan putaran dan pantulan */
-@keyframes spin-and-bounce {
-  0% {
-    transform: rotate(0deg) translateY(0);
-  }
-  10% {
-    transform: rotate(36deg) translateY(0);
-  }
-  20% {
-    transform: rotate(72deg) translateY(-25px);
-  }
-  30% {
-    transform: rotate(108deg) translateY(0);
-  }
-  40% {
-    transform: rotate(144deg) translateY(-15px);
-  }
-  50% {
-    transform: rotate(180deg) translateY(0);
-  }
-  60% {
-    transform: rotate(216deg) translateY(-8px);
-  }
-  70% {
-    transform: rotate(252deg) translateY(0);
-  }
-  80% {
-    transform: rotate(288deg) translateY(-5px);
-  }
-  90% {
-    transform: rotate(324deg) translateY(0);
-  }
-  100% {
-    transform: rotate(360deg) translateY(0);
-  }
-}
-
-@keyframes rotate3D {
-  0% {
-    transform: rotateY(0deg) scale(1);
-  }
-  25% {
-    transform: rotateY(180deg) scale(1.1);
-  }
-  50% {
-    transform: rotateY(360deg) scale(1);
-  }
-  75% {
-    transform: rotateY(180deg) scale(0.9);
-  }
-  100% {
-    transform: rotateY(0deg) scale(1);
-  }
 }
 
 .login-form h1 {
@@ -175,12 +114,10 @@
   margin-top: 15px;
   font-weight: bold;
 }
-/* Styling untuk grup password agar bisa menampung ikon */
 .password-group {
   position: relative;
 }
 
-/* Styling untuk ikon mata */
 .password-toggle-icon {
   position: absolute;
   top: 50%;
@@ -204,7 +141,6 @@
   color: #3d7dca;
 }
 
-/* Animasi untuk hint-box saat muncul */
 .hint-box {
   animation: slideDown 0.4s ease-out;
 }
