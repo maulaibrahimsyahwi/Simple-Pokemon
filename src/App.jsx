@@ -3,6 +3,7 @@ import Pokemons from "./components/PokemonList/PokemonList";
 import Login from "./components/Login/Login";
 import ScrollToTopButton from "./components/ScrollToTopButton/ScrollToTopButton";
 import PokemonComparison from "./components/PokemonComparison/PokemonComparison";
+import PokemonDetailOverlay from "./components/PokemonDetailOverlay/PokemonDetailOverlay";
 import { useTranslation } from "react-i18next";
 import usePokemonData from "./hooks/usePokemonData";
 import { IoLogOutOutline } from "react-icons/io5";
@@ -20,6 +21,8 @@ function App() {
   const [view, setView] = useState("list");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
+  const [selectedPokemonForDetails, setSelectedPokemonForDetails] =
+    useState(null);
   const languageRef = useRef(null);
 
   const pokemonData = usePokemonData();
@@ -100,6 +103,14 @@ function App() {
 
   const toggleLanguageDropdown = () => {
     setShowLanguageDropdown((prev) => !prev);
+  };
+
+  const handleShowDetails = (details) => {
+    setSelectedPokemonForDetails(details);
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedPokemonForDetails(null);
   };
 
   return (
@@ -199,10 +210,22 @@ function App() {
               onAddForComparison={handleAddForComparison}
               onRemoveFromComparison={handleRemoveFromComparison}
               selectedPokemons={selectedPokemons}
+              onShowDetails={handleShowDetails}
             />
           )}
           {view === "compare" && (
             <PokemonComparison selectedPokemons={selectedPokemons} />
+          )}
+          {selectedPokemonForDetails && (
+            <PokemonDetailOverlay
+              evolutionLine={selectedPokemonForDetails.evolutionLine}
+              initialIndex={selectedPokemonForDetails.initialIndex}
+              initialFormIndex={selectedPokemonForDetails.initialFormIndex}
+              onClose={handleCloseDetails}
+              selectedPokemons={selectedPokemons}
+              onAddForComparison={handleAddForComparison}
+              onRemoveFromComparison={handleRemoveFromComparison}
+            />
           )}
         </>
       ) : (

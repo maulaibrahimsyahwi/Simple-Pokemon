@@ -29,6 +29,7 @@ function Pokemons({
   hasMore,
   loadPokemons,
   searchPokemon,
+  onShowDetails,
 }) {
   const { t } = useTranslation();
   const listWrapperRef = useRef(null);
@@ -115,9 +116,8 @@ function Pokemons({
     setShowSuggestions(false);
   };
 
-  // Perbaikan: Menerima event untuk menghentikan propagasi
   const handleFilterChange = (type, e) => {
-    e.stopPropagation(); // Mencegah event klik naik ke elemen induk
+    e.stopPropagation();
     setFilterType(type);
     setSearchQuery("");
     loadPokemons(type);
@@ -139,7 +139,6 @@ function Pokemons({
   };
 
   const handleWrapperClick = (e) => {
-    // Pastikan klik di dalam dropdown tidak memicu toggle wrapper
     if (filterDropdownRef.current.contains(e.target)) {
       setShowTypeDropdown((prev) => !prev);
     }
@@ -337,6 +336,7 @@ function Pokemons({
                     onAddForComparison={onAddForComparison}
                     onRemoveFromComparison={onRemoveFromComparison}
                     selectedPokemons={selectedPokemons}
+                    onShowDetails={onShowDetails}
                   />
                 </div>
               );
@@ -349,6 +349,7 @@ function Pokemons({
                   onAddForComparison={onAddForComparison}
                   onRemoveFromComparison={onRemoveFromComparison}
                   selectedPokemons={selectedPokemons}
+                  onShowDetails={onShowDetails}
                 />
               );
             }

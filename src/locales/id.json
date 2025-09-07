@@ -60,6 +60,11 @@
     "tooltipPrev": "Evolusi Sebelumnya",
     "tooltipNext": "Evolusi Selanjutnya",
     "tooltipPrevForm": "Bentuk Sebelumnya",
-    "tooltipNextForm": "Bentuk Selanjutnya"
+    "tooltipNextForm": "Bentuk Selanjutnya",
+    "locationTitle": "Lokasi",
+    "noLocationFound": "Tidak ada lokasi yang diketahui.",
+    "showAllLocations": "Lihat Semua Lokasi",
+    "hideLocations": "Sembunyikan Lokasi",
+    "noInfoFound": "Tidak Ada Informasi Ditemukan."
   }
 }

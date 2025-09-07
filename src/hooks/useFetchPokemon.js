@@ -388,6 +388,30 @@ const useFetchPokemon = (allPokemonNames) => {
     }
   }, []);
 
+  const fetchLocations = useCallback(async (pokemonId) => {
+    const cacheKey = `pokemon_locations_${pokemonId}`;
+    const cachedData = getCache(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
+    try {
+      const response = await fetch(
+        `https://pokeapi.co/api/v2/pokemon/${pokemonId}/encounters`
+      );
+      if (!response.ok) return [];
+      const data = await response.json();
+      const locations = data.map((location) =>
+        location.location_area.name.replace(/-/g, " ")
+      );
+      setCache(cacheKey, locations);
+      return locations;
+    } catch (e) {
+      console.error("Failed to fetch pokemon locations:", e);
+      return [];
+    }
+  }, []);
+
   useEffect(() => {
     if (allPokemonNames.length > 0) {
       loadPokemons("all");
@@ -404,6 +428,7 @@ const useFetchPokemon = (allPokemonNames) => {
     loadPokemons,
     searchPokemon,
     fetchWeaknesses,
+    fetchLocations, // <-- Ekspor fungsi baru ini
   };
 };
 

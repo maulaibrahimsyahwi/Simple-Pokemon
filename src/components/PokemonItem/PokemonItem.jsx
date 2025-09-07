@@ -11,19 +11,15 @@ function PokemonItem({
   onAddForComparison,
   onRemoveFromComparison,
   selectedPokemons,
+  onShowDetails,
 }) {
   const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const [showDetails, setShowDetails] = useState(false);
+  const [currentFormIndex, setCurrentFormIndex] = useState(0);
   const [showPrevTooltip, setShowPrevTooltip] = useState(false);
   const [showNextTooltip, setShowNextTooltip] = useState(false);
-
-  // State untuk mengontrol slider bentuk
-  const [currentFormIndex, setCurrentFormIndex] = useState(0);
   const [showPrevFormTooltip, setShowPrevFormTooltip] = useState(false);
   const [showNextFormTooltip, setShowNextFormTooltip] = useState(false);
-
-  // Menggunakan useRef untuk menyimpan ID timeout
   const prevTooltipTimeoutRef = useRef(null);
   const nextTooltipTimeoutRef = useRef(null);
   const prevFormTooltipTimeoutRef = useRef(null);
@@ -31,13 +27,14 @@ function PokemonItem({
 
   useEffect(() => {
     setCurrentIndex(initialIndex);
+    setCurrentFormIndex(0);
   }, [initialIndex, evolutionLine]);
 
   const handleNext = (event) => {
     event.stopPropagation();
     if (currentIndex < evolutionLine.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
-      setCurrentFormIndex(0); // Reset bentuk ke 0 saat evolusi berubah
+      setCurrentFormIndex(0);
     }
   };
 
@@ -45,7 +42,7 @@ function PokemonItem({
     event.stopPropagation();
     if (currentIndex > 0) {
       setCurrentIndex((prevIndex) => prevIndex - 1);
-      setCurrentFormIndex(0); // Reset bentuk ke 0 saat evolusi berubah
+      setCurrentFormIndex(0);
     }
   };
 
@@ -64,17 +61,17 @@ function PokemonItem({
     }
   };
 
-  const toggleDetails = () => {
-    setShowDetails((prev) => !prev);
+  const handleShowDetails = (e) => {
+    e.stopPropagation();
+    onShowDetails({
+      evolutionLine: evolutionLine,
+      initialIndex: currentIndex,
+      initialFormIndex: currentFormIndex,
+    });
   };
 
   const pokemon = evolutionLine[currentIndex];
-  // Ambil data pokemon dari array varieties jika ada
-  const displayedPokemon =
-    pokemon.varieties && pokemon.varieties[currentFormIndex]
-      ? pokemon.varieties[currentFormIndex]
-      : pokemon;
-
+  const displayedPokemon = pokemon.varieties[currentFormIndex];
   const mainType = displayedPokemon.types[0].toLowerCase();
   const cardBackgroundColor = colours[mainType];
   const isSelected = selectedPokemons.some((p) => p.id === displayedPokemon.id);
@@ -111,7 +108,6 @@ function PokemonItem({
     setShowNextTooltip(false);
   };
 
-  // Event handler untuk tooltip bentuk
   const handlePrevFormMouseEnter = () => {
     prevFormTooltipTimeoutRef.current = setTimeout(() => {
       setShowPrevFormTooltip(true);
@@ -140,15 +136,15 @@ function PokemonItem({
       style={{
         backgroundColor: `${cardBackgroundColor}aa`,
       }}
-      onClick={toggleDetails}
+      onClick={handleShowDetails}
     >
       <div className="card-header">
         <div className="pokemon-measurements">
           <span className="measurement-tag">
-            {t("height")} {displayedPokemon.height / 10} m
+            {t("height")}: {displayedPokemon.height / 10} m
           </span>
           <span className="measurement-tag">
-            {t("weight")} {displayedPokemon.weight / 10} kg
+            {t("weight")}: {displayedPokemon.weight / 10} kg
           </span>
         </div>
         {evolutionLine.length > 1 && (
@@ -249,32 +245,8 @@ function PokemonItem({
           {isSelected ? t("removeFromCompare") : t("addToCompare")}
         </button>
 
-        <button
-          className="details-toggle-button"
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleDetails();
-          }}
-        >
-          {showDetails ? t("hideDescription") : t("showDescription")}
-        </button>
-      </div>
-
-      <div className={`details-overlay ${showDetails ? "show" : ""}`}>
-        <div className="details-content">
-          <p>{displayedPokemon.description}</p>
-          {displayedPokemon.stats && (
-            <StatGrid stats={displayedPokemon.stats} />
-          )}
-        </div>
-        <button
-          className="details-close-button"
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleDetails();
-          }}
-        >
-          {t("hideDescription")}
+        <button className="details-toggle-button" onClick={handleShowDetails}>
+          {t("showDescription")}
         </button>
       </div>
     </div>

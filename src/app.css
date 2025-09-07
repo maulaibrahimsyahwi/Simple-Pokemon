@@ -4,6 +4,8 @@
   padding: 20px;
   padding-top: 100px;
   text-align: center;
+  position: relative; /* Tambahkan ini agar z-index bekerja dengan baik */
+  z-index: 10;
 }
 
 .app-container.comparison-page {
@@ -26,7 +28,7 @@
   width: 100%;
   padding: 20px;
   background-color: white;
-  z-index: 100;
+  z-index: 100; /* Nilai z-index yang tinggi untuk header */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
