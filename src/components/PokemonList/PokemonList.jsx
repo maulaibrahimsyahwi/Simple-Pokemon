@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import PokemonItem from "../PokemonItem/PokemonItem";
-// Hapus impor usePokemonData
 import PokemonCardSkeleton from "../PokemonItem/PokemonCardSkeleton/PokemonCardSkeleton";
 import ErrorDisplay from "../ErrorDisplay/ErrorDisplay";
 import "./PokemonList.css";
 import NotfoundImage from "./img/Not Found Pokemon.webp";
 import { useTranslation } from "react-i18next";
+import { RiArrowDropDownLine } from "react-icons/ri";
 
-// Terima semua props yang diperlukan dari App.jsx
 function Pokemons({
   isInitialLoad,
   setIsInitialLoad,
@@ -32,13 +31,15 @@ function Pokemons({
   searchPokemon,
 }) {
   const { t } = useTranslation();
-  // Hapus panggilan usePokemonData dari sini
-
   const listWrapperRef = useRef(null);
   const listRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchInputRef = useRef(null);
+  const filterDropdownRef = useRef(null);
+  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
+  const dropdownTimeoutRef = useRef(null);
+  const [hoveredType, setHoveredType] = useState(null);
 
   const observer = useRef();
   const lastPokemonElementRef = useCallback(
@@ -114,10 +115,34 @@ function Pokemons({
     setShowSuggestions(false);
   };
 
-  const handleFilterChange = (type) => {
+  // Perbaikan: Menerima event untuk menghentikan propagasi
+  const handleFilterChange = (type, e) => {
+    e.stopPropagation(); // Mencegah event klik naik ke elemen induk
     setFilterType(type);
     setSearchQuery("");
     loadPokemons(type);
+    setShowTypeDropdown(false);
+  };
+
+  const handleDropdownMouseEnter = () => {
+    clearTimeout(dropdownTimeoutRef.current);
+    dropdownTimeoutRef.current = setTimeout(() => {
+      setShowTypeDropdown(true);
+    }, 200);
+  };
+
+  const handleDropdownMouseLeave = () => {
+    clearTimeout(dropdownTimeoutRef.current);
+    dropdownTimeoutRef.current = setTimeout(() => {
+      setShowTypeDropdown(false);
+    }, 200);
+  };
+
+  const handleWrapperClick = (e) => {
+    // Pastikan klik di dalam dropdown tidak memicu toggle wrapper
+    if (filterDropdownRef.current.contains(e.target)) {
+      setShowTypeDropdown((prev) => !prev);
+    }
   };
 
   return (
@@ -137,7 +162,7 @@ function Pokemons({
         {showSuggestions && searchSuggestions.length > 0 && (
           <ul className="suggestions-list">
             {searchSuggestions.map((name, index) => (
-              <li key={index} onClick={() => handleSuggestionClick(name)}>
+              <li key={index} onClick={(e) => handleSuggestionClick(name, e)}>
                 {name}
               </li>
             ))}
@@ -183,36 +208,85 @@ function Pokemons({
           <>
             <div className="filter-container">
               <strong>{t("filterByType")}</strong>
-              <select
-                className="type-dropdown"
-                value={filterType}
-                onChange={(e) => handleFilterChange(e.target.value)}
-                style={{ "--type-color": colours[filterType] }}
+              <div
+                className={`type-dropdown-wrapper ${
+                  showTypeDropdown ? "active" : ""
+                }`}
+                onMouseEnter={handleDropdownMouseEnter}
+                onMouseLeave={handleDropdownMouseLeave}
+                onClick={handleWrapperClick}
+                ref={filterDropdownRef}
               >
-                <option value="all">{t("allType")}</option>
-                {Object.keys(colours).map((type) => (
-                  <option key={type} value={type}>
-                    {t(type.charAt(0).toUpperCase() + type.slice(1))}
-                  </option>
-                ))}
-              </select>
-              <div className="type-buttons">
                 <button
-                  className={filterType === "all" ? "active" : ""}
-                  onClick={() => handleFilterChange("all")}
+                  type="button"
+                  className={`type-dropdown-button ${
+                    filterType !== "all" ? "active" : ""
+                  }`}
+                  style={{
+                    backgroundColor:
+                      filterType === "all" ? "#efefef" : colours[filterType],
+                    color: filterType === "all" ? "#333" : "white",
+                  }}
                 >
-                  {t("allType")}
+                  {t(filterType.charAt(0).toUpperCase() + filterType.slice(1))}
+                  <RiArrowDropDownLine className="dropdown-icon" />
                 </button>
-                {Object.keys(colours).map((type) => (
-                  <button
-                    key={type}
-                    className={filterType === type ? "active" : ""}
-                    onClick={() => handleFilterChange(type)}
-                    style={{ "--type-color": colours[type] }}
-                  >
-                    {t(type.charAt(0).toUpperCase() + type.slice(1))}
-                  </button>
-                ))}
+                {showTypeDropdown && (
+                  <div className="type-dropdown-menu">
+                    <div
+                      key="all"
+                      className={`type-dropdown-item ${
+                        filterType === "all" ? "active" : ""
+                      }`}
+                      onClick={(e) => handleFilterChange("all", e)}
+                      onMouseEnter={() => setHoveredType("all")}
+                      onMouseLeave={() => setHoveredType(null)}
+                      style={{
+                        backgroundColor:
+                          hoveredType === "all" || filterType === "all"
+                            ? "#4a90e2"
+                            : "#f0f0f0",
+                        color:
+                          hoveredType === "all" || filterType === "all"
+                            ? "white"
+                            : "#333",
+                        borderColor:
+                          hoveredType === "all" || filterType === "all"
+                            ? "#3d7dca"
+                            : "#ddd",
+                      }}
+                    >
+                      {t("allType")}
+                    </div>
+                    {Object.keys(colours).map((type) => (
+                      <div
+                        key={type}
+                        className={`type-dropdown-item ${
+                          filterType === type ? "active" : ""
+                        }`}
+                        onClick={(e) => handleFilterChange(type, e)}
+                        onMouseEnter={() => setHoveredType(type)}
+                        onMouseLeave={() => setHoveredType(null)}
+                        style={{
+                          backgroundColor:
+                            hoveredType === type || filterType === type
+                              ? colours[type]
+                              : "#f0f0f0",
+                          color:
+                            hoveredType === type || filterType === type
+                              ? "white"
+                              : "#333",
+                          borderColor:
+                            hoveredType === type || filterType === type
+                              ? colours[type]
+                              : "#ddd",
+                        }}
+                      >
+                        {t(type.charAt(0).toUpperCase() + type.slice(1))}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
             <div className="settings-container">
@@ -279,7 +353,6 @@ function Pokemons({
               );
             }
           })}
-          {/* ... kode lainnya */}
         </div>
       </div>
     </>
