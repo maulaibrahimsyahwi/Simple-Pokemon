@@ -187,9 +187,6 @@
   background-color: #2a588d;
 }
 
-/* --- KODE BARU UNTUK RESPONSIVE --- */
-
-/* Sembunyikan dropdown di layar besar secara default */
 .type-dropdown {
   display: none;
   width: 100%;
@@ -268,35 +265,34 @@
   background-color: #2a588d;
 }
 
-/* Tampilan untuk layar 1280px ke bawah */
-@media (max-width: 1280px) {
+/* Tampilan untuk layar 1279px ke bawah */
+@media (max-width: 1279px) {
   .controls-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
+    gap: 250px;
   }
 
   .filter-container,
   .settings-container {
     width: 100%;
-    align-items: center;
-    text-align: center;
   }
 
-  /* Sembunyikan tombol-tombol tipe lama */
   .type-buttons {
     display: none;
   }
 
-  /* Tampilkan dropdown select untuk mobile */
   .type-dropdown {
     display: block;
     margin: 0 auto;
   }
+  .type-dropdown-menu {
+    grid-template-columns: repeat(4, 1fr);
+    width: auto;
+    max-width: 90vw;
+  }
 
-  .sort-container,
-  .grid-size-container {
-    text-align: center;
+  .type-dropdown-item {
+    padding: 8px; /* Sesuaikan padding agar lebih ringkas */
+    font-size: 0.85rem; /* Kurangi ukuran font agar pas */
   }
 }
 
