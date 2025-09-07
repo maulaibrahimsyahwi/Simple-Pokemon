@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next"; // Impor useTranslation
 import "./Login.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-
+import LogoForm from "/assets/Pokemon.gif";
 function Login({ setIsLogin }) {
   const { t } = useTranslation(); // Gunakan hook useTranslation
   const [user, setUser] = useState({
@@ -36,11 +36,7 @@ function Login({ setIsLogin }) {
   return (
     <div className="login-container">
       <form onSubmit={handleLogin} className="login-form">
-        <img
-          src="../../../public/assets/Pokemon.gif"
-          alt="Pokeball Logo"
-          className="login-logo"
-        />
+        <img src={LogoForm} alt="Pokeball Logo" className="login-logo" />
         <h1>{t("loginWelcome")}</h1>
         <p className="login-subtitle">{t("loginSubtitle")}</p>
 
