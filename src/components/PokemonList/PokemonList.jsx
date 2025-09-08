@@ -191,7 +191,14 @@ function Pokemons({
               <select
                 className="type-dropdown"
                 value={filterType}
-                onChange={(e) => handleFilterChange(e.target.value)}
+                // --- PERBAIKAN DIMULAI DI SINI ---
+                onChange={(e) => {
+                  const newType = e.target.value;
+                  setFilterType(newType);
+                  setSearchQuery("");
+                  loadPokemons(newType);
+                }}
+                // --- PERBAIKAN BERAKHIR DI SINI ---
                 style={{ "--type-color": colours[filterType] }}
               >
                 <option value="all">{t("allType")}</option>
