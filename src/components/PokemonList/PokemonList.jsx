@@ -314,46 +314,58 @@ function Pokemons({
           ref={listRef}
           style={{ "--grid-size": gridSize }}
         >
-          {error && !loading && <ErrorDisplay message={error} />}
-          {!error && !loading && processedPokemons.length === 0 && (
-            <div className="not-found-container">
-              <img
-                src={NotfoundImage}
-                alt="Not Found"
-                style={{ width: "350px", marginBottom: "20px" }}
-              />
-              <h2>{t("notFoundTitle")}</h2>
-              <p>{t("notFoundMessage")}</p>
-            </div>
-          )}
-          {processedPokemons.map((item, index) => {
-            if (processedPokemons.length === index + 1) {
-              return (
-                <div ref={lastPokemonElementRef} key={index}>
-                  <PokemonItem
-                    evolutionLine={item.evolutionLine}
-                    initialIndex={item.initialIndex}
-                    onAddForComparison={onAddForComparison}
-                    onRemoveFromComparison={onRemoveFromComparison}
-                    selectedPokemons={selectedPokemons}
-                    onShowDetails={onShowDetails}
+          {loading && processedPokemons.length === 0 ? (
+            Array.from({ length: gridSize * 2 }).map((_, index) => (
+              <PokemonCardSkeleton key={index} />
+            ))
+          ) : (
+            <>
+              {error && !loading && <ErrorDisplay message={error} />}
+              {!error && processedPokemons.length === 0 && (
+                <div className="not-found-container">
+                  <img
+                    src={NotfoundImage}
+                    alt="Not Found"
+                    style={{ width: "350px", marginBottom: "20px" }}
                   />
+                  <h2>{t("notFoundTitle")}</h2>
+                  <p>{t("notFoundMessage")}</p>
                 </div>
-              );
-            } else {
-              return (
-                <PokemonItem
-                  key={index}
-                  evolutionLine={item.evolutionLine}
-                  initialIndex={item.initialIndex}
-                  onAddForComparison={onAddForComparison}
-                  onRemoveFromComparison={onRemoveFromComparison}
-                  selectedPokemons={selectedPokemons}
-                  onShowDetails={onShowDetails}
-                />
-              );
-            }
-          })}
+              )}
+              {processedPokemons.map((item, index) => {
+                if (processedPokemons.length === index + 1) {
+                  return (
+                    <div ref={lastPokemonElementRef} key={index}>
+                      <PokemonItem
+                        evolutionLine={item.evolutionLine}
+                        initialIndex={item.initialIndex}
+                        onAddForComparison={onAddForComparison}
+                        onRemoveFromComparison={onRemoveFromComparison}
+                        selectedPokemons={selectedPokemons}
+                        onShowDetails={onShowDetails}
+                      />
+                    </div>
+                  );
+                } else {
+                  return (
+                    <PokemonItem
+                      key={index}
+                      evolutionLine={item.evolutionLine}
+                      initialIndex={item.initialIndex}
+                      onAddForComparison={onAddForComparison}
+                      onRemoveFromComparison={onRemoveFromComparison}
+                      selectedPokemons={selectedPokemons}
+                      onShowDetails={onShowDetails}
+                    />
+                  );
+                }
+              })}
+              {moreLoading &&
+                Array.from({ length: gridSize * 1 }).map((_, index) => (
+                  <PokemonCardSkeleton key={index} />
+                ))}
+            </>
+          )}
         </div>
       </div>
     </>

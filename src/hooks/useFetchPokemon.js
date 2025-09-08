@@ -257,44 +257,28 @@ const useFetchPokemon = (allPokemonNames) => {
         return;
       }
 
+      const matchingNames = allPokemonNames.filter((pokemonName) =>
+        pokemonName.toLowerCase().includes(name.toLowerCase())
+      );
+
+      if (matchingNames.length === 0) {
+        setPokemons([]);
+        setLoading(false);
+        isFetchingRef.current = false;
+        hasMore.current = false;
+        return;
+      }
+
       try {
-        const pokeResponse = await fetch(
-          `https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`
-        );
-        if (!pokeResponse.ok) {
-          throw new Error("Pokemon not found.");
-        }
-        const pokeData = await pokeResponse.json();
-
-        const speciesUrl = pokeData.species.url;
-        const speciesResponse = await fetch(speciesUrl);
-        const speciesData = await speciesResponse.json();
-        const evolutionChainUrl = speciesData.evolution_chain.url;
-        const evolutionResponse = await fetch(evolutionChainUrl);
-        const evolutionChainData = await evolutionResponse.json();
-
-        const pokemonNames = [];
-        const traverseEvolution = (chain) => {
-          pokemonNames.push(chain.species.name);
-          if (chain.evolves_to && chain.evolves_to.length > 0) {
-            traverseEvolution(chain.evolves_to[0]);
-          }
-        };
-
-        traverseEvolution(evolutionChainData.chain);
-        const speciesList = pokemonNames.map((p) => ({
+        const speciesList = matchingNames.slice(0, 20).map((p) => ({
           name: p,
           url: `https://pokeapi.co/api/v2/pokemon-species/${p}/`,
         }));
 
-        const evolutionLine = (await fetchPokemonDetails(speciesList))[0]
-          .evolutionLine;
-        const initialIndex = evolutionLine.findIndex(
-          (p) => p.name.toLowerCase() === name.toLowerCase()
-        );
+        const newPokemons = await fetchPokemonDetails(speciesList);
 
-        setPokemons([{ evolutionLine, initialIndex }]);
-        setCache(cacheKey, [{ evolutionLine, initialIndex }]);
+        setPokemons(newPokemons);
+        setCache(cacheKey, newPokemons);
         hasMore.current = false;
       } catch (err) {
         setError(err.message);
@@ -303,7 +287,7 @@ const useFetchPokemon = (allPokemonNames) => {
         isFetchingRef.current = false;
       }
     },
-    [fetchPokemonDetails]
+    [allPokemonNames, fetchPokemonDetails]
   );
 
   const loadMore = useCallback(() => {
@@ -428,7 +412,7 @@ const useFetchPokemon = (allPokemonNames) => {
     loadPokemons,
     searchPokemon,
     fetchWeaknesses,
-    fetchLocations, // <-- Ekspor fungsi baru ini
+    fetchLocations,
   };
 };
 

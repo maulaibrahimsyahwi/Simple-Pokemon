@@ -26,6 +26,7 @@ function PokemonItem({
   const nextFormTooltipTimeoutRef = useRef(null);
 
   useEffect(() => {
+    // Memastikan currentIndex selalu sinkron dengan initialIndex yang baru
     setCurrentIndex(initialIndex);
     setCurrentFormIndex(0);
   }, [initialIndex, evolutionLine]);
