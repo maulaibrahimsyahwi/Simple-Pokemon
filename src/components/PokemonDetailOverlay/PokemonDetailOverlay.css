@@ -388,6 +388,30 @@
   }
 }
 
+@media (max-width: 1280px) {
+  .evolution-and-forms-container {
+    flex-direction: column; /* Mengubah tata letak menjadi kolom */
+    align-items: center; /* Pusatkan item */
+  }
+
+  .evolution-line-container,
+  .pokemon-forms-container {
+    width: 100%; /* Ambil lebar penuh */
+    margin-bottom: 20px; /* Tambahkan sedikit jarak antar bagian */
+  }
+
+  .pokemon-forms-container {
+    margin-top: 20px; /* Tambahkan jarak dari evolusi */
+  }
+}
+
+@media (max-width: 640px) {
+  .details-close-button,
+  .add-to-compare-button {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
 @media (max-width: 480px) {
   .pokemon-detail-overlay {
     width: 100%;

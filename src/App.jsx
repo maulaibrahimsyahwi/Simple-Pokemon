@@ -74,11 +74,14 @@ function App() {
   };
 
   const handleAddForComparison = (pokemon) => {
-    setSelectedPokemons((prev) =>
-      prev.length < 2
-        ? [...prev, pokemon]
-        : (alert(t("comparisonLimitMessage")), prev)
-    );
+    setSelectedPokemons((prev) => {
+      if (prev.length < 2) {
+        return [...prev, pokemon];
+      } else {
+        alert(t("comparisonLimitMessage"));
+        return prev;
+      }
+    });
   };
 
   const handleRemoveFromComparison = (pokemonToRemove) => {
@@ -90,6 +93,7 @@ function App() {
   const handleCompareClick = () => {
     if (selectedPokemons.length === 2) {
       setView("compare");
+      setSelectedPokemonForDetails(null); // Tutup overlay saat transisi
     } else {
       alert(t("selectTwoPokemonsMessage"));
     }
@@ -225,6 +229,7 @@ function App() {
               selectedPokemons={selectedPokemons}
               onAddForComparison={handleAddForComparison}
               onRemoveFromComparison={handleRemoveFromComparison}
+              onGoToCompare={handleCompareClick} // Prop baru
             />
           )}
         </>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
+import { TbLayoutSidebarLeftExpand } from "react-icons/tb";
+import { FaCodeCompare } from "react-icons/fa6";
 import StatGrid from "../../StatGrid/StatGrid";
 import { colours } from "../../data/colours";
 import usePokemonData from "../../hooks/usePokemonData";
@@ -15,6 +17,7 @@ function PokemonDetailOverlay({
   selectedPokemons,
   onAddForComparison,
   onRemoveFromComparison,
+  onGoToCompare,
 }) {
   const { t } = useTranslation();
   const { fetchWeaknesses, fetchLocations } = usePokemonData();
@@ -27,7 +30,16 @@ function PokemonDetailOverlay({
   });
   const [pokemonLocations, setPokemonLocations] = useState([]);
   const [showAllLocations, setShowAllLocations] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const formSliderRef = useRef(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 640);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (evolutionLine && evolutionLine.length > 0) {
@@ -92,12 +104,24 @@ function PokemonDetailOverlay({
   };
 
   const isSelected = selectedPokemons.some((p) => p.id === displayedPokemon.id);
-  const handleAddToCompare = (event) => {
-    event.stopPropagation();
-    if (isSelected) {
+
+  const buttonAction = () => {
+    if (selectedPokemons.length === 2) {
+      onGoToCompare();
+    } else if (isSelected) {
       onRemoveFromComparison(displayedPokemon);
     } else {
       onAddForComparison(displayedPokemon);
+    }
+  };
+
+  const buttonText = () => {
+    if (selectedPokemons.length === 2) {
+      return isMobile ? <FaCodeCompare /> : t("compareButton");
+    } else if (isSelected) {
+      return isMobile ? <FaCodeCompare /> : t("removeFromCompare");
+    } else {
+      return isMobile ? <FaCodeCompare /> : t("addToCompare");
     }
   };
 
@@ -110,14 +134,15 @@ function PokemonDetailOverlay({
         <div className="overlay-main-container">
           <div className="overlay-buttons-container">
             <button className="details-close-button" onClick={onClose}>
-              {t("hideDescription")}
+              {isMobile ? <TbLayoutSidebarLeftExpand /> : t("hideDescription")}
             </button>
             <button
-              className={`add-to-compare-button ${isSelected ? "remove" : ""}`}
-              onClick={handleAddToCompare}
-              disabled={!isSelected && selectedPokemons.length >= 2}
+              className={`add-to-compare-button ${
+                isSelected && selectedPokemons.length < 2 ? "remove" : ""
+              }`}
+              onClick={buttonAction}
             >
-              {isSelected ? t("removeFromCompare") : t("addToCompare")}
+              {buttonText()} ({selectedPokemons.length}/2)
             </button>
           </div>
 
