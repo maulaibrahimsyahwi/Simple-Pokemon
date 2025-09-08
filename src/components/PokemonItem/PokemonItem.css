@@ -329,18 +329,25 @@
 
 /* Gaya untuk kontrol evolusi di bagian bawah */
 .evolution-controls.bottom-controls {
-  margin-top: -10px;
+  margin-top: 5px;
   margin-bottom: 10px;
   position: relative;
   z-index: 10;
   display: flex;
   align-items: center;
   gap: 5px;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.8);
   padding: 5px 10px;
   border-radius: 15px;
-  border: 1px solid #bbb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: none;
+  box-shadow: none;
   margin-left: auto;
   margin-right: auto;
+}
+.evolution-controls button {
+  background: transparent;
+  border: none !important;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
 }

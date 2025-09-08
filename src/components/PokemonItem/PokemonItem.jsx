@@ -142,10 +142,10 @@ function PokemonItem({
       <div className="card-header">
         <div className="pokemon-measurements">
           <span className="measurement-tag">
-            {t("height")}: {displayedPokemon.height / 10} m
+            {t("height")} {displayedPokemon.height / 10} m
           </span>
           <span className="measurement-tag">
-            {t("weight")}: {displayedPokemon.weight / 10} kg
+            {t("weight")} {displayedPokemon.weight / 10} kg
           </span>
         </div>
         {evolutionLine.length > 1 && (

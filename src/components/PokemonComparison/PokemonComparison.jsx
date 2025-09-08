@@ -135,10 +135,10 @@ function PokemonComparison({ selectedPokemons }) {
             </div>
             <div className="measurements-container">
               <p>
-                <strong>{t("height")}</strong>: {pokemon1.height / 10} m
+                <strong>{t("height")}</strong> {pokemon1.height / 10} m
               </p>
               <p>
-                <strong>{t("weight")}</strong>: {pokemon1.weight / 10} kg
+                <strong>{t("weight")}</strong> {pokemon1.weight / 10} kg
               </p>
             </div>
 
@@ -156,11 +156,11 @@ function PokemonComparison({ selectedPokemons }) {
                 }`}
               >
                 <div className="stats-section">
-                  <h3 className="section-title">Base Stats</h3>
+                  <h3 className="section-title">{t("winnerBreakdownTitle")}</h3>
                   {renderStats(pokemon1)}
                 </div>
                 <div className="weakness-section">
-                  <h3 className="section-title">Weaknesses</h3>
+                  <h3 className="section-title">{t("weaknessesTitle")}</h3>
                   <div className="weakness-badges">
                     {pokemon1Relations.weaknesses.map((weakness, index) => (
                       <span
@@ -174,7 +174,7 @@ function PokemonComparison({ selectedPokemons }) {
                       </span>
                     ))}
                   </div>
-                  <h3 className="section-title">Resistances</h3>
+                  <h3 className="section-title">{t("resistancesTitle")}</h3>
                   <div className="weakness-badges">
                     {pokemon1Relations.resistances.map((resistance, index) => (
                       <span
@@ -190,7 +190,7 @@ function PokemonComparison({ selectedPokemons }) {
                   </div>
                   {pokemon1Relations.immunities.length > 0 && (
                     <>
-                      <h3 className="section-title">Immunities</h3>
+                      <h3 className="section-title">{t("immunitiesTitle")}</h3>
                       <div className="weakness-badges">
                         {pokemon1Relations.immunities.map((immunity, index) => (
                           <span
@@ -264,11 +264,11 @@ function PokemonComparison({ selectedPokemons }) {
                 }`}
               >
                 <div className="stats-section">
-                  <h3 className="section-title">Base Stats</h3>
+                  <h3 className="section-title">{t("winnerBreakdownTitle")}</h3>
                   {renderStats(pokemon2)}
                 </div>
                 <div className="weakness-section">
-                  <h3 className="section-title">Weaknesses</h3>
+                  <h3 className="section-title">{t("weaknessesTitle")}</h3>
                   <div className="weakness-badges">
                     {pokemon2Relations.weaknesses.map((weakness, index) => (
                       <span
@@ -282,7 +282,7 @@ function PokemonComparison({ selectedPokemons }) {
                       </span>
                     ))}
                   </div>
-                  <h3 className="section-title">Resistances</h3>
+                  <h3 className="section-title">{t("resistancesTitle")}</h3>
                   <div className="weakness-badges">
                     {pokemon2Relations.resistances.map((resistance, index) => (
                       <span
@@ -298,7 +298,7 @@ function PokemonComparison({ selectedPokemons }) {
                   </div>
                   {pokemon2Relations.immunities.length > 0 && (
                     <>
-                      <h3 className="section-title">Immunities</h3>
+                      <h3 className="section-title">{t("immunitiesTitle")}</h3>
                       <div className="weakness-badges">
                         {pokemon2Relations.immunities.map((immunity, index) => (
                           <span

@@ -65,6 +65,13 @@
     "noLocationFound": "No locations found.",
     "showAllLocations": "Show All Locations",
     "hideLocations": "Hide Locations",
-    "noInfoFound": "No Information Found."
+    "noInfoFound": "No Information Found.",
+    "evolutionTitle": "Evolutions",
+    "formsTitle": "Forms",
+    "descriptionTitle": "Description",
+    "typeTitle": "Type",
+    "weaknessesTitle": "Weaknesses",
+    "resistancesTitle": "Resistances",
+    "immunitiesTitle": "Immunities"
   }
 }

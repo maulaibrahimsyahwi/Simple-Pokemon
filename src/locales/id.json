@@ -65,6 +65,13 @@
     "noLocationFound": "Tidak ada lokasi yang diketahui.",
     "showAllLocations": "Lihat Semua Lokasi",
     "hideLocations": "Sembunyikan Lokasi",
-    "noInfoFound": "Tidak Ada Informasi Ditemukan."
+    "noInfoFound": "Tidak Ada Informasi Ditemukan.",
+    "evolutionTitle": "Evolusi",
+    "formsTitle": "Bentuk",
+    "descriptionTitle": "Deskripsi",
+    "typeTitle": "Tipe",
+    "weaknessesTitle": "Kelemahan",
+    "resistancesTitle": "Resistansi",
+    "immunitiesTitle": "Imunitas"
   }
 }

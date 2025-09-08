@@ -149,7 +149,7 @@ function PokemonDetailOverlay({
           <div className="evolution-and-forms-container">
             {evolutionLine.length > 1 && (
               <div className="evolution-line-container">
-                <h3>Evolutions</h3>
+                <h3>{t("evolutionTitle")}</h3>
                 <div className="evolution-items-wrapper">
                   {evolutionLine.map((evo, index) => (
                     <React.Fragment key={evo.id || index}>
@@ -177,7 +177,7 @@ function PokemonDetailOverlay({
 
             {hasMultipleForms && !showFormsInSlider && (
               <div className="pokemon-forms-container">
-                <h3>Forms</h3>
+                <h3>{t("formsTitle")}</h3>
                 <div className="form-items-wrapper">
                   {pokemon.varieties.map((form, index) => (
                     <div
@@ -201,7 +201,7 @@ function PokemonDetailOverlay({
 
           {showFormsInSlider && (
             <div className="pokemon-forms-slider-container">
-              <h3>Forms</h3>
+              <h3>{t("formsTitle")}</h3>
               <div className="form-slider-wrapper">
                 <button
                   className="slider-button left"
@@ -239,7 +239,7 @@ function PokemonDetailOverlay({
           <div className="overlay-content-area">
             <div className="main-info-container">
               <span className="measurement-tag height-tag">
-                {t("height")}: {displayedPokemon.height / 10} m
+                {t("height")} {displayedPokemon.height / 10} m
               </span>
               <img
                 src={displayedPokemon.imageUrl}
@@ -247,7 +247,7 @@ function PokemonDetailOverlay({
                 className="overlay-image"
               />
               <span className="measurement-tag weight-tag">
-                {t("weight")}: {displayedPokemon.weight / 10} kg
+                {t("weight")} {displayedPokemon.weight / 10} kg
               </span>
             </div>
 
@@ -256,7 +256,7 @@ function PokemonDetailOverlay({
             </h1>
 
             <div className="overlay-description-box">
-              <h3>Deskripsi</h3>
+              <h3>{t("descriptionTitle")}</h3>
               <p>{displayedPokemon.description}</p>
             </div>
 
@@ -269,7 +269,7 @@ function PokemonDetailOverlay({
 
             <div className="grid-section">
               <div className="box">
-                <h3>Type</h3>
+                <h3>{t("typeTitle")}</h3>
                 <div className="types-container">
                   {displayedPokemon.types.length > 0 ? (
                     displayedPokemon.types.map((type, index) => (
@@ -287,7 +287,7 @@ function PokemonDetailOverlay({
                 </div>
               </div>
               <div className="box">
-                <h3>Weaknesses</h3>
+                <h3>{t("weaknessesTitle")}</h3>
                 <div className="weakness-badges">
                   {relations.weaknesses.length > 0 ? (
                     relations.weaknesses.map((w, i) => (
@@ -305,7 +305,7 @@ function PokemonDetailOverlay({
                 </div>
               </div>
               <div className="box">
-                <h3>Resistances</h3>
+                <h3>{t("resistancesTitle")}</h3>
                 <div className="weakness-badges">
                   {relations.resistances.length > 0 ? (
                     relations.resistances.map((r, i) => (
@@ -323,7 +323,7 @@ function PokemonDetailOverlay({
                 </div>
               </div>
               <div className="box">
-                <h3>Immunities</h3>
+                <h3>{t("immunitiesTitle")}</h3>
                 <div className="weakness-badges">
                   {relations.immunities.length > 0 ? (
                     relations.immunities.map((i, idx) => (
@@ -344,7 +344,7 @@ function PokemonDetailOverlay({
 
             {pokemonLocations.length > 0 && (
               <div className="box full-width">
-                <h3>Lokasi</h3>
+                <h3>{t("locationTitle")}</h3>
                 <div className="location-list">
                   {locationsToShow.map((loc, index) => (
                     <span key={index} className="location-item">
@@ -366,7 +366,7 @@ function PokemonDetailOverlay({
             )}
             {pokemonLocations.length === 0 && (
               <div className="box full-width">
-                <h3>Lokasi</h3>
+                <h3>{t("locationTitle")}</h3>
                 <p>{t("noLocationFound")}</p>
               </div>
             )}
