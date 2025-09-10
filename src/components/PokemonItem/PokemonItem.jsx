@@ -2,12 +2,13 @@ import { useState, useRef, useEffect } from "react";
 import "./PokemonItem.css";
 import { colours } from "../../data/colours";
 import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
-import StatGrid from "../../StatGrid/StatGrid";
 import { useTranslation } from "react-i18next";
+import PokemonCardSkeleton from "./PokemonCardSkeleton/PokemonCardSkeleton";
 
 function PokemonItem({
   evolutionLine,
   initialIndex,
+  initialBranchIndex, // Terima prop baru
   onAddForComparison,
   onRemoveFromComparison,
   selectedPokemons,
@@ -15,26 +16,52 @@ function PokemonItem({
 }) {
   const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  // Gunakan initialBranchIndex untuk state awal
+  const [currentBranchIndex, setCurrentBranchIndex] = useState(
+    initialBranchIndex || 0
+  );
   const [currentFormIndex, setCurrentFormIndex] = useState(0);
-  const [showPrevTooltip, setShowPrevTooltip] = useState(false);
-  const [showNextTooltip, setShowNextTooltip] = useState(false);
-  const [showPrevFormTooltip, setShowPrevFormTooltip] = useState(false);
-  const [showNextFormTooltip, setShowNextFormTooltip] = useState(false);
-  const prevTooltipTimeoutRef = useRef(null);
-  const nextTooltipTimeoutRef = useRef(null);
-  const prevFormTooltipTimeoutRef = useRef(null);
-  const nextFormTooltipTimeoutRef = useRef(null);
+
+  const [activeTooltip, setActiveTooltip] = useState(null);
+  const tooltipTimeoutRef = useRef(null);
 
   useEffect(() => {
-    // Memastikan currentIndex selalu sinkron dengan initialIndex yang baru
     setCurrentIndex(initialIndex);
+    // Pastikan branch juga di-reset saat prop berubah
+    setCurrentBranchIndex(initialBranchIndex || 0);
     setCurrentFormIndex(0);
-  }, [initialIndex, evolutionLine]);
+  }, [initialIndex, initialBranchIndex, evolutionLine]);
+
+  const handleMouseEnter = (tooltipId) => {
+    tooltipTimeoutRef.current = setTimeout(() => {
+      setActiveTooltip(tooltipId);
+    }, 500);
+  };
+
+  const handleMouseLeave = () => {
+    clearTimeout(tooltipTimeoutRef.current);
+    setActiveTooltip(null);
+  };
+
+  const renderTooltip = (tooltipId, text) => {
+    return (
+      <span
+        className="evolution-tooltip-wrapper"
+        onMouseEnter={() => handleMouseEnter(tooltipId)}
+        onMouseLeave={handleMouseLeave}
+      >
+        {activeTooltip === tooltipId && (
+          <span className="evolution-tooltip">{text}</span>
+        )}
+      </span>
+    );
+  };
 
   const handleNext = (event) => {
     event.stopPropagation();
-    if (currentIndex < evolutionLine.length - 1) {
+    if (evolutionLine.length > 0 && currentIndex < evolutionLine.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
+      setCurrentBranchIndex(0);
       setCurrentFormIndex(0);
     }
   };
@@ -43,14 +70,32 @@ function PokemonItem({
     event.stopPropagation();
     if (currentIndex > 0) {
       setCurrentIndex((prevIndex) => prevIndex - 1);
+      setCurrentBranchIndex(0);
+      setCurrentFormIndex(0);
+    }
+  };
+
+  const handleNextBranch = (event) => {
+    event.stopPropagation();
+    const currentStage = evolutionLine[currentIndex];
+    if (currentStage && currentBranchIndex < currentStage.pokemons.length - 1) {
+      setCurrentBranchIndex((prev) => prev + 1);
+      setCurrentFormIndex(0);
+    }
+  };
+
+  const handlePrevBranch = (event) => {
+    event.stopPropagation();
+    if (currentBranchIndex > 0) {
+      setCurrentBranchIndex((prev) => prev - 1);
       setCurrentFormIndex(0);
     }
   };
 
   const handleNextForm = (event) => {
     event.stopPropagation();
-    const pokemon = evolutionLine[currentIndex];
-    if (currentFormIndex < pokemon.varieties.length - 1) {
+    const pokemon = evolutionLine[currentIndex]?.pokemons[currentBranchIndex];
+    if (pokemon && currentFormIndex < pokemon.varieties.length - 1) {
       setCurrentFormIndex((prevIndex) => prevIndex + 1);
     }
   };
@@ -67,16 +112,24 @@ function PokemonItem({
     onShowDetails({
       evolutionLine: evolutionLine,
       initialIndex: currentIndex,
+      initialBranchIndex: currentBranchIndex,
       initialFormIndex: currentFormIndex,
     });
   };
 
-  const pokemon = evolutionLine[currentIndex];
-  const displayedPokemon = pokemon.varieties[currentFormIndex];
+  const currentStage = evolutionLine?.[currentIndex];
+  const currentPokemonData = currentStage?.pokemons?.[currentBranchIndex];
+  const displayedPokemon = currentPokemonData?.varieties?.[currentFormIndex];
+
+  if (!displayedPokemon) {
+    return null;
+  }
+
   const mainType = displayedPokemon.types[0].toLowerCase();
   const cardBackgroundColor = colours[mainType];
   const isSelected = selectedPokemons.some((p) => p.id === displayedPokemon.id);
-  const hasMultipleForms = pokemon.varieties && pokemon.varieties.length > 1;
+  const hasMultipleForms = currentPokemonData.varieties.length > 1;
+  const hasBranches = currentStage.pokemons.length > 1;
 
   const handleAddClick = (event) => {
     event.stopPropagation();
@@ -85,50 +138,6 @@ function PokemonItem({
     } else {
       onAddForComparison(displayedPokemon);
     }
-  };
-
-  const handlePrevMouseEnter = () => {
-    prevTooltipTimeoutRef.current = setTimeout(() => {
-      setShowPrevTooltip(true);
-    }, 500);
-  };
-
-  const handlePrevMouseLeave = () => {
-    clearTimeout(prevTooltipTimeoutRef.current);
-    setShowPrevTooltip(false);
-  };
-
-  const handleNextMouseEnter = () => {
-    nextTooltipTimeoutRef.current = setTimeout(() => {
-      setShowNextTooltip(true);
-    }, 500);
-  };
-
-  const handleNextMouseLeave = () => {
-    clearTimeout(nextTooltipTimeoutRef.current);
-    setShowNextTooltip(false);
-  };
-
-  const handlePrevFormMouseEnter = () => {
-    prevFormTooltipTimeoutRef.current = setTimeout(() => {
-      setShowPrevFormTooltip(true);
-    }, 500);
-  };
-
-  const handlePrevFormMouseLeave = () => {
-    clearTimeout(prevFormTooltipTimeoutRef.current);
-    setShowPrevFormTooltip(false);
-  };
-
-  const handleNextFormMouseEnter = () => {
-    nextFormTooltipTimeoutRef.current = setTimeout(() => {
-      setShowNextFormTooltip(true);
-    }, 500);
-  };
-
-  const handleNextFormMouseLeave = () => {
-    clearTimeout(nextFormTooltipTimeoutRef.current);
-    setShowNextFormTooltip(false);
   };
 
   return (
@@ -152,23 +161,21 @@ function PokemonItem({
           <div className="evolution-controls top-controls">
             <span
               className="evolution-tooltip-wrapper"
-              onMouseEnter={handlePrevMouseEnter}
-              onMouseLeave={handlePrevMouseLeave}
+              onMouseEnter={() => handleMouseEnter("prev")}
+              onMouseLeave={handleMouseLeave}
             >
               <button onClick={handlePrev} disabled={currentIndex === 0}>
                 <MdArrowBackIos className="evolution-icon" />
               </button>
-              {showPrevTooltip && (
-                <span className="evolution-tooltip">{t("tooltipPrev")}</span>
-              )}
+              {renderTooltip("prev", t("tooltipPrev"))}
             </span>
             <span>
               {currentIndex + 1} / {evolutionLine.length}
             </span>
             <span
               className="evolution-tooltip-wrapper"
-              onMouseEnter={handleNextMouseEnter}
-              onMouseLeave={handleNextMouseLeave}
+              onMouseEnter={() => handleMouseEnter("next")}
+              onMouseLeave={handleMouseLeave}
             >
               <button
                 onClick={handleNext}
@@ -176,9 +183,7 @@ function PokemonItem({
               >
                 <MdArrowForwardIos className="evolution-icon" />
               </button>
-              {showNextTooltip && (
-                <span className="evolution-tooltip">{t("tooltipNext")}</span>
-              )}
+              {renderTooltip("next", t("tooltipNext"))}
             </span>
           </div>
         )}
@@ -202,37 +207,71 @@ function PokemonItem({
         ))}
       </div>
 
+      {hasBranches && (
+        <div className="evolution-controls branch-controls">
+          <span
+            className="evolution-tooltip-wrapper"
+            onMouseEnter={() => handleMouseEnter("prevBranch")}
+            onMouseLeave={handleMouseLeave}
+          >
+            <button
+              onClick={handlePrevBranch}
+              disabled={currentBranchIndex === 0}
+            >
+              <MdArrowBackIos className="evolution-icon" />
+            </button>
+            {renderTooltip("prevBranch", t("tooltipPrevBranch"))}
+          </span>
+          <span>
+            {t("branch")} {currentBranchIndex + 1} /{" "}
+            {currentStage.pokemons.length}
+          </span>
+          <span
+            className="evolution-tooltip-wrapper"
+            onMouseEnter={() => handleMouseEnter("nextBranch")}
+            onMouseLeave={handleMouseLeave}
+          >
+            <button
+              onClick={handleNextBranch}
+              disabled={currentBranchIndex === currentStage.pokemons.length - 1}
+            >
+              <MdArrowForwardIos className="evolution-icon" />
+            </button>
+            {renderTooltip("nextBranch", t("tooltipNextBranch"))}
+          </span>
+        </div>
+      )}
+
       {hasMultipleForms && (
         <div className="evolution-controls bottom-controls">
           <span
             className="evolution-tooltip-wrapper"
-            onMouseEnter={handlePrevFormMouseEnter}
-            onMouseLeave={handlePrevFormMouseLeave}
+            onMouseEnter={() => handleMouseEnter("prevForm")}
+            onMouseLeave={handleMouseLeave}
           >
             <button onClick={handlePrevForm} disabled={currentFormIndex === 0}>
               <MdArrowBackIos className="evolution-icon" />
             </button>
-            {showPrevFormTooltip && (
-              <span className="evolution-tooltip">{t("tooltipPrevForm")}</span>
-            )}
+            {renderTooltip("prevForm", t("tooltipPrevForm"))}
           </span>
           <span>
-            Bentuk {currentFormIndex + 1} / {pokemon.varieties.length}
+            {t("formsTitle")} {currentFormIndex + 1} /{" "}
+            {currentPokemonData.varieties.length}
           </span>
           <span
             className="evolution-tooltip-wrapper"
-            onMouseEnter={handleNextFormMouseEnter}
-            onMouseLeave={handleNextFormMouseLeave}
+            onMouseEnter={() => handleMouseEnter("nextForm")}
+            onMouseLeave={handleMouseLeave}
           >
             <button
               onClick={handleNextForm}
-              disabled={currentFormIndex === pokemon.varieties.length - 1}
+              disabled={
+                currentFormIndex === currentPokemonData.varieties.length - 1
+              }
             >
               <MdArrowForwardIos className="evolution-icon" />
             </button>
-            {showNextFormTooltip && (
-              <span className="evolution-tooltip">{t("tooltipNextForm")}</span>
-            )}
+            {renderTooltip("nextForm", t("tooltipNextForm"))}
           </span>
         </div>
       )}

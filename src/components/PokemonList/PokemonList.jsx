@@ -191,14 +191,12 @@ function Pokemons({
               <select
                 className="type-dropdown"
                 value={filterType}
-                // --- PERBAIKAN DIMULAI DI SINI ---
                 onChange={(e) => {
                   const newType = e.target.value;
                   setFilterType(newType);
                   setSearchQuery("");
                   loadPokemons(newType);
                 }}
-                // --- PERBAIKAN BERAKHIR DI SINI ---
                 style={{ "--type-color": colours[filterType] }}
               >
                 <option value="all">{t("allType")}</option>
@@ -340,12 +338,17 @@ function Pokemons({
                 </div>
               )}
               {processedPokemons.map((item, index) => {
+                const itemKey = item.chainId
+                  ? `${item.chainId}-${index}`
+                  : index;
+
                 if (processedPokemons.length === index + 1) {
                   return (
-                    <div ref={lastPokemonElementRef} key={index}>
+                    <div ref={lastPokemonElementRef} key={itemKey}>
                       <PokemonItem
                         evolutionLine={item.evolutionLine}
                         initialIndex={item.initialIndex}
+                        initialBranchIndex={item.initialBranchIndex} // Teruskan prop baru
                         onAddForComparison={onAddForComparison}
                         onRemoveFromComparison={onRemoveFromComparison}
                         selectedPokemons={selectedPokemons}
@@ -356,9 +359,10 @@ function Pokemons({
                 } else {
                   return (
                     <PokemonItem
-                      key={index}
+                      key={itemKey}
                       evolutionLine={item.evolutionLine}
                       initialIndex={item.initialIndex}
+                      initialBranchIndex={item.initialBranchIndex} // Teruskan prop baru
                       onAddForComparison={onAddForComparison}
                       onRemoveFromComparison={onRemoveFromComparison}
                       selectedPokemons={selectedPokemons}

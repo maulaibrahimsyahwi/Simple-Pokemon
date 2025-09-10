@@ -224,12 +224,13 @@ function App() {
             <PokemonDetailOverlay
               evolutionLine={selectedPokemonForDetails.evolutionLine}
               initialIndex={selectedPokemonForDetails.initialIndex}
+              initialBranchIndex={selectedPokemonForDetails.initialBranchIndex}
               initialFormIndex={selectedPokemonForDetails.initialFormIndex}
               onClose={handleCloseDetails}
               selectedPokemons={selectedPokemons}
               onAddForComparison={handleAddForComparison}
               onRemoveFromComparison={handleRemoveFromComparison}
-              onGoToCompare={handleCompareClick} // Prop baru
+              onGoToCompare={handleCompareClick}
             />
           )}
         </>

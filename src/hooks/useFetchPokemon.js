@@ -54,6 +54,23 @@ const fetchPokemonDetailsFromUrl = async (url, description) => {
   }
 };
 
+const parseEvolutionChain = (chain) => {
+  const stages = [];
+  const traverse = (node, level) => {
+    if (!stages[level]) {
+      stages[level] = [];
+    }
+    stages[level].push(node.species.name);
+    if (node.evolves_to.length > 0) {
+      node.evolves_to.forEach((evolution) => {
+        traverse(evolution, level + 1);
+      });
+    }
+  };
+  traverse(chain, 0);
+  return stages;
+};
+
 const useFetchPokemon = (allPokemonNames) => {
   const [pokemons, setPokemons] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -64,7 +81,6 @@ const useFetchPokemon = (allPokemonNames) => {
   const hasMore = useRef(true);
   const isFetchingRef = useRef(false);
   const currentFilterType = useRef("all");
-  const processedChainIds = useRef(new Set());
   const typePokemonNames = useRef([]);
 
   const fetchPokemonDetails = useCallback(async (pokemonList) => {
@@ -90,64 +106,70 @@ const useFetchPokemon = (allPokemonNames) => {
 
     const validChains = evolutionChains.filter((chain) => chain !== null);
 
-    const uniqueChains = validChains.filter((chain) => {
-      if (!processedChainIds.current.has(chain.id)) {
-        processedChainIds.current.add(chain.id);
-        return true;
+    // Ubah logika untuk menangani duplikat rantai evolusi dengan benar
+    const uniqueChains = [];
+    const chainsById = new Map();
+    validChains.forEach((chain) => {
+      if (!chainsById.has(chain.id)) {
+        chainsById.set(chain.id, chain);
+        uniqueChains.push(chain);
       }
-      return false;
     });
 
     const pokemonDetails = await Promise.all(
       uniqueChains.map(async (chain) => {
-        const pokemonNames = [];
-        let current = chain.chain;
-        while (current) {
-          pokemonNames.push(current.species.name);
-          current = current.evolves_to[0];
-        }
-
-        const pokemonDataArray = await Promise.all(
-          pokemonNames.map(async (pokemonName) => {
-            const speciesUrl = `https://pokeapi.co/api/v2/pokemon-species/${pokemonName}/`;
-            const speciesResponse = await fetch(speciesUrl);
-            const speciesData = await speciesResponse.json();
-            const descriptionEntry =
-              speciesData.flavor_text_entries.find(
-                (entry) => entry.language.name === "en"
-              ) || speciesData.flavor_text_entries[0];
-            const description = descriptionEntry
-              ? descriptionEntry.flavor_text.replace(/\s+/g, " ")
-              : "No description available.";
-
-            const varieties = [];
-
-            // Memperbaiki logika untuk mengambil SEMUA varian
-            if (speciesData.varieties.length > 0) {
-              const varietiesPromises = speciesData.varieties.map((v) =>
-                fetchPokemonDetailsFromUrl(v.pokemon.url, description)
-              );
-              const fetchedVarieties = await Promise.all(varietiesPromises);
-              varieties.push(...fetchedVarieties.filter(Boolean));
-            }
-
-            return {
-              id: varieties[0]?.id,
-              name: varieties[0]?.name,
-              imageUrl: varieties[0]?.imageUrl,
-              types: varieties[0]?.types || [],
-              description: varieties[0]?.description,
-              stats: varieties[0]?.stats || {},
-              height: varieties[0]?.height,
-              weight: varieties[0]?.weight,
-              varieties,
-            };
+        const evolutionStages = parseEvolutionChain(chain.chain);
+        const structuredEvolutionLine = await Promise.all(
+          evolutionStages.map(async (stageNames, stageIndex) => {
+            const pokemonsInStage = (
+              await Promise.all(
+                stageNames.map(async (pokemonName) => {
+                  const speciesUrl = `https://pokeapi.co/api/v2/pokemon-species/${pokemonName}/`;
+                  const speciesResponse = await fetch(speciesUrl);
+                  const speciesData = await speciesResponse.json();
+                  const descriptionEntry =
+                    speciesData.flavor_text_entries.find(
+                      (entry) => entry.language.name === "en"
+                    ) || speciesData.flavor_text_entries[0];
+                  const description = descriptionEntry
+                    ? descriptionEntry.flavor_text.replace(/\s+/g, " ")
+                    : "No description available.";
+                  const varieties = (
+                    await Promise.all(
+                      speciesData.varieties.map((v) =>
+                        fetchPokemonDetailsFromUrl(v.pokemon.url, description)
+                      )
+                    )
+                  ).filter(Boolean);
+                  return { id: varieties[0]?.id, name: pokemonName, varieties };
+                })
+              )
+            ).filter((p) => p && p.varieties.length > 0);
+            return { stage: stageIndex, pokemons: pokemonsInStage };
           })
         );
 
+        const initialPokemonName = chain.speciesData.name;
+        let initialIndex = 0;
+        let initialBranchIndex = 0;
+
+        structuredEvolutionLine.forEach((stage, stageIdx) => {
+          const branchIdx = stage.pokemons.findIndex(
+            (p) => p.name === initialPokemonName
+          );
+          if (branchIdx !== -1) {
+            initialIndex = stageIdx;
+            initialBranchIndex = branchIdx;
+          }
+        });
+
         return {
-          evolutionLine: pokemonDataArray.filter((p) => p !== null),
-          initialIndex: 0,
+          chainId: chain.id,
+          evolutionLine: structuredEvolutionLine.filter(
+            (stage) => stage.pokemons.length > 0
+          ),
+          initialIndex,
+          initialBranchIndex,
         };
       })
     );
@@ -188,7 +210,6 @@ const useFetchPokemon = (allPokemonNames) => {
 
   const loadPokemons = useCallback(
     async (type = "all") => {
-      processedChainIds.current.clear();
       currentFilterType.current = type;
       setPage(0);
       setPokemons([]);
@@ -203,7 +224,6 @@ const useFetchPokemon = (allPokemonNames) => {
         setLoading(true);
         isFetchingRef.current = true;
         setError(null);
-        processedChainIds.current.clear();
 
         const cacheKey = `pokemons_type_names_${type}`;
         const cachedData = getCache(cacheKey);
@@ -245,9 +265,9 @@ const useFetchPokemon = (allPokemonNames) => {
       setPokemons([]);
       isFetchingRef.current = true;
       setError(null);
-      processedChainIds.current.clear();
 
-      const cacheKey = `pokemon_search_${name.toLowerCase()}`;
+      const lowerCaseName = name.toLowerCase();
+      const cacheKey = `pokemon_search_${lowerCaseName}`;
       const cachedData = getCache(cacheKey);
       if (cachedData) {
         setPokemons(cachedData);
@@ -257,8 +277,9 @@ const useFetchPokemon = (allPokemonNames) => {
         return;
       }
 
+      // Perbaiki logika pencocokan untuk memprioritaskan hasil yang paling relevan
       const matchingNames = allPokemonNames.filter((pokemonName) =>
-        pokemonName.toLowerCase().includes(name.toLowerCase())
+        pokemonName.toLowerCase().includes(lowerCaseName)
       );
 
       if (matchingNames.length === 0) {
@@ -270,18 +291,18 @@ const useFetchPokemon = (allPokemonNames) => {
       }
 
       try {
-        const speciesList = matchingNames.slice(0, 20).map((p) => ({
+        const speciesList = matchingNames.map((p) => ({
           name: p,
           url: `https://pokeapi.co/api/v2/pokemon-species/${p}/`,
         }));
 
         const newPokemons = await fetchPokemonDetails(speciesList);
-
         setPokemons(newPokemons);
         setCache(cacheKey, newPokemons);
         hasMore.current = false;
       } catch (err) {
         setError(err.message);
+        setPokemons([]);
       } finally {
         setLoading(false);
         isFetchingRef.current = false;

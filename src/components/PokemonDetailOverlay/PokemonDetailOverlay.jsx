@@ -12,6 +12,7 @@ import "./PokemonDetailOverlay.css";
 function PokemonDetailOverlay({
   evolutionLine,
   initialIndex,
+  initialBranchIndex,
   initialFormIndex,
   onClose,
   selectedPokemons,
@@ -22,6 +23,8 @@ function PokemonDetailOverlay({
   const { t } = useTranslation();
   const { fetchWeaknesses, fetchLocations } = usePokemonData();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [currentBranchIndex, setCurrentBranchIndex] =
+    useState(initialBranchIndex);
   const [currentFormIndex, setCurrentFormIndex] = useState(initialFormIndex);
   const [relations, setRelations] = useState({
     weaknesses: [],
@@ -44,14 +47,23 @@ function PokemonDetailOverlay({
   useEffect(() => {
     if (evolutionLine && evolutionLine.length > 0) {
       setCurrentIndex(initialIndex);
+      setCurrentBranchIndex(initialBranchIndex);
       setCurrentFormIndex(initialFormIndex);
     }
-  }, [evolutionLine, initialIndex, initialFormIndex]);
+  }, [evolutionLine, initialIndex, initialBranchIndex, initialFormIndex]);
 
   useEffect(() => {
     const fetchOverlayData = async () => {
-      if (evolutionLine && evolutionLine.length > 0) {
-        const pokemon = evolutionLine[currentIndex].varieties[currentFormIndex];
+      if (
+        evolutionLine &&
+        evolutionLine.length > 0 &&
+        evolutionLine[currentIndex] &&
+        evolutionLine[currentIndex].pokemons[currentBranchIndex]
+      ) {
+        const pokemon =
+          evolutionLine[currentIndex].pokemons[currentBranchIndex].varieties[
+            currentFormIndex
+          ];
         const weaknesses = await fetchWeaknesses(pokemon.types);
         const locations = await fetchLocations(pokemon.id);
         setRelations(weaknesses);
@@ -70,23 +82,52 @@ function PokemonDetailOverlay({
   }, [
     evolutionLine,
     currentIndex,
+    currentBranchIndex,
     currentFormIndex,
     fetchWeaknesses,
     fetchLocations,
   ]);
 
-  if (!evolutionLine || evolutionLine.length === 0) {
+  if (
+    !evolutionLine ||
+    evolutionLine.length === 0 ||
+    !evolutionLine[currentIndex] ||
+    !evolutionLine[currentIndex].pokemons[currentBranchIndex]
+  ) {
     return null;
   }
 
-  const pokemon = evolutionLine[currentIndex];
-  const displayedPokemon = pokemon.varieties[currentFormIndex];
-  const hasMultipleForms = pokemon.varieties && pokemon.varieties.length > 1;
-  const showFormsInSlider = hasMultipleForms && pokemon.varieties.length > 3;
+  const currentStage = evolutionLine[currentIndex];
+  const pokemonData = currentStage.pokemons[currentBranchIndex];
+  const displayedPokemon = pokemonData.varieties[currentFormIndex];
+
+  const hasMultipleForms =
+    pokemonData.varieties && pokemonData.varieties.length > 1;
+  const showFormsInSlider =
+    hasMultipleForms && pokemonData.varieties.length > 3;
   const locationsToShow = showAllLocations
     ? pokemonLocations
     : pokemonLocations.slice(0, 8);
   const hasMoreLocations = pokemonLocations.length > 8;
+
+  // --- LOGIKA BARU UNTUK KONTROL TAMPILAN CABANG ---
+  let branchDisplayStage = null;
+  let branchSourceStageIndex = -1;
+
+  const nextStage = evolutionLine[currentIndex + 1];
+  if (nextStage && nextStage.pokemons.length > 1) {
+    branchDisplayStage = nextStage;
+    branchSourceStageIndex = currentIndex;
+  } else if (currentIndex > 0) {
+    const currentStageIsBranch =
+      evolutionLine[currentIndex].pokemons.length > 1;
+    if (currentStageIsBranch) {
+      branchDisplayStage = evolutionLine[currentIndex];
+      branchSourceStageIndex = currentIndex - 1;
+    }
+  }
+  const hasBranchesToDisplay = branchDisplayStage !== null;
+  // --- BATAS AKHIR LOGIKA BARU ---
 
   const scrollForms = (direction) => {
     if (formSliderRef.current) {
@@ -151,26 +192,35 @@ function PokemonDetailOverlay({
               <div className="evolution-line-container">
                 <h3>{t("evolutionTitle")}</h3>
                 <div className="evolution-items-wrapper">
-                  {evolutionLine.map((evo, index) => (
-                    <React.Fragment key={evo.id || index}>
-                      <div
-                        className={`evolution-item ${
-                          index === currentIndex ? "active" : ""
-                        }`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCurrentIndex(index);
-                          setCurrentFormIndex(0);
-                        }}
-                      >
-                        <img src={evo.varieties[0].imageUrl} alt={evo.name} />
-                        <span>{evo.name}</span>
-                      </div>
-                      {index < evolutionLine.length - 1 && (
-                        <IoChevronForward className="evolution-arrow" />
-                      )}
-                    </React.Fragment>
-                  ))}
+                  {evolutionLine.map((stage, index) => {
+                    const firstPokemonOfStage = stage.pokemons[0];
+                    const representativePokemon =
+                      firstPokemonOfStage.varieties[0];
+                    return (
+                      <React.Fragment key={representativePokemon.id || index}>
+                        <div
+                          className={`evolution-item ${
+                            index === currentIndex ? "active" : ""
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentIndex(index);
+                            setCurrentBranchIndex(0);
+                            setCurrentFormIndex(0);
+                          }}
+                        >
+                          <img
+                            src={representativePokemon.imageUrl}
+                            alt={representativePokemon.name}
+                          />
+                          <span>{representativePokemon.name}</span>
+                        </div>
+                        {index < evolutionLine.length - 1 && (
+                          <IoChevronForward className="evolution-arrow" />
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -179,7 +229,7 @@ function PokemonDetailOverlay({
               <div className="pokemon-forms-container">
                 <h3>{t("formsTitle")}</h3>
                 <div className="form-items-wrapper">
-                  {pokemon.varieties.map((form, index) => (
+                  {pokemonData.varieties.map((form, index) => (
                     <div
                       key={form.id || index}
                       className={`form-item ${
@@ -210,7 +260,7 @@ function PokemonDetailOverlay({
                   <MdArrowBackIos />
                 </button>
                 <div className="form-items-wrapper slider" ref={formSliderRef}>
-                  {pokemon.varieties.map((form, index) => (
+                  {pokemonData.varieties.map((form, index) => (
                     <div
                       key={form.id || index}
                       className={`form-item ${
@@ -232,6 +282,43 @@ function PokemonDetailOverlay({
                 >
                   <MdArrowForwardIos />
                 </button>
+              </div>
+            </div>
+          )}
+
+          {hasBranchesToDisplay && (
+            <div className="pokemon-branches-container">
+              <h3>{t("branchesTitle")}</h3>
+              <div className="branch-items-wrapper">
+                {branchDisplayStage.pokemons.map(
+                  (branchPokemon, branchIndex) => {
+                    const representativePokemon = branchPokemon.varieties[0];
+                    const isActiveBranch =
+                      branchSourceStageIndex + 1 === currentIndex &&
+                      branchIndex === currentBranchIndex;
+
+                    return (
+                      <div
+                        key={representativePokemon.id}
+                        className={`branch-item ${
+                          isActiveBranch ? "active" : ""
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentIndex(branchSourceStageIndex + 1);
+                          setCurrentBranchIndex(branchIndex);
+                          setCurrentFormIndex(0);
+                        }}
+                      >
+                        <img
+                          src={representativePokemon.imageUrl}
+                          alt={representativePokemon.name}
+                        />
+                        <span>{representativePokemon.name}</span>
+                      </div>
+                    );
+                  }
+                )}
               </div>
             </div>
           )}
