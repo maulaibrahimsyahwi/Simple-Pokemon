@@ -151,12 +151,25 @@
 
 .form-items-wrapper.slider {
   display: flex;
-  overflow-x: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   scroll-behavior: smooth;
   flex-grow: 1;
   gap: 10px;
-  padding: 0 40px;
+  padding: 10px 40px;
+  flex-wrap: nowrap;
 }
+
+/* --- PERUBAHAN DIMULAI DI SINI --- */
+.form-items-wrapper.slider::-webkit-scrollbar {
+  display: none; /* Sembunyikan scrollbar untuk browser Webkit (Chrome, Safari) */
+}
+
+.form-items-wrapper.slider {
+  -ms-overflow-style: none; /* Sembunyikan scrollbar untuk IE dan Edge */
+  scrollbar-width: none; /* Sembunyikan scrollbar untuk Firefox */
+}
+/* --- PERUBAHAN BERAKHIR DI SINI --- */
 
 .slider-button {
   background-color: rgba(0, 0, 0, 0.5);
@@ -339,6 +352,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .evolution-item,
