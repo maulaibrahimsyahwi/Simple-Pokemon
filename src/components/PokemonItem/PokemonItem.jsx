@@ -8,7 +8,7 @@ import PokemonCardSkeleton from "./PokemonCardSkeleton/PokemonCardSkeleton";
 function PokemonItem({
   evolutionLine,
   initialIndex,
-  initialBranchIndex, // Terima prop baru
+  initialBranchIndex,
   onAddForComparison,
   onRemoveFromComparison,
   selectedPokemons,
@@ -16,21 +16,22 @@ function PokemonItem({
 }) {
   const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  // Gunakan initialBranchIndex untuk state awal
   const [currentBranchIndex, setCurrentBranchIndex] = useState(
     initialBranchIndex || 0
   );
   const [currentFormIndex, setCurrentFormIndex] = useState(0);
-
   const [activeTooltip, setActiveTooltip] = useState(null);
   const tooltipTimeoutRef = useRef(null);
 
   useEffect(() => {
     setCurrentIndex(initialIndex);
-    // Pastikan branch juga di-reset saat prop berubah
     setCurrentBranchIndex(initialBranchIndex || 0);
     setCurrentFormIndex(0);
   }, [initialIndex, initialBranchIndex, evolutionLine]);
+
+  const currentStage = evolutionLine?.[currentIndex];
+  const currentPokemonData = currentStage?.pokemons?.[currentBranchIndex];
+  const displayedPokemon = currentPokemonData?.varieties?.[currentFormIndex];
 
   const handleMouseEnter = (tooltipId) => {
     tooltipTimeoutRef.current = setTimeout(() => {
@@ -117,10 +118,6 @@ function PokemonItem({
     });
   };
 
-  const currentStage = evolutionLine?.[currentIndex];
-  const currentPokemonData = currentStage?.pokemons?.[currentBranchIndex];
-  const displayedPokemon = currentPokemonData?.varieties?.[currentFormIndex];
-
   if (!displayedPokemon) {
     return null;
   }
@@ -130,6 +127,11 @@ function PokemonItem({
   const isSelected = selectedPokemons.some((p) => p.id === displayedPokemon.id);
   const hasMultipleForms = currentPokemonData.varieties.length > 1;
   const hasBranches = currentStage.pokemons.length > 1;
+
+  // --- PERUBAHAN DIMULAI DI SINI ---
+  // Terapkan kelas 'long-name' jika panjang nama lebih dari 10 karakter
+  const nameClassName = displayedPokemon.name.length > 10 ? "long-name" : "";
+  // --- PERUBAHAN BERAKHIR DI SINI ---
 
   const handleAddClick = (event) => {
     event.stopPropagation();
@@ -194,7 +196,10 @@ function PokemonItem({
         alt={displayedPokemon.name}
         className="pokemon-image"
       />
-      <h1 style={{ textTransform: "capitalize" }}>{displayedPokemon.name}</h1>
+      {/* Terapkan kelas CSS secara dinamis */}
+      <h1 className={nameClassName} style={{ textTransform: "capitalize" }}>
+        {displayedPokemon.name}
+      </h1>
       <div className="types-container">
         {displayedPokemon.types.map((type, index) => (
           <span

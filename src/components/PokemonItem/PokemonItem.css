@@ -1,6 +1,6 @@
 .pokemon-card {
   width: 300px;
-  height: 520px;
+  height: 540px;
   border-radius: 10px;
   text-align: center;
   padding: 15px;
@@ -91,11 +91,19 @@
 }
 
 .pokemon-card h1 {
-  font-size: 1.8rem;
-  margin: 10px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 1.7rem;
+  margin: 5px 0;
+  white-space: normal;
+  word-break: break-word;
+  height: 3.4em;
+  line-height: 1.2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pokemon-card h1.long-name {
+  font-size: 1.4rem;
 }
 
 .types-container {
@@ -325,8 +333,23 @@
   border-style: solid;
   border-color: #333 transparent transparent transparent;
 }
-
-.evolution-controls.bottom-controls,
+.evolution-controls.bottom-controls {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 5px 10px;
+  border-radius: 15px;
+  border: none;
+  box-shadow: none;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 30px;
+}
 .evolution-controls.branch-controls {
   margin-top: 5px;
   margin-bottom: 5px;
@@ -349,4 +372,10 @@
   outline: none;
   cursor: pointer;
   padding: 0;
+}
+
+@media (min-width: 1281px) {
+  .details-toggle-button {
+    display: none;
+  }
 }
