@@ -239,11 +239,28 @@
   cursor: pointer;
   text-align: left;
   text-transform: capitalize;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.suggestions-list li:hover {
+.suggestions-list li:hover,
+.suggestions-list li.highlighted {
   background-color: #f0f0f0;
 }
+
+.delete-history-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #888;
+}
+
+.delete-history-button:hover {
+  color: #333;
+}
+
 .load-more-container {
   margin-top: 20px;
   text-align: center;

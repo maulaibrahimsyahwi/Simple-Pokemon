@@ -43,6 +43,27 @@ function App() {
     }
   }, [isLogin]);
 
+  // EFEK BARU: Memuat state perbandingan dari localStorage saat aplikasi pertama kali dimuat
+  useEffect(() => {
+    const savedPokemons = JSON.parse(localStorage.getItem("selectedPokemons"));
+    if (isLogin && savedPokemons && savedPokemons.length === 2) {
+      setSelectedPokemons(savedPokemons);
+      setView("compare");
+    }
+  }, [isLogin]);
+
+  // EFEK BARU: Menyimpan Pokemon yang dipilih ke localStorage setiap kali berubah
+  useEffect(() => {
+    if (selectedPokemons.length === 2) {
+      localStorage.setItem(
+        "selectedPokemons",
+        JSON.stringify(selectedPokemons)
+      );
+    } else {
+      localStorage.removeItem("selectedPokemons");
+    }
+  }, [selectedPokemons]);
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (languageRef.current && !languageRef.current.contains(event.target)) {
@@ -93,7 +114,7 @@ function App() {
   const handleCompareClick = () => {
     if (selectedPokemons.length === 2) {
       setView("compare");
-      setSelectedPokemonForDetails(null); // Tutup overlay saat transisi
+      setSelectedPokemonForDetails(null);
     } else {
       alert(t("selectTwoPokemonsMessage"));
     }

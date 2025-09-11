@@ -5,7 +5,7 @@ import ErrorDisplay from "../ErrorDisplay/ErrorDisplay";
 import "./PokemonList.css";
 import NotfoundImage from "./img/Not Found Pokemon.webp";
 import { useTranslation } from "react-i18next";
-import { RiArrowDropDownLine } from "react-icons/ri";
+import { RiArrowDropDownLine, RiCloseLine } from "react-icons/ri";
 
 function Pokemons({
   isInitialLoad,
@@ -41,6 +41,15 @@ function Pokemons({
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
   const dropdownTimeoutRef = useRef(null);
   const [hoveredType, setHoveredType] = useState(null);
+  const [searchHistory, setSearchHistory] = useState([]);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const suggestionsListRef = useRef(null);
+
+  useEffect(() => {
+    const storedHistory =
+      JSON.parse(localStorage.getItem("searchHistory")) || [];
+    setSearchHistory(storedHistory);
+  }, []);
 
   const observer = useRef();
   const lastPokemonElementRef = useCallback(
@@ -94,18 +103,41 @@ function Pokemons({
     }
   }, [loading, processedPokemons, isInitialLoad, setIsInitialLoad]);
 
+  useEffect(() => {
+    if (highlightedIndex > -1 && suggestionsListRef.current) {
+      const highlightedItem =
+        suggestionsListRef.current.children[highlightedIndex];
+      if (highlightedItem) {
+        highlightedItem.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
+      }
+    }
+  }, [highlightedIndex]);
+
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-    setShowSuggestions(e.target.value.length > 0);
+    setShowSuggestions(e.target.value.length > 0 || searchHistory.length > 0);
     if (e.target.value === "") {
       loadPokemons(filterType);
     }
+  };
+
+  const updateSearchHistory = (query) => {
+    const newHistory = [
+      query,
+      ...searchHistory.filter((item) => item !== query),
+    ].slice(0, 3);
+    setSearchHistory(newHistory);
+    localStorage.setItem("searchHistory", JSON.stringify(newHistory));
   };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery) {
       searchPokemon(searchQuery);
+      updateSearchHistory(searchQuery);
       setShowSuggestions(false);
     }
   };
@@ -113,7 +145,31 @@ function Pokemons({
   const handleSuggestionClick = (name) => {
     setSearchQuery(name);
     searchPokemon(name);
+    updateSearchHistory(name);
     setShowSuggestions(false);
+  };
+
+  const handleHistoryDelete = (e, itemToDelete) => {
+    e.stopPropagation();
+    const newHistory = searchHistory.filter((item) => item !== itemToDelete);
+    setSearchHistory(newHistory);
+    localStorage.setItem("searchHistory", JSON.stringify(newHistory));
+  };
+
+  const handleKeyDown = (e) => {
+    const totalItems = searchHistory.length + searchSuggestions.length;
+    if (e.key === "ArrowDown") {
+      setHighlightedIndex((prevIndex) => (prevIndex + 1) % totalItems);
+    } else if (e.key === "ArrowUp") {
+      setHighlightedIndex(
+        (prevIndex) => (prevIndex - 1 + totalItems) % totalItems
+      );
+    } else if (e.key === "Enter" && highlightedIndex > -1) {
+      const selectedItem = [...searchHistory, ...searchSuggestions][
+        highlightedIndex
+      ];
+      handleSuggestionClick(selectedItem);
+    }
   };
 
   const handleFilterChange = (type, e) => {
@@ -149,6 +205,7 @@ function Pokemons({
       <form
         className="search-container-with-suggestions"
         onSubmit={handleSearchSubmit}
+        onKeyDown={handleKeyDown}
       >
         <input
           type="text"
@@ -157,11 +214,36 @@ function Pokemons({
           placeholder={t("searchPlaceholder")}
           className="search"
           onChange={handleSearchChange}
+          onFocus={() => setShowSuggestions(true)}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
         />
-        {showSuggestions && searchSuggestions.length > 0 && (
-          <ul className="suggestions-list">
+        {showSuggestions && (
+          <ul className="suggestions-list" ref={suggestionsListRef}>
+            {searchHistory.map((item, index) => (
+              <li
+                key={`history-${index}`}
+                className={highlightedIndex === index ? "highlighted" : ""}
+                onMouseDown={() => handleSuggestionClick(item)}
+              >
+                <span>{item}</span>
+                <button
+                  className="delete-history-button"
+                  onMouseDown={(e) => handleHistoryDelete(e, item)}
+                >
+                  <RiCloseLine />
+                </button>
+              </li>
+            ))}
             {searchSuggestions.map((name, index) => (
-              <li key={index} onClick={(e) => handleSuggestionClick(name, e)}>
+              <li
+                key={index}
+                className={
+                  highlightedIndex === searchHistory.length + index
+                    ? "highlighted"
+                    : ""
+                }
+                onMouseDown={() => handleSuggestionClick(name)}
+              >
                 {name}
               </li>
             ))}
@@ -348,7 +430,7 @@ function Pokemons({
                       <PokemonItem
                         evolutionLine={item.evolutionLine}
                         initialIndex={item.initialIndex}
-                        initialBranchIndex={item.initialBranchIndex} // Teruskan prop baru
+                        initialBranchIndex={item.initialBranchIndex}
                         onAddForComparison={onAddForComparison}
                         onRemoveFromComparison={onRemoveFromComparison}
                         selectedPokemons={selectedPokemons}
@@ -362,7 +444,7 @@ function Pokemons({
                       key={itemKey}
                       evolutionLine={item.evolutionLine}
                       initialIndex={item.initialIndex}
-                      initialBranchIndex={item.initialBranchIndex} // Teruskan prop baru
+                      initialBranchIndex={item.initialBranchIndex}
                       onAddForComparison={onAddForComparison}
                       onRemoveFromComparison={onRemoveFromComparison}
                       selectedPokemons={selectedPokemons}

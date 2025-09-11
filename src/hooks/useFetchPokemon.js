@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 jam
+const CACHE_DURATION = 182 * 24 * 60 * 60 * 1000; // Kurang lebih 6 bulan
 
 const getCache = (key) => {
   const cachedData = localStorage.getItem(key);
@@ -82,6 +82,7 @@ const useFetchPokemon = (allPokemonNames) => {
   const isFetchingRef = useRef(false);
   const currentFilterType = useRef("all");
   const typePokemonNames = useRef([]);
+  const loadedChainIds = useRef(new Set()); // Tambahkan ref untuk melacak chain ID
 
   const fetchPokemonDetails = useCallback(async (pokemonList) => {
     const evolutionChains = await Promise.all(
@@ -106,15 +107,21 @@ const useFetchPokemon = (allPokemonNames) => {
 
     const validChains = evolutionChains.filter((chain) => chain !== null);
 
-    // Ubah logika untuk menangani duplikat rantai evolusi dengan benar
     const uniqueChains = [];
-    const chainsById = new Map();
+    const chainsByIdInBatch = new Map();
     validChains.forEach((chain) => {
-      if (!chainsById.has(chain.id)) {
-        chainsById.set(chain.id, chain);
+      // Periksa duplikat di dalam batch saat ini DAN duplikat dari batch sebelumnya
+      if (
+        !chainsByIdInBatch.has(chain.id) &&
+        !loadedChainIds.current.has(chain.id)
+      ) {
+        chainsByIdInBatch.set(chain.id, chain);
         uniqueChains.push(chain);
       }
     });
+
+    // Tambahkan chain ID yang baru diproses ke dalam set global
+    uniqueChains.forEach((chain) => loadedChainIds.current.add(chain.id));
 
     const pokemonDetails = await Promise.all(
       uniqueChains.map(async (chain) => {
@@ -179,8 +186,12 @@ const useFetchPokemon = (allPokemonNames) => {
   const fetchPaginatedPokemons = useCallback(
     async (namesToFetch, currentPage, reset) => {
       isFetchingRef.current = true;
-      if (reset) setLoading(true);
-      else setMoreLoading(true);
+      if (reset) {
+        setLoading(true);
+        loadedChainIds.current.clear(); // Hapus cache ID saat reset/filter baru
+      } else {
+        setMoreLoading(true);
+      }
 
       try {
         if (namesToFetch.length === 0) {
@@ -265,6 +276,7 @@ const useFetchPokemon = (allPokemonNames) => {
       setPokemons([]);
       isFetchingRef.current = true;
       setError(null);
+      loadedChainIds.current.clear(); // Hapus cache ID saat pencarian baru
 
       const lowerCaseName = name.toLowerCase();
       const cacheKey = `pokemon_search_${lowerCaseName}`;
@@ -277,7 +289,6 @@ const useFetchPokemon = (allPokemonNames) => {
         return;
       }
 
-      // Perbaiki logika pencocokan untuk memprioritaskan hasil yang paling relevan
       const matchingNames = allPokemonNames.filter((pokemonName) =>
         pokemonName.toLowerCase().includes(lowerCaseName)
       );

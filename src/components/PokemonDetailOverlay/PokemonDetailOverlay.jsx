@@ -103,14 +103,15 @@ function PokemonDetailOverlay({
 
   const hasMultipleForms =
     pokemonData.varieties && pokemonData.varieties.length > 1;
+  // --- PERUBAHAN DI SINI ---
   const showFormsInSlider =
-    hasMultipleForms && pokemonData.varieties.length > 3;
+    hasMultipleForms && pokemonData.varieties.length > 2;
+  // --- BATAS PERUBAHAN ---
   const locationsToShow = showAllLocations
     ? pokemonLocations
     : pokemonLocations.slice(0, 8);
   const hasMoreLocations = pokemonLocations.length > 8;
 
-  // --- LOGIKA BARU UNTUK KONTROL TAMPILAN CABANG ---
   let branchDisplayStage = null;
   let branchSourceStageIndex = -1;
 
@@ -127,7 +128,6 @@ function PokemonDetailOverlay({
     }
   }
   const hasBranchesToDisplay = branchDisplayStage !== null;
-  // --- BATAS AKHIR LOGIKA BARU ---
 
   const scrollForms = (direction) => {
     if (formSliderRef.current) {
