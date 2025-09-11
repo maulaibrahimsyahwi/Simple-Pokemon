@@ -1,11 +1,13 @@
+// src/components/PokemonList/PokemonList.jsx
 import { useState, useEffect, useRef, useCallback } from "react";
 import PokemonItem from "../PokemonItem/PokemonItem";
 import PokemonCardSkeleton from "../PokemonItem/PokemonCardSkeleton/PokemonCardSkeleton";
 import ErrorDisplay from "../ErrorDisplay/ErrorDisplay";
+import Search from "./Search";
+import Filter from "./Filter";
 import "./PokemonList.css";
 import NotfoundImage from "./img/Not Found Pokemon.webp";
 import { useTranslation } from "react-i18next";
-import { RiArrowDropDownLine, RiCloseLine } from "react-icons/ri";
 
 function Pokemons({
   isInitialLoad,
@@ -36,11 +38,6 @@ function Pokemons({
   const listRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const searchInputRef = useRef(null);
-  const filterDropdownRef = useRef(null);
-  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
-  const dropdownTimeoutRef = useRef(null);
-  const [hoveredType, setHoveredType] = useState(null);
   const [searchHistory, setSearchHistory] = useState([]);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const suggestionsListRef = useRef(null);
@@ -116,14 +113,6 @@ function Pokemons({
     }
   }, [highlightedIndex]);
 
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-    setShowSuggestions(e.target.value.length > 0 || searchHistory.length > 0);
-    if (e.target.value === "") {
-      loadPokemons(filterType);
-    }
-  };
-
   const updateSearchHistory = (query) => {
     const newHistory = [
       query,
@@ -172,228 +161,35 @@ function Pokemons({
     }
   };
 
-  const handleFilterChange = (type, e) => {
-    e.stopPropagation();
-    setFilterType(type);
-    setSearchQuery("");
-    loadPokemons(type);
-    setShowTypeDropdown(false);
-  };
-
-  const handleDropdownMouseEnter = () => {
-    clearTimeout(dropdownTimeoutRef.current);
-    dropdownTimeoutRef.current = setTimeout(() => {
-      setShowTypeDropdown(true);
-    }, 200);
-  };
-
-  const handleDropdownMouseLeave = () => {
-    clearTimeout(dropdownTimeoutRef.current);
-    dropdownTimeoutRef.current = setTimeout(() => {
-      setShowTypeDropdown(false);
-    }, 200);
-  };
-
-  const handleWrapperClick = (e) => {
-    if (filterDropdownRef.current.contains(e.target)) {
-      setShowTypeDropdown((prev) => !prev);
-    }
-  };
-
   return (
     <>
-      <form
-        className="search-container-with-suggestions"
-        onSubmit={handleSearchSubmit}
-        onKeyDown={handleKeyDown}
-      >
-        <input
-          type="text"
-          value={searchQuery}
-          ref={searchInputRef}
-          placeholder={t("searchPlaceholder")}
-          className="search"
-          onChange={handleSearchChange}
-          onFocus={() => setShowSuggestions(true)}
-          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+      <div onKeyDown={handleKeyDown}>
+        <Search
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          handleSearchSubmit={handleSearchSubmit}
+          showSuggestions={showSuggestions}
+          suggestionsListRef={suggestionsListRef}
+          searchHistory={searchHistory}
+          highlightedIndex={highlightedIndex}
+          handleSuggestionClick={handleSuggestionClick}
+          handleHistoryDelete={handleHistoryDelete}
+          searchSuggestions={searchSuggestions}
+          setShowSuggestions={setShowSuggestions}
+          loadPokemons={loadPokemons}
+          filterType={filterType}
         />
-        {showSuggestions && (
-          <ul className="suggestions-list" ref={suggestionsListRef}>
-            {searchHistory.map((item, index) => (
-              <li
-                key={`history-${index}`}
-                className={highlightedIndex === index ? "highlighted" : ""}
-                onMouseDown={() => handleSuggestionClick(item)}
-              >
-                <span>{item}</span>
-                <button
-                  className="delete-history-button"
-                  onMouseDown={(e) => handleHistoryDelete(e, item)}
-                >
-                  <RiCloseLine />
-                </button>
-              </li>
-            ))}
-            {searchSuggestions.map((name, index) => (
-              <li
-                key={index}
-                className={
-                  highlightedIndex === searchHistory.length + index
-                    ? "highlighted"
-                    : ""
-                }
-                onMouseDown={() => handleSuggestionClick(name)}
-              >
-                {name}
-              </li>
-            ))}
-          </ul>
-        )}
-      </form>
-
-      <div className="controls-container">
-        {isMobile ? (
-          <div className="mobile-controls-row">
-            <div className="grid-size-container">
-              <strong>{t("Size")}</strong>
-              <div className="grid-buttons">
-                {[2, 3].map((size) => (
-                  <button
-                    key={size}
-                    className={gridSize === size ? "active" : ""}
-                    onClick={() => setGridSize(size)}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="filter-container">
-              <strong>{t("filterByType")}</strong>
-              <select
-                className="type-dropdown"
-                value={filterType}
-                onChange={(e) => {
-                  const newType = e.target.value;
-                  setFilterType(newType);
-                  setSearchQuery("");
-                  loadPokemons(newType);
-                }}
-                style={{ "--type-color": colours[filterType] }}
-              >
-                <option value="all">{t("allType")}</option>
-                {Object.keys(colours).map((type) => (
-                  <option key={type} value={type}>
-                    {t(type.charAt(0).toUpperCase() + type.slice(1))}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="filter-container">
-              <strong>{t("filterByType")}</strong>
-              <div
-                className={`type-dropdown-wrapper ${
-                  showTypeDropdown ? "active" : ""
-                }`}
-                onMouseEnter={handleDropdownMouseEnter}
-                onMouseLeave={handleDropdownMouseLeave}
-                onClick={handleWrapperClick}
-                ref={filterDropdownRef}
-              >
-                <button
-                  type="button"
-                  className={`type-dropdown-button ${
-                    filterType !== "all" ? "active" : ""
-                  }`}
-                  style={{
-                    backgroundColor:
-                      filterType === "all" ? "#efefef" : colours[filterType],
-                    color: filterType === "all" ? "#333" : "white",
-                  }}
-                >
-                  {t(filterType.charAt(0).toUpperCase() + filterType.slice(1))}
-                  <RiArrowDropDownLine className="dropdown-icon" />
-                </button>
-                {showTypeDropdown && (
-                  <div className="type-dropdown-menu">
-                    <div
-                      key="all"
-                      className={`type-dropdown-item ${
-                        filterType === "all" ? "active" : ""
-                      }`}
-                      onClick={(e) => handleFilterChange("all", e)}
-                      onMouseEnter={() => setHoveredType("all")}
-                      onMouseLeave={() => setHoveredType(null)}
-                      style={{
-                        backgroundColor:
-                          hoveredType === "all" || filterType === "all"
-                            ? "#4a90e2"
-                            : "#f0f0f0",
-                        color:
-                          hoveredType === "all" || filterType === "all"
-                            ? "white"
-                            : "#333",
-                        borderColor:
-                          hoveredType === "all" || filterType === "all"
-                            ? "#3d7dca"
-                            : "#ddd",
-                      }}
-                    >
-                      {t("allType")}
-                    </div>
-                    {Object.keys(colours).map((type) => (
-                      <div
-                        key={type}
-                        className={`type-dropdown-item ${
-                          filterType === type ? "active" : ""
-                        }`}
-                        onClick={(e) => handleFilterChange(type, e)}
-                        onMouseEnter={() => setHoveredType(type)}
-                        onMouseLeave={() => setHoveredType(null)}
-                        style={{
-                          backgroundColor:
-                            hoveredType === type || filterType === type
-                              ? colours[type]
-                              : "#f0f0f0",
-                          color:
-                            hoveredType === type || filterType === type
-                              ? "white"
-                              : "#333",
-                          borderColor:
-                            hoveredType === type || filterType === type
-                              ? colours[type]
-                              : "#ddd",
-                        }}
-                      >
-                        {t(type.charAt(0).toUpperCase() + type.slice(1))}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="settings-container">
-              <div className="grid-size-container">
-                <strong>{t("Size")}</strong>
-                <div className="grid-buttons">
-                  {[4, 5, 6, 7].map((size) => (
-                    <button
-                      key={size}
-                      className={gridSize === size ? "active" : ""}
-                      onClick={() => setGridSize(size)}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </>
-        )}
       </div>
+      <Filter
+        isMobile={isMobile}
+        gridSize={gridSize}
+        setGridSize={setGridSize}
+        filterType={filterType}
+        setFilterType={setFilterType}
+        colours={colours}
+        loadPokemons={loadPokemons}
+        setSearchQuery={setSearchQuery}
+      />
 
       <div className="list-pokemon-wrapper" ref={listWrapperRef}>
         <div
