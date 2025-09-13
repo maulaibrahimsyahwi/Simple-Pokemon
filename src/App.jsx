@@ -43,7 +43,6 @@ function App() {
     }
   }, [isLogin]);
 
-  // EFEK BARU: Memuat state perbandingan dari localStorage saat aplikasi pertama kali dimuat
   useEffect(() => {
     const savedPokemons = JSON.parse(localStorage.getItem("selectedPokemons"));
     if (isLogin && savedPokemons && savedPokemons.length === 2) {
@@ -52,7 +51,6 @@ function App() {
     }
   }, [isLogin]);
 
-  // EFEK BARU: Menyimpan Pokemon yang dipilih ke localStorage setiap kali berubah
   useEffect(() => {
     if (selectedPokemons.length === 2) {
       localStorage.setItem(
@@ -75,6 +73,19 @@ function App() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [languageRef]);
+
+  // EFEK BARU: Mengelola scroll pada body saat overlay terbuka/tertutup
+  useEffect(() => {
+    if (selectedPokemonForDetails) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    // Cleanup function untuk memastikan overflow kembali normal
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [selectedPokemonForDetails]);
 
   const handleLogout = () => {
     setIsLogin(false);
@@ -258,7 +269,7 @@ function App() {
       ) : (
         <Login setIsLogin={handleLoginSuccess} />
       )}
-      <ScrollToTopButton />
+      <ScrollToTopButton isOverlayOpen={!!selectedPokemonForDetails} />
     </div>
   );
 }

@@ -68,17 +68,10 @@ function PokemonDetailOverlay({
         const locations = await fetchLocations(pokemon.id);
         setRelations(weaknesses);
         setPokemonLocations(locations);
-        document.body.style.overflow = "hidden";
-      } else {
-        document.body.style.overflow = "unset";
       }
     };
 
     fetchOverlayData();
-
-    return () => {
-      document.body.style.overflow = "unset";
-    };
   }, [
     evolutionLine,
     currentIndex,
@@ -103,10 +96,8 @@ function PokemonDetailOverlay({
 
   const hasMultipleForms =
     pokemonData.varieties && pokemonData.varieties.length > 1;
-  // --- PERUBAHAN DI SINI ---
   const showFormsInSlider =
     hasMultipleForms && pokemonData.varieties.length > 2;
-  // --- BATAS PERUBAHAN ---
   const locationsToShow = showAllLocations
     ? pokemonLocations
     : pokemonLocations.slice(0, 8);

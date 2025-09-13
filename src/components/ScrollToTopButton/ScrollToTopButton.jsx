@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import "./ScrollToTopButton.css";
 import { FaCaretUp } from "react-icons/fa";
 
-function ScrollToTopButton() {
+function ScrollToTopButton({ isOverlayOpen }) {
   const [isVisible, setIsVisible] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipTimeoutRef = useRef(null); // Gunakan useRef untuk menyimpan ID timeout
@@ -45,7 +45,11 @@ function ScrollToTopButton() {
   };
 
   return (
-    <div className={`scroll-to-top ${isVisible ? "visible" : ""}`}>
+    <div
+      className={`scroll-to-top ${
+        isVisible && !isOverlayOpen ? "visible" : ""
+      }`}
+    >
       <div
         className="scroll-button-wrapper"
         onMouseEnter={handleMouseEnter} // Terapkan fungsi baru
