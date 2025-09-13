@@ -169,7 +169,9 @@ function PokemonItem({
               <button onClick={handlePrev} disabled={currentIndex === 0}>
                 <MdArrowBackIos className="evolution-icon" />
               </button>
-              {renderTooltip("prev", t("tooltipPrev"))}
+              {activeTooltip === "prev" && (
+                <span className="evolution-tooltip">{t("tooltipPrev")}</span>
+              )}
             </span>
             <span>
               {currentIndex + 1} / {evolutionLine.length}
@@ -185,7 +187,9 @@ function PokemonItem({
               >
                 <MdArrowForwardIos className="evolution-icon" />
               </button>
-              {renderTooltip("next", t("tooltipNext"))}
+              {activeTooltip === "next" && (
+                <span className="evolution-tooltip">{t("tooltipNext")}</span>
+              )}
             </span>
           </div>
         )}
