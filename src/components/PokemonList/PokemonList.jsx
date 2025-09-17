@@ -5,6 +5,8 @@ import PokemonCardSkeleton from "../PokemonItem/PokemonCardSkeleton/PokemonCardS
 import ErrorDisplay from "../ErrorDisplay/ErrorDisplay";
 import Search from "./Search";
 import Filter from "./Filter";
+// Hapus import LoadingMore jika tidak digunakan lagi di file ini
+// import LoadingMore from "../LoadingMore/LoadingMore";
 import "./PokemonList.css";
 import NotfoundImage from "./img/Not Found Pokemon.webp";
 import { useTranslation } from "react-i18next";
@@ -32,6 +34,8 @@ function Pokemons({
   loadPokemons,
   searchPokemon,
   onShowDetails,
+  loadCount,
+  // setLoadCount, // setLoadCount tidak lagi diperlukan di sini
 }) {
   const { t } = useTranslation();
   const listWrapperRef = useRef(null);
@@ -53,14 +57,18 @@ function Pokemons({
     (node) => {
       if (moreLoading) return;
       if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          loadMore();
-        }
-      });
-      if (node) observer.current.observe(node);
+
+      if (loadCount < 6) {
+        observer.current = new IntersectionObserver((entries) => {
+          if (entries[0].isIntersecting && hasMore) {
+            loadMore();
+          }
+        });
+
+        if (node) observer.current.observe(node);
+      }
     },
-    [moreLoading, hasMore, loadMore]
+    [moreLoading, hasMore, loadMore, loadCount]
   );
 
   useEffect(() => {
@@ -78,6 +86,7 @@ function Pokemons({
         const listHeight = listRef.current.scrollHeight;
         if (listWidth > wrapperWidth) {
           const scale = wrapperWidth / listWidth;
+
           listRef.current.style.transform = `scale(${scale})`;
           listWrapperRef.current.style.height = `${listHeight * scale}px`;
         } else {
@@ -204,7 +213,7 @@ function Pokemons({
           ) : (
             <>
               {error && !loading && <ErrorDisplay message={error} />}
-              {!error && processedPokemons.length === 0 && (
+              {!error && processedPokemons.length === 0 && !loading && (
                 <div className="not-found-container">
                   <img
                     src={NotfoundImage}
@@ -249,10 +258,6 @@ function Pokemons({
                   );
                 }
               })}
-              {moreLoading &&
-                Array.from({ length: gridSize * 1 }).map((_, index) => (
-                  <PokemonCardSkeleton key={index} />
-                ))}
             </>
           )}
         </div>

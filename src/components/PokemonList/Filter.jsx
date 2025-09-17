@@ -176,7 +176,7 @@ function Filter({
             <div className="grid-size-container">
               <strong>{t("Size")}</strong>
               <div className="grid-buttons">
-                {[4, 5, 6, 7].map((size) => (
+                {[4, 5, 6].map((size) => (
                   <button
                     key={size}
                     className={gridSize === size ? "active" : ""}

@@ -1,0 +1,133 @@
+.footer-container {
+  padding: 50px 40px;
+  background-color: #1c1c1f;
+  color: #a9a9b3;
+  width: 100%;
+  font-family: "Jura", sans-serif;
+  border-top: 1px solid #333;
+}
+
+.footer-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.footer-left {
+  flex: 2;
+  min-width: 280px;
+  text-align: left;
+}
+
+.footer-left h3 {
+  font-size: 2rem;
+  color: #ffffff;
+  margin: 0 0 10px 0;
+}
+
+.footer-tagline {
+  font-size: 1rem;
+  margin: 0 0 20px 0;
+  max-width: 300px;
+}
+
+.footer-copyright {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.footer-copyright p {
+  margin: 0;
+}
+
+.footer-right {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 40px;
+}
+
+.footer-connect h4 {
+  font-size: 1.1rem;
+  color: #ffffff;
+  margin: 0 0 15px 0;
+  text-align: right;
+}
+
+.footer-social-links {
+  display: flex;
+  gap: 15px;
+}
+
+.social-icon {
+  font-size: 1.5rem;
+  color: #a9a9b3;
+  background-color: #2a2a2e;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.social-icon:hover {
+  background-color: #4a90e2;
+  color: #ffffff;
+  transform: translateY(-3px);
+}
+
+.footer-meta {
+  text-align: right;
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.footer-meta p {
+  margin: 0 0 10px 0;
+}
+
+.footer-meta a {
+  color: #a9a9b3;
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-meta a:hover {
+  color: #4a90e2;
+}
+
+.back-to-top {
+  cursor: pointer;
+  transition: color 0.2s;
+  color: #a9a9b3;
+}
+
+.back-to-top:hover {
+  color: #4a90e2;
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .footer-left,
+  .footer-right,
+  .footer-connect h4,
+  .footer-meta {
+    align-items: center;
+    text-align: center;
+  }
+  .footer-tagline {
+    margin: 0 auto 20px auto;
+  }
+}

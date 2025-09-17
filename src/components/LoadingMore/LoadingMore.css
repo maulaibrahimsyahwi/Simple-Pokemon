@@ -1,0 +1,42 @@
+/* src/components/LoadingMore/LoadingMore.css */
+.loading-more-container {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.loading-more-gif {
+  width: 100px;
+  height: auto;
+}
+
+.load-more-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 40px; /* Memberi jarak antara tombol dan footer */
+}
+
+.load-more-wrapper {
+  text-align: center;
+}
+
+/* Mengambil gaya tombol dari PokemonList.css agar konsisten */
+.load-more-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  background-color: #3d7dca;
+  border: 2px solid #2a588d;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.load-more-button:hover {
+  background-color: #2a588d;
+}

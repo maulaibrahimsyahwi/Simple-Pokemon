@@ -10,8 +10,8 @@
     "Water": "Air",
     "Grass": "Rumput",
     "Electric": "Listrik",
-    "Ice": "Gelap",
-    "Fighting": "Pertempuran",
+    "Ice": "Es",
+    "Fighting": "Pertarungan",
     "Poison": "Racun",
     "Ground": "Tanah",
     "Rock": "Batu",
@@ -34,7 +34,7 @@
     "hideDescription": "Sembunyikan Deskripsi",
     "errorMessage": "Gagal memuat data. Periksa koneksi internet Anda.",
     "retryButton": "Coba Lagi",
-    "loginWelcome": "Selamat Datang, Trainer!",
+    "loginWelcome": "Selamat Datang, Pelatih!",
     "loginSubtitle": "Masukkan kredensial untuk memulai petualanganmu.",
     "usernamePlaceholder": "Nama pengguna",
     "passwordPlaceholder": "Kata sandi",
@@ -76,6 +76,14 @@
     "typeTitle": "Tipe",
     "weaknessesTitle": "Kelemahan",
     "resistancesTitle": "Resistansi",
-    "immunitiesTitle": "Imunitas"
+    "immunitiesTitle": "Imunitas",
+    "loadMoreButton": "Muat Lebih Banyak",
+    "footerAttribution": "Dipersembahkan oleh",
+    "appTagline": "Pokedex sederhana untuk menjelajahi dunia Pokémon.",
+    "connect": "Terhubung",
+    "madeWithReact": "Dibuat dengan React",
+    "backToTop": "Kembali ke atas ↑",
+    "copyrightOwner": "© {{year}} Maula Ibrahim Syahwi",
+    "copyrightRights": "Hak cipta dilindungi."
   }
 }

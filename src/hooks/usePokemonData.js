@@ -1,10 +1,12 @@
+// src/hooks/usePokemonData.js
 import { useState } from "react";
 import { colours } from "../data/colours";
 import useFetchPokemon from "./useFetchPokemon";
 import usePokemonFilteringAndSorting from "./usePokemonFilteringAndSorting";
 
 const usePokemonData = () => {
-  const [gridSize, setGridSize] = useState(window.innerWidth <= 640 ? 3 : 4);
+  // Pastikan state gridSize ada di sini
+  const [gridSize, setGridSize] = useState(window.innerWidth <= 640 ? 2 : 4);
 
   const {
     allPokemonNamesSorted,
@@ -25,10 +27,11 @@ const usePokemonData = () => {
     loadPokemons,
     searchPokemon,
     fetchWeaknesses,
-    fetchLocations, // <-- Tambahkan ini
+    fetchLocations,
+    loadCount,
+    setLoadCount,
   } = useFetchPokemon(allPokemonNamesSorted);
 
-  // `processedPokemons` dari sini sekarang sudah dijamin terurut dengan benar
   const { processedPokemons } = usePokemonFilteringAndSorting(pokemons);
 
   return {
@@ -49,7 +52,9 @@ const usePokemonData = () => {
     loadPokemons,
     searchPokemon,
     fetchWeaknesses,
-    fetchLocations, // <-- Tambahkan ini
+    fetchLocations,
+    loadCount,
+    setLoadCount,
   };
 };
 

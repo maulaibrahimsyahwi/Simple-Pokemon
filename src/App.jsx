@@ -1,3 +1,4 @@
+// src/App.jsx
 import { useState, useEffect, useRef } from "react";
 import Pokemons from "./components/PokemonList/PokemonList";
 import Login from "./components/Login/Login";
@@ -9,6 +10,7 @@ import usePokemonData from "./hooks/usePokemonData";
 import { IoLogOutOutline } from "react-icons/io5";
 import { FaCodeCompare } from "react-icons/fa6";
 import { FaLanguage } from "react-icons/fa";
+import LoadingMore from "./components/LoadingMore/LoadingMore"; // Tambahkan import ini
 import "./app.css";
 
 function App() {
@@ -74,14 +76,12 @@ function App() {
     };
   }, [languageRef]);
 
-  // EFEK BARU: Mengelola scroll pada body saat overlay terbuka/tertutup
   useEffect(() => {
     if (selectedPokemonForDetails) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
     }
-    // Cleanup function untuk memastikan overflow kembali normal
     return () => {
       document.body.style.overflow = "unset";
     };
@@ -150,127 +150,153 @@ function App() {
   };
 
   return (
-    <div
-      className={`app-container ${view === "compare" ? "comparison-page" : ""}`}
-    >
-      {isLogin ? (
-        <>
-          <div className="header">
-            <div className="header-left-controls">
-              {view === "list" && (
-                <button
-                  className="compare-button"
-                  onClick={handleCompareClick}
-                  disabled={selectedPokemons.length !== 2}
-                >
-                  {isMobile ? (
-                    <>
-                      <FaCodeCompare />
-                      <span className="compare-count-mobile">
-                        ({selectedPokemons.length}/2)
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      {t("compareButton")} ({selectedPokemons.length}/2)
-                    </>
-                  )}
-                </button>
-              )}
-              {view === "compare" && (
-                <button
-                  className="compare-button back-to-list-button"
-                  onClick={handleClearComparison}
-                >
-                  {t("backButton")}
-                </button>
-              )}
-            </div>
+    // Gunakan Fragment <>...</> agar bisa merender footer di luar .app-container
+    <>
+      <div
+        className={`app-container ${
+          view === "compare" ? "comparison-page" : ""
+        }`}
+      >
+        {isLogin ? (
+          <>
+            <div className="header">
+              <div className="header-left-controls">
+                {view === "list" && (
+                  <button
+                    className="compare-button"
+                    onClick={handleCompareClick}
+                    disabled={selectedPokemons.length !== 2}
+                  >
+                    {isMobile ? (
+                      <>
+                        <FaCodeCompare />
+                        <span className="compare-count-mobile">
+                          ({selectedPokemons.length}/2)
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        {t("compareButton")} ({selectedPokemons.length}/2)
+                      </>
+                    )}
+                  </button>
+                )}
+                {view === "compare" && (
+                  <button
+                    className="compare-button back-to-list-button"
+                    onClick={handleClearComparison}
+                  >
+                    {t("backButton")}
+                  </button>
+                )}
+              </div>
 
-            <div className="header-center-controls">
-              <h1>{t("appTitle")}</h1>
-            </div>
+              <div className="header-center-controls">
+                <h1>{t("appTitle")}</h1>
+              </div>
 
-            <div className="header-controls">
-              {isMobile ? (
-                <div className="language-dropdown-container" ref={languageRef}>
-                  <button
-                    className="language-toggle-button"
-                    onClick={toggleLanguageDropdown}
+              <div className="header-controls">
+                {isMobile ? (
+                  <div
+                    className="language-dropdown-container"
+                    ref={languageRef}
                   >
-                    <FaLanguage />
-                  </button>
-                  {showLanguageDropdown && (
-                    <div className="language-dropdown">
-                      <button
-                        onClick={() => changeLanguage("en")}
-                        className={i18n.language === "en" ? "active" : ""}
-                      >
-                        EN
-                      </button>
-                      <button
-                        onClick={() => changeLanguage("id")}
-                        className={i18n.language === "id" ? "active" : ""}
-                      >
-                        ID
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="language-switcher">
-                  <button
-                    onClick={() => changeLanguage("en")}
-                    className={i18n.language === "en" ? "active" : ""}
-                  >
-                    EN
-                  </button>
-                  <button
-                    onClick={() => changeLanguage("id")}
-                    className={i18n.language === "id" ? "active" : ""}
-                  >
-                    ID
-                  </button>
-                </div>
-              )}
-              <button onClick={handleLogout} className="logout-button">
-                {isMobile ? <IoLogOutOutline /> : t("logoutButton")}
-              </button>
+                    <button
+                      className="language-toggle-button"
+                      onClick={toggleLanguageDropdown}
+                    >
+                      <FaLanguage />
+                    </button>
+                    {showLanguageDropdown && (
+                      <div className="language-dropdown">
+                        <button
+                          onClick={() => changeLanguage("en")}
+                          className={i18n.language === "en" ? "active" : ""}
+                        >
+                          EN
+                        </button>
+                        <button
+                          onClick={() => changeLanguage("id")}
+                          className={i18n.language === "id" ? "active" : ""}
+                        >
+                          ID
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="language-switcher">
+                    <button
+                      onClick={() => changeLanguage("en")}
+                      className={i18n.language === "en" ? "active" : ""}
+                    >
+                      EN
+                    </button>
+                    <button
+                      onClick={() => changeLanguage("id")}
+                      className={i18n.language === "id" ? "active" : ""}
+                    >
+                      ID
+                    </button>
+                  </div>
+                )}
+                <button onClick={handleLogout} className="logout-button">
+                  {isMobile ? <IoLogOutOutline /> : t("logoutButton")}
+                </button>
+              </div>
             </div>
-          </div>
-          {view === "list" && (
-            <Pokemons
-              {...pokemonData}
-              isInitialLoad={isInitialLoad}
-              setIsInitialLoad={setIsInitialLoad}
-              onAddForComparison={handleAddForComparison}
-              onRemoveFromComparison={handleRemoveFromComparison}
-              selectedPokemons={selectedPokemons}
-              onShowDetails={handleShowDetails}
-            />
-          )}
-          {view === "compare" && (
-            <PokemonComparison selectedPokemons={selectedPokemons} />
-          )}
-          {selectedPokemonForDetails && (
-            <PokemonDetailOverlay
-              evolutionLine={selectedPokemonForDetails.evolutionLine}
-              initialIndex={selectedPokemonForDetails.initialIndex}
-              initialBranchIndex={selectedPokemonForDetails.initialBranchIndex}
-              initialFormIndex={selectedPokemonForDetails.initialFormIndex}
-              onClose={handleCloseDetails}
-              selectedPokemons={selectedPokemons}
-              onAddForComparison={handleAddForComparison}
-              onRemoveFromComparison={handleRemoveFromComparison}
-              onGoToCompare={handleCompareClick}
-            />
-          )}
-        </>
-      ) : (
-        <Login setIsLogin={handleLoginSuccess} />
-      )}
+            {view === "list" && (
+              <Pokemons
+                {...pokemonData}
+                isInitialLoad={isInitialLoad}
+                setIsInitialLoad={setIsInitialLoad}
+                onAddForComparison={handleAddForComparison}
+                onRemoveFromComparison={handleRemoveFromComparison}
+                selectedPokemons={selectedPokemons}
+                onShowDetails={handleShowDetails}
+              />
+            )}
+            {view === "compare" && (
+              <PokemonComparison selectedPokemons={selectedPokemons} />
+            )}
+            {selectedPokemonForDetails && (
+              <PokemonDetailOverlay
+                evolutionLine={selectedPokemonForDetails.evolutionLine}
+                initialIndex={selectedPokemonForDetails.initialIndex}
+                initialBranchIndex={
+                  selectedPokemonForDetails.initialBranchIndex
+                }
+                initialFormIndex={selectedPokemonForDetails.initialFormIndex}
+                onClose={handleCloseDetails}
+                selectedPokemons={selectedPokemons}
+                onAddForComparison={handleAddForComparison}
+                onRemoveFromComparison={handleRemoveFromComparison}
+                onGoToCompare={handleCompareClick}
+              />
+            )}
+          </>
+        ) : (
+          <Login setIsLogin={handleLoginSuccess} />
+        )}
+      </div>
+
+      {/* === PERUBAHAN DI SINI: Pindahkan LoadingMore ke luar .app-container === */}
+      {isLogin &&
+        view === "list" &&
+        (pokemonData.moreLoading ||
+          (pokemonData.loadCount >= 6 && pokemonData.hasMore)) && (
+          <LoadingMore
+            isLoading={pokemonData.moreLoading}
+            onLoadMore={() => {
+              pokemonData.setLoadCount(1);
+              pokemonData.loadMore();
+            }}
+          />
+        )}
+      {/* === AKHIR PERUBAHAN === */}
+
       <ScrollToTopButton isOverlayOpen={!!selectedPokemonForDetails} />
-    </div>
+    </>
   );
 }
 

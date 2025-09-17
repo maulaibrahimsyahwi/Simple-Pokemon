@@ -13,6 +13,7 @@ const useFetchPokemon = (allPokemonNames) => {
   const [moreLoading, setMoreLoading] = useState(false);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
+  const [loadCount, setLoadCount] = useState(0);
   const limit = 20;
   const hasMore = useRef(true);
   const isFetchingRef = useRef(false);
@@ -63,6 +64,7 @@ const useFetchPokemon = (allPokemonNames) => {
     async (type = "all") => {
       currentFilterType.current = type;
       setPage(0);
+      setLoadCount(0); // Reset hitungan
       setPokemons([]);
 
       if (type === "all") {
@@ -117,6 +119,7 @@ const useFetchPokemon = (allPokemonNames) => {
       isFetchingRef.current = true;
       setError(null);
       loadedChainIds.current.clear();
+      setLoadCount(0); // Reset hitungan
 
       const lowerCaseName = name.toLowerCase();
       const cacheKey = `pokemon_search_${lowerCaseName}`;
@@ -167,6 +170,7 @@ const useFetchPokemon = (allPokemonNames) => {
 
   const loadMore = useCallback(() => {
     if (isFetchingRef.current) return;
+    setLoadCount((prevCount) => prevCount + 1);
     if (currentFilterType.current === "all") {
       if (hasMore.current) {
         const start = page * limit;
@@ -203,6 +207,8 @@ const useFetchPokemon = (allPokemonNames) => {
     searchPokemon,
     fetchWeaknesses: fetchPokemonWeaknesses,
     fetchLocations: fetchPokemonLocations,
+    loadCount,
+    setLoadCount, // <-- Ekspor setter
   };
 };
 
