@@ -80,10 +80,11 @@
     "loadMoreButton": "Muat Lebih Banyak",
     "footerAttribution": "Dipersembahkan oleh",
     "appTagline": "Pokedex sederhana untuk menjelajahi dunia Pokémon.",
-    "connect": "Terhubung",
+    "connect": "Terhubung dengan saya",
     "madeWithReact": "Dibuat dengan React",
     "backToTop": "Kembali ke atas ↑",
     "copyrightOwner": "© {{year}} Maula Ibrahim Syahwi",
-    "copyrightRights": "Hak cipta dilindungi."
+    "copyrightRights": "Hak cipta dilindungi.",
+    "instagramTooltip": "Ikuti saya di Instagram"
   }
 }

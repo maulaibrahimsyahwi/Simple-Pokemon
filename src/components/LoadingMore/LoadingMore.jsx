@@ -3,6 +3,7 @@ import Footer from "../Footer/Footer"; // Impor Footer di sini
 import "./LoadingMore.css";
 
 const loadingAnimation = "/assets/loading-more.gif";
+
 const LoadingMore = ({ isLoading, onLoadMore }) => {
   return (
     <div className="loading-more-container">

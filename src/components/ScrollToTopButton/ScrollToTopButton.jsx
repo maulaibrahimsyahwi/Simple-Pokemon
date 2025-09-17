@@ -5,20 +5,37 @@ import { FaCaretUp } from "react-icons/fa";
 function ScrollToTopButton({ isOverlayOpen }) {
   const [isVisible, setIsVisible] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
-  const tooltipTimeoutRef = useRef(null); // Gunakan useRef untuk menyimpan ID timeout
+  const tooltipTimeoutRef = useRef(null);
+  const footerRef = useRef(null);
 
-  // Fungsi untuk menampilkan tombol saat halaman di-scroll ke bawah
+  useEffect(() => {
+    // Menemukan elemen footer sekali saat komponen dimuat
+    footerRef.current = document.querySelector(".footer-container");
+  }, []);
+
   const toggleVisibility = () => {
-    if (window.scrollY > 300) {
+    const footer = footerRef.current;
+    let isFooterVisible = false;
+
+    if (footer) {
+      const footerRect = footer.getBoundingClientRect();
+      // Cek apakah bagian atas footer terlihat di layar
+      isFooterVisible = footerRect.top < window.innerHeight;
+    }
+
+    // Tampilkan tombol jika scroll > 300px DAN footer tidak terlihat
+    if (window.scrollY > 300 && !isFooterVisible) {
       setIsVisible(true);
     } else {
       setIsVisible(false);
     }
   };
 
-  // Menambahkan event listener saat komponen dimuat
   useEffect(() => {
     window.addEventListener("scroll", toggleVisibility);
+    // Panggil sekali untuk memeriksa posisi saat load
+    toggleVisibility();
+
     return () => {
       window.removeEventListener("scroll", toggleVisibility);
     };
@@ -31,14 +48,12 @@ function ScrollToTopButton({ isOverlayOpen }) {
     });
   };
 
-  // Fungsi untuk menampilkan tooltip dengan delay
   const handleMouseEnter = () => {
     tooltipTimeoutRef.current = setTimeout(() => {
       setShowTooltip(true);
-    }, 500); // Delay 500 ms
+    }, 500);
   };
 
-  // Fungsi untuk menyembunyikan tooltip segera dan membatalkan delay
   const handleMouseLeave = () => {
     clearTimeout(tooltipTimeoutRef.current);
     setShowTooltip(false);
@@ -52,8 +67,8 @@ function ScrollToTopButton({ isOverlayOpen }) {
     >
       <div
         className="scroll-button-wrapper"
-        onMouseEnter={handleMouseEnter} // Terapkan fungsi baru
-        onMouseLeave={handleMouseLeave} // Terapkan fungsi baru
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <FaCaretUp onClick={scrollToTop} className="scroll-button" />
         {showTooltip && (

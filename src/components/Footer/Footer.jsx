@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaInstagram } from "react-icons/fa";
 import "./Footer.css";
 
 function Footer() {
@@ -35,6 +35,7 @@ function Footer() {
                 rel="noopener noreferrer"
                 className="social-icon"
                 aria-label="GitHub"
+                data-tooltip="GitHub"
               >
                 <FaGithub />
               </a>
@@ -44,8 +45,19 @@ function Footer() {
                 rel="noopener noreferrer"
                 className="social-icon"
                 aria-label="LinkedIn"
+                data-tooltip="LinkedIn"
               >
                 <FaLinkedin />
+              </a>
+              <a
+                href="https://www.instagram.com/maulaibrahimsyahwi/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-icon"
+                aria-label="Instagram"
+                data-tooltip={t("instagramTooltip")}
+              >
+                <FaInstagram />
               </a>
             </div>
           </div>

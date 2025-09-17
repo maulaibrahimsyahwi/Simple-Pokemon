@@ -80,10 +80,11 @@
     "loadMoreButton": "Load More Pokemon",
     "footerAttribution": "Powered by",
     "appTagline": "A simple Pokedex to explore the world of Pokémon.",
-    "connect": "Connect",
+    "connect": "Connect with me",
     "madeWithReact": "Made with React",
     "backToTop": "Back to top ↑",
     "copyrightOwner": "© {{year}} Maula Ibrahim Syahwi",
-    "copyrightRights": "All rights reserved."
+    "copyrightRights": "All rights reserved.",
+    "instagramTooltip": "Instagram"
   }
 }

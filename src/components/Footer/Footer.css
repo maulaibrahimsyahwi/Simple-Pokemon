@@ -49,7 +49,7 @@
   min-width: 250px;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-end; /* Diubah dari center ke flex-end */
   gap: 40px;
 }
 
@@ -75,12 +75,35 @@
   align-items: center;
   justify-content: center;
   transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  position: relative;
 }
 
 .social-icon:hover {
   background-color: #4a90e2;
   color: #ffffff;
   transform: translateY(-3px);
+}
+
+.social-icon::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  font-size: 0.8rem;
+}
+
+.social-icon:hover::after {
+  opacity: 1;
+  visibility: visible;
 }
 
 .footer-meta {
