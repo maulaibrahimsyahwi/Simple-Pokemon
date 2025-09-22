@@ -30,7 +30,7 @@ function Footer() {
             <h4>{t("connect")}</h4>
             <div className="footer-social-links">
               <a
-                href="https://github.com/maulaibrahimsyahwi/simple-pokemon"
+                href="https://github.com/maulaibrahimsyahwi"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-icon"
@@ -40,7 +40,7 @@ function Footer() {
                 <FaGithub />
               </a>
               <a
-                href="https://www.linkedin.com/in/maulaibrahimsyahwi/"
+                href="https://www.linkedin.com/in/maula-ibrahim-syahwi/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-icon"
@@ -50,7 +50,7 @@ function Footer() {
                 <FaLinkedin />
               </a>
               <a
-                href="https://www.instagram.com/maulaibrahimsyahwi/"
+                href="https://www.instagram.com/maulaibrhmsyah/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-icon"
